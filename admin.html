@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SECOND WIFE | Kitchen Management Console (Elite)</title>
+    <title>SECOND WIFE | Kitchen Management Console (Elite Live)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display+SC:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -17,15 +17,15 @@
 </head>
 <body class="bg-[#030712] text-slate-100 min-h-screen antialiased pb-24">
 
-    <header class="sticky top-0 z-50 bg-[#030712]/90 backdrop-blur-md border-b border-white/[0.05] px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-xl">
-        <div class="flex flex-col text-center sm:text-left">
+    <header class="sticky top-0 z-50 bg-[#030712]/90 backdrop-blur-md border-b border-white/[0.05] px-6 py-4 flex justify-between items-center shadow-xl">
+        <div class="flex flex-col">
             <h1 class="brand-font text-white text-2xl font-black tracking-tight">Second Wife</h1>
-            <span style="letter-spacing: 0.25em;" class="text-[9px] font-black text-orange-500 uppercase mt-1">Kitchen Command Center</span>
+            <span class="text-[9px] font-black text-orange-500 uppercase tracking-widest mt-1">Kitchen Command Center</span>
         </div>
-        <div class="flex items-center gap-4">
-            <span id="live-ping-node" class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-extrabold text-[10px] px-3 py-1.5 rounded-xl uppercase tracking-wider animate-pulse">
-                <i class="fa-solid fa-circle text-[6px]"></i> Live Sync Engine
-            </span>
+        <div class="flex gap-2">
+            <button onclick="openStockModalNode()" class="bg-gradient-to-r from-orange-500 to-red-600 text-black font-extrabold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition active:scale-95">
+                <i class="fa-solid fa-layer-group"></i> 🥞 MANAGE DISH STOCK
+            </button>
         </div>
     </header>
 
@@ -47,7 +47,7 @@
                 <i class="fa-solid fa-truck-ramp-box absolute right-4 bottom-4 text-blue-950/40 text-2xl"></i>
             </div>
             <div class="glass-card p-5 rounded-3xl relative overflow-hidden">
-                <p class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Live Net Revenue</p>
+                <p class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Net Revenue</p>
                 <h3 id="stat-revenue" class="text-3xl font-black text-emerald-500 mt-1">₹0</h3>
                 <i class="fa-solid fa-indian-rupee-sign absolute right-4 bottom-4 text-emerald-950/40 text-2xl"></i>
             </div>
@@ -57,114 +57,109 @@
             <i class="fa-solid fa-list-check text-orange-500"></i> Active Production Queue
         </h2>
         
-        <div id="admin-orders-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="col-span-full text-center py-12 glass-card rounded-3xl text-slate-500 font-semibold text-xs">
-                <i class="fa-solid fa-spinner animate-spin text-lg mb-2 block text-orange-500"></i> Loading Live Server Database...
-            </div>
-        </div>
+        <div id="admin-orders-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </main>
+
+    <div id="stock-modal-layer" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-950 border border-white/10 w-full max-w-md rounded-[2.5rem] p-6 max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
+                <h3 class="text-sm font-black text-orange-400 uppercase tracking-wider">Kitchen Menu Stock Toggle</h3>
+                <button onclick="closeStockModalNode()" class="text-slate-400 font-bold">✕</button>
+            </div>
+            <div id="stock-items-list-box" class="space-y-2.5 overflow-y-auto pr-1"></div>
+        </div>
+    </div>
 
     <script>
         const firebaseConfig = { databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
-        // LIVE FEED SYNCHRONIZER
+        const fullMenu = [
+            { id: 1, name: "Veg Biryani" }, { id: 2, name: "Soya Chaap Biryani" }, { id: 3, name: "Hyderabadi Dum Biryani" },
+            { id: 4, name: "Special Thali" }, { id: 5, name: "Golden Thali" }, { id: 6, name: "Makhmali Malai Chaap Gravy" },
+            { id: 7, name: "Mushroom Masala" }, { id: 10, name: "Handi Paneer" }, { id: 23, name: "Tandoori Roti" },
+            { id: 24, name: "Butter Tandoori Roti" }, { id: 27, name: "Butter Naan" }, { id: 38, name: "Makhmali Malai Chaap" },
+            { id: 40, name: "Paneer Tikka" }, { id: 46, name: "Jeera Rice" }, { id: 50, name: "French Fries" }
+        ];
+
+        // REALTIME ORDERS FEEDS RECEIVER LOOP
         db.ref('orders').on('value', (snapshot) => {
             const data = snapshot.val() || {};
-            const grid = document.getElementById('admin-orders-grid');
-            grid.innerHTML = "";
-
+            const grid = document.getElementById('admin-orders-grid'); grid.innerHTML = "";
             let total = 0, pending = 0, transit = 0, revenue = 0;
 
-            const sortedKeys = Object.keys(data).sort((a, b) => data[b].timestamp - data[a].timestamp);
-
-            if(sortedKeys.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 glass-card rounded-3xl text-slate-500 font-bold text-xs">No active orders placed yet.</div>`;
-            }
-
-            sortedKeys.forEach(id => {
-                const order = data[id];
-                total++;
+            Object.keys(data).sort((a, b) => data[b].timestamp - data[a].timestamp).forEach(id => {
+                const order = data[id]; total++;
                 if (order.status === 'placed' || order.status === 'cooking') pending++;
                 if (order.status === 'dispatched') transit++;
                 if (order.status === 'delivered') revenue += parseInt(order.total || 0);
 
-                // Pure layout style structure logic with status color configurations
-                let statusColor = "border-amber-500/30 text-amber-400 bg-amber-500/5";
-                if(order.status === 'cooking') statusColor = "border-orange-500/30 text-orange-400 bg-orange-500/5";
-                if(order.status === 'dispatched') statusColor = "border-blue-500/30 text-blue-400 bg-blue-500/5";
-                if(order.status === 'delivered') statusColor = "border-emerald-500/30 text-emerald-400 bg-emerald-500/5";
-
-                const timeStr = new Date(order.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                let sColor = "border-amber-500/30 text-amber-400 bg-amber-500/5";
+                if(order.status === 'cooking') sColor = "border-orange-500/30 text-orange-400 bg-orange-500/5";
+                if(order.status === 'dispatched') sColor = "border-blue-500/30 text-blue-400 bg-blue-500/5";
+                if(order.status === 'delivered') sColor = "border-emerald-500/30 text-emerald-400 bg-emerald-500/5";
 
                 grid.innerHTML += `
-                    <div class="glass-card p-6 rounded-[2rem] flex flex-col justify-between border border-white/[0.04] hover:border-orange-500/20 transition-all duration-300 shadow-2xl">
+                    <div class="glass-card p-6 rounded-[2rem] flex flex-col justify-between border border-white/[0.04]">
                         <div>
                             <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <h4 class="text-base font-black text-white tracking-tight">${order.id}</h4>
-                                    <span class="text-[10px] font-mono font-bold text-slate-500"><i class="fa-regular fa-clock"></i> ${timeStr}</span>
-                                </div>
-                                <span class="text-[10px] font-extrabold px-3 py-1.5 rounded-xl uppercase tracking-wide border ${statusColor}">
-                                    ${order.status}
-                                </span>
+                                <div><h4 class="text-base font-black text-white">${order.id}</h4></div>
+                                <span class="text-[10px] font-extrabold px-3 py-1.5 rounded-xl uppercase border ${sColor}">${order.status}</span>
                             </div>
-
-                            <div class="bg-black/20 border border-white/[0.02] p-3.5 rounded-2xl mb-4 space-y-1.5 text-xs">
+                            <div class="bg-black/20 border border-white/[0.02] p-3.5 rounded-2xl mb-4 space-y-1.5 text-xs text-left">
                                 <p class="text-slate-400"><b>👤 Name:</b> <span class="text-white font-bold">${order.custName || 'N/A'}</span></p>
-                                <p class="text-slate-400"><b>📞 Phone:</b> <a href="tel:${order.custPhone}" class="text-blue-400 font-mono font-bold underline">${order.custPhone || 'N/A'}</a></p>
-                                <p class="text-slate-400"><b>📦 Type:</b> <span class="bg-white/5 px-2 py-0.5 rounded text-[10px] font-black text-orange-400 uppercase">${order.custType || 'DineIn'}</span></p>
+                                <p class="text-slate-400"><b>📞 Phone:</b> <a href="tel:${order.custPhone}" class="text-blue-400 underline font-bold">${order.custPhone || 'N/A'}</a></p>
+                                <p class="text-slate-400"><b>📦 Type:</b> <span class="text-orange-400 font-black uppercase text-[10px]">${order.custType || 'DineIn'}</span></p>
                                 <p class="text-slate-400"><b>📍 Table/Addr:</b> <span class="text-amber-400 font-semibold">${order.custLoc || 'N/A'}</span></p>
-                                ${order.utr && order.utr !== 'COD_MODE' ? `<p class="text-slate-400 truncate"><b>💳 UPI UTR:</b> <span class="text-purple-400 font-mono font-bold">${order.utr}</span></p>` : ''}
                             </div>
-
-                            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Basket Food Items:</p>
-                            <div class="bg-slate-950/60 border border-white/[0.03] p-3 rounded-xl font-bold text-xs text-slate-200 mb-4 whitespace-pre-line leading-relaxed">
-                                ${order.items}
-                            </div>
+                            <div class="bg-slate-950/60 p-3 rounded-xl text-xs font-bold text-slate-200 mb-4">${order.items}</div>
                         </div>
-
-                        <div class="border-t border-white/[0.04] pt-4 flex flex-col gap-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-[10px] font-black text-slate-500 uppercase">Total Invoice:</span>
-                                <span class="text-2xl font-black text-orange-500 brand-font">₹${order.total}</span>
-                            </div>
-                            
+                        <div class="border-t border-white/[0.04] pt-4 space-y-3">
+                            <div class="flex justify-between items-center"><span class="text-[10px] font-black text-slate-500 uppercase">Total Invoice:</span><span class="text-2xl font-black text-orange-500 brand-font">₹${order.total}</span></div>
                             <div class="flex gap-2">
-                                <select onchange="updateStatusNode('${order.id}', this.value)" class="bg-slate-900 border border-white/10 text-white font-bold text-xs rounded-xl px-3 py-2.5 w-full focus:outline-none focus:border-orange-500">
-                                    <option value="placed" ${order.status==='placed'?'selected':''}>Placed (Received)</option>
-                                    <option value="cooking" ${order.status==='cooking'?'selected':''}>Cooking In Kitchen</option>
-                                    <option value="dispatched" ${order.status==='dispatched'?'selected':''}>Out For Delivery</option>
-                                    <option value="delivered" ${order.status==='delivered'?'selected':''}>Delivered Fine</option>
+                                <select onchange="db.ref('orders/${order.id}').update({status:this.value})" class="bg-slate-900 border border-white/10 text-white font-bold text-xs rounded-xl px-3 py-2.5 w-full focus:outline-none">
+                                    <option value="placed" ${order.status==='placed'?'selected':''}>Placed</option>
+                                    <option value="cooking" ${order.status==='cooking'?'selected':''}>Cooking</option>
+                                    <option value="dispatched" ${order.status==='dispatched'?'selected':''}>Dispatched</option>
+                                    <option value="delivered" ${order.status==='delivered'?'selected':''}>Delivered</option>
                                 </select>
-                                <button onclick="deleteOrderNode('${order.id}')" class="bg-red-500/10 hover:bg-red-500 border border-red-500/20 hover:text-white text-red-400 px-3.5 rounded-xl transition-all duration-200" title="Delete Archive">
-                                    <i class="fa-solid fa-trash-can text-xs"></i>
-                                </button>
+                                <button onclick="if(confirm('Delete?')) db.ref('orders/${order.id}').remove()" class="bg-red-500/10 text-red-400 border border-red-500/20 px-3.5 rounded-xl"><i class="fa-solid fa-trash-can text-xs"></i></button>
                             </div>
                         </div>
                     </div>
                 `;
             });
-
-            // Counters Update Trigger Node
             document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-pending').innerText = pending;
             document.getElementById('stat-transit').innerText = transit;
             document.getElementById('stat-revenue').innerText = "₹" + revenue;
         });
 
-        // UPDATE ORDER STATUS TRIGGER
-        window.updateStatusNode = function(id, val) {
-            db.ref('orders/' + id).update({ status: val });
+        // STOCK ENGINE POPUP MANAGEMENT CONTROL RULES
+        window.openStockModalNode = function() {
+            document.getElementById('stock-modal-layer').classList.remove('hidden');
+            const container = document.getElementById('stock-items-list-box');
+            
+            db.ref('menu_stock').once('value').then(snap => {
+                const stock = snap.val() || {}; container.innerHTML = "";
+                fullMenu.forEach(item => {
+                    const isAvailable = stock[item.id] !== false;
+                    container.innerHTML += `
+                        <div class="bg-slate-900 border border-white/5 p-3 rounded-xl flex justify-between items-center">
+                            <span class="text-xs font-bold text-slate-200">${item.name}</span>
+                            <button onclick="toggleItemStockNode(${item.id}, ${isAvailable})" class="text-[10px] font-black uppercase px-3 py-1.5 rounded-lg border ${isAvailable ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}">
+                                ${isAvailable ? '🟢 IN STOCK' : '🔴 OUT OF STOCK'}
+                            </button>
+                        </div>
+                    `;
+                });
+            });
         }
 
-        // PURGE ARCHIVE CONTROLLER NODE
-        window.deleteOrderNode = function(id) {
-            if(confirm("Kya aap sach me is order ko delete/clear karna chahte hain?")) {
-                db.ref('orders/' + id).remove();
-            }
+        window.toggleItemStockNode = function(id, currentStatus) {
+            db.ref('menu_stock/' + id).set(!currentStatus).then(() => openStockModalNode());
         }
+        window.closeStockModalNode = function() { document.getElementById('stock-modal-layer').classList.add('hidden'); }
     </script>
 </body>
 </html>
