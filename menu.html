@@ -15,7 +15,7 @@
         .glass-premium { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.04); }
         .glass-header { background: rgba(3, 7, 18, 0.82); backdrop-filter: blur(20px); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .active-pill { background: linear-gradient(135deg, #f97316, #ea580c); color: #000000; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.2); }
+        .active-pill { background: linear-gradient(135deg, #f97316, #ea580c); color: #000000; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.2); border-color: transparent; }
     </style>
 </head>
 <body class="bg-[#030712] text-slate-100 antialiased overflow-x-hidden">
@@ -64,7 +64,7 @@
         <div class="max-w-xl mx-auto px-4 mt-6">
             <div class="relative flex items-center">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 text-slate-500 text-xs"></i>
-                <input type="text" id="search-bar" onkeyup="searchDish()" placeholder="Biryani, Paneer, Naan dhoondein..." class="w-full bg-slate-900/50 border border-white/5 rounded-2xl py-4.5 pl-11 pr-4 text-xs text-white font-semibold placeholder-slate-600 focus:outline-none">
+                <input type="text" id="search-bar" onkeyup="searchDish()" placeholder="Biryani, Paneer, Naan dhoondein..." class="w-full bg-slate-900/50 border border-white/5 rounded-2xl py-4.5 pl-11 pr-4 text-xs text-white font-semibold focus:outline-none focus:border-orange-500/40">
             </div>
         </div>
 
@@ -83,35 +83,40 @@
     <div id="tracking-screen-view" class="hidden max-w-xl mx-auto px-4 py-12 text-center">
         <h2 id="track-order-id" class="text-xl font-black text-white mt-6 brand-font-premium">Order ID: Checking...</h2>
         <div class="glass-premium p-8 rounded-[2.5rem] mt-8 text-left space-y-8">
-            <div id="step-placed" class="opacity-40 flex gap-4"><div id="icon-placed" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0">1</div><div><h3 id="title-placed" class="font-bold text-sm text-white">Order Received</h3></div></div>
-            <div id="step-cooking" class="opacity-40 flex gap-4"><div id="icon-cooking" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0">2</div><div><h3 id="title-cooking" class="font-bold text-sm text-white">Cooking In Kitchen</h3><p id="cooking-timer-text" class="text-xs text-slate-400 mt-0.5"></p></div></div>
-            <div id="step-dispatched" class="opacity-40 flex gap-4"><div id="icon-dispatched" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0">3</div><div><h3 id="title-dispatched" class="font-bold text-sm text-white">Out For Delivery</h3></div></div>
-            <div id="step-delivered" class="opacity-40 flex gap-4"><div id="icon-delivered" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0">4</div><div><h3 id="title-delivered" class="font-bold text-sm text-white">Delivered Successfully</h3></div></div>
+            <div id="step-placed" class="opacity-40 flex gap-4"><div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white">1</div><div><h3 id="title-placed" class="font-bold text-sm text-white">Order Received</h3></div></div>
+            <div id="step-cooking" class="opacity-40 flex gap-4"><div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white">2</div><div><h3 id="title-cooking" class="font-bold text-sm text-white">Cooking In Kitchen</h3><p id="cooking-timer-text" class="text-xs text-slate-400 mt-0.5"></p></div></div>
+            <div id="step-dispatched" class="opacity-40 flex gap-4"><div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white">3</div><div><h3 id="title-dispatched" class="font-bold text-sm text-white">Out For Delivery</h3></div></div>
+            <div id="step-delivered" class="opacity-40 flex gap-4"><div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white">4</div><div><h3 id="title-delivered" class="font-bold text-sm text-white">Delivered Successfully</h3></div></div>
         </div>
         <button onclick="minimizeTrackingViewNode()" class="mt-8 text-xs font-bold text-slate-400 border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50">Back to Menu</button>
     </div>
 
-    <div id="history-drawer" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[85vh] overflow-y-auto max-w-xl mx-auto">
+    <div id="history-drawer" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 max-h-[85vh] overflow-y-auto max-w-xl mx-auto rounded-t-[2.5rem]">
         <div class="w-full max-w-md flex justify-between items-center mb-4 border-b border-white/5 pb-2.5"><span class="text-[10px] font-black text-orange-400 uppercase">Your Past Orders History</span><button onclick="document.getElementById('history-drawer').classList.add('translate-y-full')" class="text-slate-400">✕</button></div>
-        <div class="w-full max-w-md space-y-3 overflow-y-auto" id="history-items-container"></div>
+        <div class="w-full max-w-md space-y-3" id="history-items-container"></div>
     </div>
 
-    <div id="checkout-bar" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[95vh] overflow-y-auto max-w-xl mx-auto">
+    <div id="checkout-bar" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 max-w-xl mx-auto rounded-t-[2.5rem] max-h-[95vh] overflow-y-auto">
         <div class="w-full max-w-md flex justify-between items-center mb-3 border-b border-white/5 pb-2.5"><span class="text-[10px] font-black text-orange-400 uppercase">Review Basket</span><button onclick="closeCartDrawer()" class="text-slate-400">✕</button></div>
+
+        <div class="w-full max-w-md bg-slate-900 border border-white/5 p-4 rounded-xl mb-4">
+            <div class="flex justify-between items-center mb-1.5"><span class="text-[10px] font-extrabold text-slate-300">Delivery Status</span><span id="delivery-msg" class="text-[10px] font-black text-amber-400">Order minimum ₹100</span></div>
+            <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden relative"><div id="delivery-progress" class="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-emerald-500 w-0"></div></div>
+        </div>
 
         <div class="w-full max-w-md bg-slate-900/60 border border-white/5 p-4 rounded-2xl mb-4 space-y-3 text-left">
             <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest"><i class="fa-solid fa-user-pen"></i> Enter Customer Details:</p>
-            <input type="text" id="cust-name" onkeyup="validateFormStateNode()" placeholder="Aapka Naam (Your Name)..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none">
-            <input type="tel" id="cust-phone" maxlength="10" onkeyup="validateFormStateNode()" placeholder="10-Digit Mobile Number..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none font-mono">
+            <input type="text" id="cust-name" onkeyup="validateFormStateNode()" placeholder="Aapka Naam (Your Name)..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold">
+            <input type="tel" id="cust-phone" maxlength="10" onkeyup="validateFormStateNode()" placeholder="10-Digit Mobile Number..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-mono font-bold">
             
             <div class="grid grid-cols-2 gap-2.5 pt-1">
                 <button type="button" id="tab-srv-dine" onclick="setServiceModeTypeNode('DineIn')" class="bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl w-full">Dine-In / Table</button>
                 <button type="button" id="tab-srv-delv" onclick="setServiceModeTypeNode('Delivery')" class="bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl w-full">Home Delivery</button>
             </div>
 
-            <div id="geo-location-container" class="hidden flex flex-col gap-2 pt-1">
+            <div id="geo-location-container" class="hidden flex justify-between items-center pt-1 gap-2">
                 <button type="button" id="gps-btn-node" onclick="fetchNativeGPSCoordinatesNode()" class="bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold text-[10px] px-3 py-2 rounded-xl transition w-full">📍 Use Current GPS Location</button>
-                <button type="button" id="btn-prev-location-pill" onclick="injectCachedPastAddressNode()" class="hidden bg-orange-500/10 border border-orange-500/20 text-orange-400 font-black text-[10px] px-3 py-2 rounded-xl truncate w-full">🕒 Use Previous Address</button>
+                <button type="button" id="btn-prev-location-pill" onclick="injectCachedPastAddressNode()" class="hidden bg-orange-500/10 border border-orange-500/20 text-orange-400 font-black text-[10px] px-3 py-2 rounded-xl truncate w-full">🕒 Purana Address</button>
             </div>
             <input type="text" id="cust-loc" onkeyup="validateFormStateNode()" placeholder="Table Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none">
         </div>
@@ -130,7 +135,7 @@
         </div>
 
         <div id="online-pay-block" class="w-full max-w-md hidden mb-4">
-            <div class="bg-white p-4 rounded-xl text-center"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" class="w-32 h-32 mx-auto"><input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="Enter 12-digit UTR..." class="w-full bg-slate-100 p-2 text-xs mt-2 text-black font-mono font-bold rounded"></div>
+            <div class="bg-white p-4 rounded-xl text-center"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" class="w-32 h-32 mx-auto"><input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="Enter 12-digit UTR..." class="w-full bg-slate-100 p-2 text-xs mt-2 text-black font-mono rounded"></div>
         </div>
 
         <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60" disabled>REALIZE CLOUD ORDER</button>
@@ -145,15 +150,17 @@
         const fullMenu = [
             { id: 1, cat: "biryani", name: "Veg Biryani", price: 199 }, { id: 2, cat: "biryani", name: "Soya Chaap Biryani", price: 229 }, { id: 3, cat: "biryani", name: "Hyderabadi Dum Biryani", price: 230 },
             { id: 4, cat: "thali", name: "Special Thali", price: 260 }, { id: 5, cat: "thali", name: "Golden Thali", price: 299 },
-            { id: 6, cat: "main", name: "Makhmali Malai Chaap Gravy", price: 289 }, { id: 7, cat: "main", name: "Mushroom Masala", price: 179 }, { id: 10, cat: "main", name: "Handi Paneer", price: 179 },
-            { id: 23, cat: "breads", name: "Tandoori Roti", price: 12 }, { id: 24, cat: "breads", name: "Butter Tandoori Roti", price: 14 }, { id: 27, cat: "breads", name: "Butter Naan", price: 45 },
-            { id: 38, cat: "starters", name: "Makhmali Malai Chaap", price: 279 }, { id: 40, cat: "starters", name: "Paneer Tikka", price: 269 },
-            { id: 46, cat: "rice", name: "Jeera Rice", price: 99 }, { id: 50, cat: "snacks", name: "French Fries", price: 139 }
+            { id: 6, cat: "main", name: "Makhmali Malai Chaap Gravy", price: 289 }, { id: 7, cat: "main", name: "Mushroom Masala", price: 179 }, { id: 8, cat: "main", name: "Matar Mushroom", price: 179 }, { id: 9, cat: "main", name: "Malai Kofta", price: 189 }, { id: 10, cat: "main", name: "Handi Paneer", price: 179 }, { id: 11, cat: "main", name: "Veg Kofta", price: 169 }, { id: 12, cat: "main", name: "Dum Aloo", price: 269 }, { id: 13, cat: "main", name: "Kashmiri Dum Aloo", price: 279 }, { id: 14, cat: "main", name: "Jeera Aloo", price: 169 }, { id: 15, cat: "main", name: "Veg Mixed", price: 149 },
+            { id: 16, cat: "side", name: "Green Garden Salad", price: 69 }, { id: 17, cat: "side", name: "Papad Dry", price: 29 }, { id: 18, cat: "side", name: "Masala Papad", price: 45 }, { id: 19, cat: "side", name: "Plain Curd", price: 99 }, { id: 20, cat: "side", name: "Boondi Raita", price: 109 }, { id: 21, cat: "side", name: "Mint Raita", price: 109 }, { id: 22, cat: "side", name: "Mixed Fruit Raita", price: 149 },
+            { id: 23, cat: "breads", name: "Tandoori Roti", price: 12 }, { id: 24, cat: "breads", name: "Butter Tandoori Roti", price: 14 }, { id: 25, cat: "breads", name: "Missi Roti", price: 35 }, { id: 26, cat: "breads", name: "Plain Naan", price: 35 }, { id: 27, cat: "breads", name: "Butter Naan", price: 45 }, { id: 28, cat: "breads", name: "Garlic Naan", price: 49 }, { id: 29, cat: "breads", name: "Plain Kulcha", price: 49 }, { id: 30, cat: "breads", name: "Special Stuff Paratha", price: 69 }, { id: 31, cat: "breads", name: "Stuffed Paneer Paratha", price: 69 }, { id: 32, cat: "breads", name: "Onion Missi Roti", price: 35 }, { id: 33, cat: "breads", name: "Lachha Paratha", price: 45 }, { id: 34, cat: "breads", name: "Pudina Paratha", price: 49 }, { id: 35, cat: "breads", name: "Mirchi Paratha", price: 49 }, { id: 36, cat: "breads", name: "Paneer Naan", price: 55 },
+            { id: 37, cat: "starters", name: "Dahi Kebab", price: 229 }, { id: 38, cat: "starters", name: "Makhmali Malai Chaap", price: 279 }, { id: 39, cat: "starters", name: "Hariyali Paneer Tikka", price: 269 }, { id: 40, cat: "starters", name: "Paneer Tikka", price: 269 }, { id: 41, cat: "starters", name: "Mushroom Tikka", price: 269 }, { id: 42, cat: "starters", name: "Veg Manchurian Dry", price: 239 }, { id: 43, cat: "starters", name: "Paneer Manchurian Dry", price: 269 }, { id: 44, cat: "starters", name: "Paneer Chilli Dry", price: 269 },
+            { id: 45, cat: "rice", name: "Plain Rice", price: 89 }, { id: 46, cat: "rice", name: "Jeera Rice", price: 99 }, { id: 47, cat: "rice", name: "Veg Pulao", price: 149 }, { id: 48, cat: "rice", name: "Matar Pulao", price: 139 }, { id: 49, cat: "rice", name: "Kashmiri Pulao", price: 169 },
+            { id: 50, cat: "snacks", name: "French Fries", price: 139 }, { id: 51, cat: "snacks", name: "Paneer Pakoda (8 pcs)", price: 199 }, { id: 52, cat: "snacks", name: "Spring Roll", price: 129 }, { id: 53, cat: "snacks", name: "Stuffed Paneer Kulcha", price: 79 }, { id: 54, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
         ];
 
         function renderInterfaceMenuRoom() {
             ['biryani', 'thali', 'main', 'starters', 'breads', 'snacks', 'rice', 'side'].forEach(c => {
-                const container = document.getElementById(`${c}-container`); if(container) container.innerHTML = "";
+                const b = document.getElementById(`${c}-container`); if(b) b.innerHTML = "";
             });
             fullMenu.forEach(item => {
                 const container = document.getElementById(`${item.cat}-container`); if(!container) return;
@@ -163,6 +170,16 @@
                         <div class="flex items-center gap-2"><button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-7 h-7 bg-slate-800 rounded-lg hidden text-xs font-bold">-</button><span id="qty-${item.id}" class="font-black text-xs text-white hidden">0</span><button id="plus-btn-node-${item.id}" onclick="changeQty(${item.id}, 1)" class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-xs rounded-lg flex items-center justify-center">+</button></div>
                     </div>
                 `;
+            });
+            db.ref('menu_stock').on('value', (snapshot) => {
+                const stock = snapshot.val() || {};
+                fullMenu.forEach(item => {
+                    const card = document.getElementById(`dish-node-card-${item.id}`); const btn = document.getElementById(`plus-btn-node-${item.id}`); const tag = document.getElementById(`price-tag-node-${item.id}`);
+                    if(card && btn && tag) {
+                        if(stock[item.id] === false) { card.classList.add('opacity-30', 'pointer-events-none'); btn.disabled = true; tag.innerHTML = `<span class="text-red-500 text-[10px] font-black uppercase">Out of Stock</span>`; }
+                        else { card.classList.remove('opacity-30', 'pointer-events-none'); btn.disabled = false; tag.innerHTML = `₹${item.price}`; }
+                    }
+                });
             });
         }
 
@@ -178,6 +195,11 @@
             const badge = document.getElementById('cart-count'); const bar = document.getElementById('checkout-bar');
             if(tItems > 0) { badge.innerText = tItems; badge.classList.remove('hidden'); if(delta > 0) bar.classList.remove('translate-y-full'); document.getElementById('cart-summary').innerText = `${tItems} Selected`; document.getElementById('cart-total').innerText = `₹${tPrice}`; }
             else { badge.classList.add('hidden'); bar.classList.add('translate-y-full'); }
+            
+            const pBar = document.getElementById('delivery-progress'); const msg = document.getElementById('delivery-msg');
+            if(tPrice < 100) { pBar.style.width = `${tPrice}%`; msg.innerHTML = `Shop ₹${100 - tPrice} more to unlock delivery`; }
+            else if(tPrice < 299) { pBar.style.width = `${(tPrice/299)*100}%`; msg.innerHTML = `Add ₹${299 - tPrice} for FREE delivery!`; }
+            else { pBar.style.width = '100%'; msg.innerHTML = "🎉 FREE delivery unlocked!"; }
             validateFormStateNode();
         }
 
@@ -205,7 +227,7 @@
                     const d = await r.json(); document.getElementById('cust-loc').value = d.display_name || `Kanpur Lat: ${p.coords.latitude.toFixed(4)}`;
                 } catch(e) { document.getElementById('cust-loc').value = `Kanpur (GPS Node Locked)`; }
                 btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode();
-            }, () => { alert("GPS Denied! Type address manually inside the box."); btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode(); }, { enableHighAccuracy: true, timeout: 8000 });
+            }, () => { alert("GPS Blocked! Address manually type karein."); btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode(); }, { enableHighAccuracy: true, timeout: 8000 });
         }
 
         window.injectCachedPastAddressNode = function() { document.getElementById('cust-loc').value = localStorage.getItem('sw_cached_delivery_address'); validateFormStateNode(); }
@@ -243,6 +265,7 @@
                 const d = s.val(); if(!d) return; const mini = document.getElementById('mini-status-text');
                 document.getElementById('step-placed').className = d.status==='placed'?"flex gap-4 font-black text-amber-400 scale-105":"opacity-40 flex gap-4";
                 document.getElementById('step-cooking').className = d.status==='cooking'?"flex gap-4 font-black text-orange-400 scale-105":"opacity-40 flex gap-4";
+                if(d.status==='cooking' && d.prepTime>0) document.getElementById('cooking-timer-text').innerHTML = `🔥 Chef are cooking. *Est: ${d.prepTime} Mins*`;
                 document.getElementById('step-dispatched').className = d.status==='dispatched'?"flex gap-4 font-black text-blue-400 scale-105":"opacity-40 flex gap-4";
                 document.getElementById('step-delivered').className = d.status==='delivered'?"flex gap-4 font-black text-emerald-400 scale-105":"opacity-40 flex gap-4";
                 mini.innerText = d.status.toUpperCase();
@@ -250,8 +273,12 @@
         }
         window.minimizeTrackingViewNode = function() { document.getElementById('tracking-screen-view').classList.add('hidden'); document.getElementById('store-front-view').classList.remove('hidden'); document.getElementById('mini-tracker-bar').classList.remove('hidden'); }
         window.maximizeTrackingViewNode = function() { document.getElementById('store-front-view').classList.add('hidden'); document.getElementById('mini-tracker-bar').classList.add('hidden'); document.getElementById('tracking-screen-view').classList.remove('hidden'); }
-        window.scrollToSection = function(id, el) { const t=document.getElementById(id); if(t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); }
+        window.scrollToSection = function(id, el) { const t=document.getElementById(id); if(t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap"); el.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap"; }
         window.searchDish = function() { const input = document.getElementById('search-bar').value.toLowerCase().trim(); const cards = document.getElementsByClassName('dish-card'); for (let i = 0; i < cards.length; i++) cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "flex" : "none"; }
+        
+        localStorage.removeItem('active_secondwife_order_id');
+        localStorage.removeItem('secondwife_tracker_state');
+        
         window.onload = renderInterfaceMenuRoom;
     </script>
 </body>
