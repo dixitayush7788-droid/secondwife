@@ -107,7 +107,7 @@
                 <div><h3 class="font-bold text-sm text-white transition-colors duration-300" id="title-delivered">Delivered Successfully</h3><p class="text-xs text-slate-400 mt-0.5">Swaad ka lutf uthaiye! Shukriya.</p></div>
             </div>
         </div>
-        <button onclick="window.location.reload()" class="mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50"><i class="fa-solid fa-house-chimney"></i> Back to Menu</button>
+        <button onclick="clearActiveOrderBackupTerminalNode()" class="mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50"><i class="fa-solid fa-house-chimney"></i> Back to Menu</button>
     </div>
 
     <div id="checkout-bar" class="fixed bottom-0 left-0 right-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -180,7 +180,6 @@
             Object.keys(window.cart).forEach(key => { itemsString += `${window.cart[key].name} (x${window.cart[key].qty}), `; });
             const utrVal = window.selectedMethod === 'Online' ? document.getElementById('utr-input').value.trim() : "COD_MODE";
 
-            // Atomic Node transaction for perfect 000001 mapping logic sequence
             const counterRef = ref(db, 'order_counter');
             runTransaction(counterRef, (currentValue) => {
                 return (currentValue || 0) + 1;
@@ -199,18 +198,20 @@
                         prepTime: 0,
                         timestamp: Date.now()
                     }).then(() => {
-                        document.getElementById('store-front-view').classList.add('hidden');
-                        document.getElementById('checkout-bar').classList.add('translate-y-full');
-                        document.getElementById('tracking-screen-view').classList.remove('hidden');
-                        document.getElementById('track-order-id').innerText = `Order ID: ${orderId}`;
-                        
-                        listenToOrderLive(orderId);
-                        
-                        let whatsappText = `🍽️ *NEW ONLINE ORDER - SECOND WIFE*%0AOrder ID: *${orderId}*%0AItems: ${itemsString}%0AMode: ${window.selectedMethod}%0ATotal: ₹${totalBill}`;
-                        window.open(`https://wa.me/918467895365?text=${whatsappText}`, '_blank');
+                        // Secure persistence logic into the phone storage memory bank
+                        localStorage.setItem('active_secondwife_order_id', orderId);
+                        launchOrderTrackingInterfaceNode(orderId);
                     });
                 }
             });
+        }
+
+        function launchOrderTrackingInterfaceNode(orderId) {
+            document.getElementById('store-front-view').classList.add('hidden');
+            document.getElementById('checkout-bar').classList.add('translate-y-full');
+            document.getElementById('tracking-screen-view').classList.remove('hidden');
+            document.getElementById('track-order-id').innerText = `Order ID: ${orderId}`;
+            listenToOrderLive(orderId);
         }
 
         function listenToOrderLive(orderId) {
@@ -234,12 +235,12 @@
                         document.getElementById('cooking-timer-text').innerHTML = `🔥 Chef are cooking. *Estimated completion time: ${data.prepTime} Mins*`;
                     }
                 } else if(status === 'dispatched') {
-                    activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-emerald-500', 'text-emerald-400');
+                    activateTrackingStep('step-placed', 'icon-placed', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-cooking', 'icon-cooking', 'title-cooking', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-dispatched', 'icon-dispatched', 'title-dispatched', 'bg-blue-500 animate-pulse scale-105', 'text-blue-400 font-black');
                     pCard.className = "absolute top-0 right-0 w-32 h-32 bg-blue-500/30 rounded-full blur-2xl";
                 } else if(status === 'delivered') {
-                    activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-emerald-500', 'text-emerald-400');
+                    activateTrackingStep('step-placed', 'icon-placed', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-cooking', 'icon-cooking', 'title-cooking', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-dispatched', 'icon-dispatched', 'title-dispatched', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-delivered', 'icon-delivered', 'title-delivered', 'bg-emerald-500 secure-pulse scale-105', 'text-emerald-400 font-black');
@@ -263,12 +264,8 @@
         function activateTrackingStep(stepId, iconId, titleId, bgClass, textClass) {
             const stepNode = document.getElementById(stepId);
             stepNode.classList.remove('opacity-40');
-            
-            // Apply scale pop micro-animations visually matching target step
             if(bgClass.includes('animate-b') || bgClass.includes('pulse') || bgClass.includes('secure')) {
                 stepNode.classList.add('scale-105', 'bg-white/[0.02]', 'border', 'border-white/5');
-                
-                // Realtime outer ping ripple framework layer inject
                 if(!document.getElementById(iconId+'-ping')) {
                     const pingNode = document.createElement('span');
                     pingNode.id = iconId+'-ping';
@@ -278,6 +275,17 @@
             }
             document.getElementById(iconId).className = `w-8 h-8 rounded-full ${bgClass.split(' ')[0]} flex items-center justify-center font-black text-sm text-black flex-shrink-0 relative`;
             document.getElementById(titleId).className = `font-bold text-sm ${textClass}`;
+        }
+
+        // CORES ENGINE CHECK: Cold-boot auto persistence sequence check layer
+        const structuralCheckId = localStorage.getItem('active_secondwife_order_id');
+        if(structuralCheckId) {
+            launchOrderTrackingInterfaceNode(structuralCheckId);
+        }
+
+        window.clearActiveOrderBackupTerminalNode = function() {
+            localStorage.removeItem('active_secondwife_order_id');
+            window.location.reload();
         }
     </script>
 
@@ -336,7 +344,7 @@
             { id: 51, cat: "snacks", name: "Paneer Pakoda (8 pcs)", price: 199 },
             { id: 52, cat: "snacks", name: "Spring Roll", price: 129 },
             { id: 53, cat: "snacks", name: "Stuffed Paneer Kulcha", price: 79 },
-            { id: 54, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
+            { id: 55, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
         ];
 
         window.cart = {};
@@ -362,7 +370,7 @@
                         <div class="flex items-center gap-2.5">
                             <button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-8 h-8 bg-slate-800 text-slate-200 font-extrabold rounded-xl hidden">-</button>
                             <span id="qty-${item.id}" class="font-black text-xs text-white hidden">0</span>
-                            <button onclick="changeQty(${item.id}, 1)" class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-sm rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 shadow-md shadow-orange-500/10">
+                            <button onclick="changeQty(${item.id}, 1)" class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-sm rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-md shadow-orange-500/10">
                                 <i class="fa-solid fa-plus text-xs"></i>
                             </button>
                         </div>
@@ -379,57 +387,59 @@
             updateCartUI(id, delta);
         }
 
-        function updateCartUI(id, delta) {
-            const qtyText = document.getElementById(`qty-${id}`);
-            const minusBtn = document.getElementById(`minus-${id}`);
-            const currentQty = window.cart[id] ? window.cart[id].qty : 0;
+        document.addEventListener('DOMContentLoaded', () => {
+            window.updateCartUI = function(id, delta) {
+                const qtyText = document.getElementById(`qty-${id}`);
+                const minusBtn = document.getElementById(`minus-${id}`);
+                const currentQty = window.cart[id] ? window.cart[id].qty : 0;
 
-            if (qtyText && minusBtn) {
-                if (currentQty > 0) {
-                    qtyText.innerText = currentQty;
-                    qtyText.classList.remove('hidden');
-                    minusBtn.classList.remove('hidden');
-                } else {
-                    qtyText.classList.add('hidden');
-                    minusBtn.classList.add('hidden');
+                if (qtyText && minusBtn) {
+                    if (currentQty > 0) {
+                        qtyText.innerText = currentQty;
+                        qtyText.classList.remove('hidden');
+                        minusBtn.classList.remove('hidden');
+                    } else {
+                        qtyText.classList.add('hidden');
+                        minusBtn.classList.add('hidden');
+                    }
                 }
-            }
 
-            let totalItems = 0;
-            let totalPrice = 0;
-            Object.keys(window.cart).forEach(key => {
-                totalItems += window.cart[key].qty;
-                totalPrice += (window.cart[key].price * window.cart[key].qty);
-            });
+                let totalItems = 0;
+                let totalPrice = 0;
+                Object.keys(window.cart).forEach(key => {
+                    totalItems += window.cart[key].qty;
+                    totalPrice += (window.cart[key].price * window.cart[key].qty);
+                });
 
-            const badge = document.getElementById('cart-count');
-            const bar = document.getElementById('checkout-bar');
-            
-            if (totalItems > 0) {
-                badge.innerText = totalItems;
-                badge.classList.remove('hidden');
-                if (delta > 0) { bar.classList.remove('translate-y-full'); }
-                document.getElementById('cart-summary').innerText = `${totalItems} ${totalItems === 1 ? 'Dish' : 'Dishes'} Selected`;
-                document.getElementById('cart-total').innerText = `₹${totalPrice}`;
-            } else {
-                badge.classList.add('hidden');
-                bar.classList.add('translate-y-full');
-            }
+                const badge = document.getElementById('cart-count');
+                const bar = document.getElementById('checkout-bar');
+                
+                if (totalItems > 0) {
+                    badge.innerText = totalItems;
+                    badge.classList.remove('hidden');
+                    if (delta > 0) { bar.classList.remove('translate-y-full'); }
+                    document.getElementById('cart-summary').innerText = `${totalItems} ${totalItems === 1 ? 'Dish' : 'Dishes'} Selected`;
+                    document.getElementById('cart-total').innerText = `₹${totalPrice}`;
+                } else {
+                    badge.classList.add('hidden');
+                    bar.classList.add('translate-y-full');
+                }
 
-            const pBar = document.getElementById('delivery-progress');
-            const msg = document.getElementById('delivery-msg');
-            if(totalPrice < 100) {
-                pBar.style.width = `${totalPrice}%`;
-                msg.innerHTML = `Shop ₹${100 - totalPrice} more to unlock delivery`;
-            } else if (totalPrice < 299) {
-                pBar.style.width = `${(totalPrice/299)*100}%`;
-                msg.innerHTML = `Add ₹${299 - totalPrice} for FREE delivery!`;
-            } else {
-                pBar.style.width = '100%';
-                msg.innerHTML = "🎉 FREE delivery unlocked!";
+                const pBar = document.getElementById('delivery-progress');
+                const msg = document.getElementById('delivery-msg');
+                if(totalPrice < 100) {
+                    pBar.style.width = `${totalPrice}%`;
+                    msg.innerHTML = `Shop ₹${100 - totalPrice} more to unlock delivery`;
+                } else if (totalPrice < 299) {
+                    pBar.style.width = `${(totalPrice/299)*100}%`;
+                    msg.innerHTML = `Add ₹${299 - totalPrice} for FREE delivery!`;
+                } else {
+                    pBar.style.width = '100%';
+                    msg.innerHTML = "🎉 FREE delivery unlocked!";
+                }
+                validateOnlineLock();
             }
-            validateOnlineLock();
-        }
+        });
 
         function openCartDrawer() { if (Object.keys(window.cart).length > 0) document.getElementById('checkout-bar').classList.remove('translate-y-full'); }
         function closeCartDrawer() { document.getElementById('checkout-bar').classList.add('translate-y-full'); }
