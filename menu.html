@@ -10,15 +10,13 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
         .brand-font-premium { font-family: 'Playfair Display SC', serif; }
-        .glass-premium { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur-28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.04); }
+        .glass-premium { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.04); }
         .glass-header { background: rgba(3, 7, 18, 0.82); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scroll-bar-width: none; }
         .active-pill { background: linear-gradient(135deg, #f97316, #ea580c); color: #000000; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.2); border-color: transparent; }
         @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, 30px); } }
         .drift { animation: drift 15s ease-in-out infinite; }
-        @keyframes border-pulse { 0%, 100% { border-color: rgba(255,255,255,0.02); } 50% { border-color: rgba(249,115,22,0.3); } }
-        .glow-card:hover { border-color: rgba(249, 115, 22, 0.2); animation: border-pulse 2s infinite; }
         @keyframes success-pulse { 0%, 100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.1); } 50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); } }
         .secure-pulse { animation: success-pulse 1.5s infinite; }
     </style>
@@ -51,9 +49,14 @@
                 <span class="brand-font-premium text-white text-2xl font-black leading-none tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-300">Second Wife</span>
                 <span style="letter-spacing: 0.28em; color: #3b82f6;" class="text-[9px] font-black uppercase mt-1.5 leading-none">Café & Restaurant</span>
             </div>
-            <div onclick="openCartDrawer()" class="relative bg-white/[0.01] border border-white/5 p-4 rounded-2xl shadow-2xl transition-all duration-300 active:scale-90 hover:border-orange-500/30 cursor-pointer group secure-pulse">
-                <i class="fa-solid fa-basket-shopping text-xl text-orange-500"></i>
-                <span id="cart-count" class="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-red-600 text-black text-[10px] font-black h-5 w-5 rounded-full flex items-center justify-center hidden border border-[#030712]">0</span>
+            <div class="flex items-center gap-2.5">
+                <div onclick="openHistoryDrawerNode()" class="bg-white/[0.01] border border-white/5 p-4 rounded-2xl shadow-xl transition active:scale-90 hover:border-orange-500/30 cursor-pointer text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                </div>
+                <div onclick="openCartDrawer()" class="relative bg-white/[0.01] border border-white/5 p-4 rounded-2xl shadow-2xl transition active:scale-90 hover:border-orange-500/30 cursor-pointer group secure-pulse">
+                    <i class="fa-solid fa-basket-shopping text-xl text-orange-500"></i>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-red-600 text-black text-[10px] font-black h-5 w-5 rounded-full flex items-center justify-center hidden border border-[#030712]">0</span>
+                </div>
             </div>
         </nav>
 
@@ -126,6 +129,16 @@
         </button>
     </div>
 
+    <div id="history-drawer" class="fixed bottom-0 left-0 right-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[85vh] overflow-y-auto shadow-2xl">
+        <div class="w-full max-w-md flex justify-between items-center mb-4 border-b border-white/5 pb-2.5">
+            <span class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em] flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left"></i> Your Past Orders History</span>
+            <button onclick="closeHistoryDrawerNode()" class="h-8 w-8 bg-slate-900 border border-white/5 text-slate-400 hover:text-orange-500 font-bold rounded-full flex items-center justify-center transition active:scale-90">✕</button>
+        </div>
+        <div class="w-full max-w-md space-y-3 overflow-y-auto pr-1" id="history-items-container">
+            <p class="text-center text-xs text-slate-500 py-8">No previous orders logged from this phone terminal node.</p>
+        </div>
+    </div>
+
     <div id="checkout-bar" class="fixed bottom-0 left-0 right-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[90vh] overflow-y-auto shadow-2xl">
         <div class="w-full max-w-md flex justify-between items-center mb-3 border-b border-white/5 pb-2.5">
             <span class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Review Basket</span>
@@ -181,7 +194,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, runTransaction, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = { databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" };
         const app = initializeApp(firebaseConfig);
@@ -214,7 +227,16 @@
                         prepTime: 0,
                         timestamp: Date.now()
                     }).then(() => {
+                        // Advanced State Locking: Persist active tracking and record mapping indices
                         localStorage.setItem('active_secondwife_order_id', orderId);
+                        localStorage.setItem('secondwife_tracker_state', 'full'); // Default lock state state definition
+                        
+                        let orderHistory = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
+                        if(!orderHistory.includes(orderId)){
+                            orderHistory.push(orderId);
+                            localStorage.setItem('secondwife_order_history', JSON.stringify(orderHistory));
+                        }
+
                         launchOrderTrackingInterfaceNode(orderId);
                     });
                 }
@@ -224,7 +246,7 @@
         window.launchOrderTrackingInterfaceNode = function(orderId) {
             document.getElementById('store-front-view').classList.add('hidden');
             document.getElementById('checkout-bar').classList.add('translate-y-full');
-            document.getElementById('mini-tracker-bar').classList.add('hidden'); // Hide mini if full screen is active
+            document.getElementById('mini-tracker-bar').classList.add('hidden'); 
             document.getElementById('tracking-screen-view').classList.remove('hidden');
             document.getElementById('track-order-id').innerText = `Order ID: ${orderId}`;
             listenToOrderLive(orderId);
@@ -274,7 +296,6 @@
                     pCard.className = "absolute top-0 right-0 w-32 h-32 bg-emerald-500/30 rounded-full blur-2xl";
                     miniStatusText.innerText = "Order Delivered ✓";
                     
-                    // Mutate exit control node explicitly for final archival wipe state
                     exitBtn.innerHTML = "<i class='fa-solid fa-square-check'></i> Finish & Clear Order";
                     exitBtn.setAttribute('onclick', 'clearActiveOrderBackupTerminalNode()');
                     exitBtn.className = "mt-8 text-xs font-black text-black border border-emerald-500 px-6 py-3 rounded-xl bg-emerald-500 secure-pulse transition cursor-pointer";
@@ -310,26 +331,113 @@
             document.getElementById(titleId).className = `font-bold text-sm ${textClass}`;
         }
 
+        // DEVICE REAL-TIME BACKEND HISTORY SYNC ENGINE
+        window.openHistoryDrawerNode = function() {
+            document.getElementById('history-drawer').classList.remove('translate-y-full');
+            const container = document.getElementById('history-items-container');
+            const historyList = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
+
+            if(historyList.length === 0) {
+                container.innerHTML = `<p class="text-center text-xs text-slate-500 py-12">No previous orders logged from this phone terminal node.</p>`;
+                return;
+            }
+
+            container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs"><i class="fa-solid fa-circle-notch animate-spin text-orange-500 mr-2"></i> Syncing past device nodes...</div>`;
+            
+            const dbRef = ref(db);
+            let fetchPromises = historyList.map(orderId => {
+                return get(child(dbRef, `orders/${orderId}`)).then(snap => snap.exists() ? snap.val() : null);
+            });
+
+            Promise.all(fetchPromises).then(results => {
+                container.innerHTML = "";
+                // Reverse loop logic to display most recent order sequence on top
+                const cleanResults = results.filter(r => r !== null).sort((a,b) => b.timestamp - a.timestamp);
+
+                if(cleanResults.length === 0) {
+                    container.innerHTML = `<p class="text-center text-xs text-slate-500 py-12">No server matched history data records found.</p>`;
+                    return;
+                }
+
+                cleanResults.forEach(order => {
+                    const formattedDate = new Date(order.timestamp).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', hour12:true });
+                    
+                    let statusColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
+                    if(order.status === 'cooking') statusColor = "text-orange-400 bg-orange-500/10 border-orange-500/20";
+                    if(order.status === 'dispatched') statusColor = "text-blue-400 bg-blue-500/10 border-blue-500/20";
+                    if(order.status === 'delivered') statusColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+
+                    container.innerHTML += `
+                        <div class="bg-slate-900/90 border border-white/5 rounded-xl p-4 space-y-3">
+                            <div class="flex justify-between items-center text-[11px] border-b border-white/5 pb-2">
+                                <div>
+                                    <span class="font-black text-white block">${order.id}</span>
+                                    <span class="text-slate-500 font-medium block mt-0.5">${formattedDate}</span>
+                                </div>
+                                <span class="uppercase font-black text-[9px] px-2.5 py-1 rounded-md border ${statusColor}">${order.status}</span>
+                            </div>
+                            <div class="text-xs font-medium text-slate-300 bg-slate-950/60 p-2.5 rounded-lg border border-white/[0.02]">
+                                ${order.items}
+                            </div>
+                            <div class="flex justify-between items-center text-xs font-bold pt-1">
+                                <div class="text-slate-400">Mode: <span class="text-slate-200">${order.payment}</span></div>
+                                <div class="text-right text-orange-500 font-black text-sm">₹${order.total}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // CORES ENGINE CHECK: Cold-boot auto persistence state sync layer loop
         const structuralCheckId = localStorage.getItem('active_secondwife_order_id');
+        const internalSavedViewState = localStorage.getItem('secondwife_tracker_state');
+
         if(structuralCheckId) {
-            window.launchOrderTrackingInterfaceNode(structuralCheckId);
+            // Safe pipeline lock execution validation check loop
+            onValue(ref(db, 'orders/' + structuralCheckId), (snapshot) => {
+                const data = snapshot.val();
+                if(data) {
+                    if(data.status !== 'delivered') {
+                        if(internalSavedViewState === 'mini') {
+                            document.getElementById('store-front-view').classList.remove('hidden');
+                            document.getElementById('mini-tracker-bar').classList.remove('hidden');
+                            listenToOrderLive(structuralCheckId);
+                        } else {
+                            launchOrderTrackingInterfaceNode(structuralCheckId);
+                        }
+                    } else {
+                        // Keep tracking open on delivered so they can manually hit finish cleanly
+                        if(internalSavedViewState === 'mini') {
+                            document.getElementById('store-front-view').classList.remove('hidden');
+                            document.getElementById('mini-tracker-bar').classList.remove('hidden');
+                            listenToOrderLive(structuralCheckId);
+                        } else {
+                            launchOrderTrackingInterfaceNode(structuralCheckId);
+                        }
+                    }
+                }
+            });
         }
 
         window.minimizeTrackingViewNode = function() {
+            localStorage.setItem('secondwife_tracker_state', 'mini'); // Force browser to remember minimization status loop
             document.getElementById('tracking-screen-view').classList.add('hidden');
             document.getElementById('store-front-view').classList.remove('hidden');
-            document.getElementById('mini-tracker-bar').classList.remove('hidden'); // Reveal floating shortcut badge node
+            document.getElementById('mini-tracker-bar').classList.remove('hidden'); 
         }
 
         window.maximizeTrackingViewNode = function() {
             const activeId = localStorage.getItem('active_secondwife_order_id');
             if(activeId) {
+                localStorage.setItem('secondwife_tracker_state', 'full'); // Expand viewport layout locking
                 window.launchOrderTrackingInterfaceNode(activeId);
             }
         }
 
         window.clearActiveOrderBackupTerminalNode = function() {
             localStorage.removeItem('active_secondwife_order_id');
+            localStorage.removeItem('secondwife_tracker_state');
             window.location.reload();
         }
     </script>
@@ -415,7 +523,7 @@
                         <div class="flex items-center gap-2.5">
                             <button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-8 h-8 bg-slate-800 text-slate-200 font-extrabold rounded-xl hidden">-</button>
                             <span id="qty-${item.id}" class="font-black text-xs text-white hidden">0</span>
-                            <button onclick="changeQty(${item.id}, 1)" class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-sm rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-md shadow-orange-500/10">
+                            <button onclick="changeQty(${item.id}, 1)" class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-sm rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 shadow-md shadow-orange-500/10">
                                 <i class="fa-solid fa-plus text-xs"></i>
                             </button>
                         </div>
@@ -488,6 +596,8 @@
 
         function openCartDrawer() { if (Object.keys(window.cart).length > 0) document.getElementById('checkout-bar').classList.remove('translate-y-full'); }
         function closeCartDrawer() { document.getElementById('checkout-bar').classList.add('translate-y-full'); }
+        
+        window.closeHistoryDrawerNode = function() { document.getElementById('history-drawer').classList.add('translate-y-full'); }
 
         function togglePaymentView(method) {
             window.selectedMethod = method;
