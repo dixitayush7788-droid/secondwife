@@ -1,347 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SECOND WIFE | Admin Control Center</title>
+    <title>SECOND WIFE | Kitchen Management Console (Elite)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display+SC:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass-gate { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .brand-font { font-family: 'Playfair Display SC', serif; }
+        .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
     </style>
 </head>
-<body class="bg-[#020617] text-slate-100 min-h-screen p-6">
+<body class="bg-[#030712] text-slate-100 min-h-screen antialiased pb-24">
 
-    <div id="security-gate" class="fixed inset-0 z-[100] glass-gate flex flex-col items-center justify-center p-4 transition-all duration-500">
-        <div class="w-full max-w-sm bg-slate-900/80 border border-white/10 rounded-3xl p-8 text-center shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-red-600"></div>
-            <div class="h-14 w-14 bg-orange-500/10 border border-orange-500/30 text-orange-500 rounded-2xl flex items-center justify-center text-xl mx-auto mb-5 shadow-lg">
-                <i class="fa-solid fa-user-shield"></i>
-            </div>
-            <h2 class="text-xl font-black text-white tracking-tight">KITCHEN AUTHENTICATION</h2>
-            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Enter secure 4-digit master PIN node gateway password to sync real-time terminal.</p>
-            
-            <div class="mt-6 relative">
-                <input type="password" id="master-pin-input" maxlength="4" placeholder="••••" class="w-full bg-slate-950 border border-white/10 rounded-2xl py-4 text-center text-xl tracking-[0.5em] font-black text-orange-500 focus:outline-none focus:border-orange-500 transition-all placeholder-slate-700">
-                <p id="auth-error-msg" class="text-[10px] font-bold text-red-400 mt-2.5 hidden"><i class="fa-solid fa-triangle-exclamation"></i> Invalid Security PIN. Access Blocked Node.</p>
-            </div>
-
-            <button onclick="verifyKitchenGateAccessPIN()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-black font-black text-xs py-4 rounded-2xl mt-5 shadow-lg active:scale-95 transition tracking-wider uppercase">
-                Unlock Dashboard Terminal
-            </button>
+    <header class="sticky top-0 z-50 bg-[#030712]/90 backdrop-blur-md border-b border-white/[0.05] px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-xl">
+        <div class="flex flex-col text-center sm:text-left">
+            <h1 class="brand-font text-white text-2xl font-black tracking-tight">Second Wife</h1>
+            <span style="letter-spacing: 0.25em;" class="text-[9px] font-black text-orange-500 uppercase mt-1">Kitchen Command Center</span>
         </div>
-    </div>
+        <div class="flex items-center gap-4">
+            <span id="live-ping-node" class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-extrabold text-[10px] px-3 py-1.5 rounded-xl uppercase tracking-wider animate-pulse">
+                <i class="fa-solid fa-circle text-[6px]"></i> Live Sync Engine
+            </span>
+        </div>
+    </header>
 
-    <div id="main-dashboard-panel" class="opacity-0 transition-opacity duration-700 pointer-events-none">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="glass-card p-5 rounded-3xl relative overflow-hidden">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total Feeds</p>
+                <h3 id="stat-total" class="text-3xl font-black text-white mt-1">0</h3>
+                <i class="fa-solid fa-boxes-stacked absolute right-4 bottom-4 text-slate-800 text-2xl"></i>
+            </div>
+            <div class="glass-card p-5 rounded-3xl relative overflow-hidden">
+                <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest">Pending Ops</p>
+                <h3 id="stat-pending" class="text-3xl font-black text-orange-500 mt-1">0</h3>
+                <i class="fa-solid fa-fire-burner absolute right-4 bottom-4 text-orange-950/40 text-2xl"></i>
+            </div>
+            <div class="glass-card p-5 rounded-3xl relative overflow-hidden">
+                <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Transit / Run</p>
+                <h3 id="stat-transit" class="text-3xl font-black text-blue-500 mt-1">0</h3>
+                <i class="fa-solid fa-truck-ramp-box absolute right-4 bottom-4 text-blue-950/40 text-2xl"></i>
+            </div>
+            <div class="glass-card p-5 rounded-3xl relative overflow-hidden">
+                <p class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Live Net Revenue</p>
+                <h3 id="stat-revenue" class="text-3xl font-black text-emerald-500 mt-1">₹0</h3>
+                <i class="fa-solid fa-indian-rupee-sign absolute right-4 bottom-4 text-emerald-950/40 text-2xl"></i>
+            </div>
+        </div>
+
+        <h2 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-orange-500"></i> Active Production Queue
+        </h2>
         
-        <header class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-white/5 pb-5 mb-6 gap-4">
-            <div>
-                <h1 class="text-2xl font-black text-orange-500 tracking-tight">KITCHEN ADMIN DASHBOARD</h1>
-                <p class="text-xs text-slate-400 mt-1">Second Wife Cafe Realtime Incoming Tracker Pipeline Node</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                <button onclick="toggleInventoryControlPanelNode()" class="w-full sm:w-auto bg-slate-900 border border-white/10 text-slate-300 font-extrabold text-xs px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition hover:bg-slate-800">
-                    <i class="fa-solid fa-boxes-stacked text-orange-500"></i> MANAGE DISH STOCK
-                </button>
-                <button onclick="unlockAudioEngineSystem(this)" class="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-600 text-black font-black text-xs px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-lg" id="audio-lock-btn">
-                    <i class="fa-solid fa-volume-high"></i> ACTIVATE AUDIO ALARM
-                </button>
-                <div id="wake-lock-status" class="hidden bg-orange-500/10 border border-orange-500/20 text-orange-400 font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2">
-                    <i class="fa-solid fa-mobile-screen animate-pulse"></i> SCREEN ALWAYS ON
-                </div>
-            </div>
-        </header>
-
-        <section id="inventory-stock-panel" class="max-w-4xl mx-auto bg-slate-950 border border-white/10 rounded-2xl p-5 mb-8 hidden transition-all duration-300 shadow-2xl">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-white/5 pb-4 mb-4 gap-3">
-                <div>
-                    <h2 class="text-sm font-black text-orange-400 tracking-wider uppercase flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> Live Stock Control Room</h2>
-                    <p class="text-[10px] font-bold text-slate-500 mt-0.5">Turn toggle OFF to instant disable dish in menu</p>
-                </div>
-                <div class="relative w-full sm:w-64 group">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600 text-xs transition-colors group-focus-within:text-orange-500"></i>
-                    <input type="text" id="stock-search-bar" onkeyup="searchStockDishNode()" placeholder="Dish ka naam dhoondein..." class="w-full bg-slate-900 border border-white/5 rounded-xl py-2.5 pl-9 pr-4 text-xs text-white focus:outline-none focus:border-orange-500/40 transition-all font-semibold placeholder-slate-600 focus:bg-slate-950">
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1 hide-scrollbar" id="inventory-switches-loop">
-                </div>
-        </section>
-
-        <div class="max-w-4xl mx-auto mb-6 flex gap-3 border-b border-white/5 pb-1">
-            <button id="tab-btn-active" onclick="switchDashboardViewTabModeNode('active')" class="text-xs font-black border-b-2 border-orange-500 pb-3 px-2 text-orange-500 tracking-wider uppercase flex items-center gap-2">
-                <i class="fa-solid fa-fire-burner text-sm"></i> Active Feeds (Realtime)
-            </button>
-            <button id="tab-btn-archive" onclick="switchDashboardViewTabModeNode('archive')" class="text-xs font-bold text-slate-400 pb-3 px-2 tracking-wider uppercase flex items-center gap-2 hover:text-white transition">
-                <i class="fa-solid fa-box-archive text-sm"></i> Orders History & Archive Matrix
-            </button>
-        </div>
-
-        <div id="panel-active-orders" class="max-w-4xl mx-auto space-y-4">
-            <div class="text-center text-slate-500 text-sm py-12" id="empty-state-msg">
-                <i class="fa-solid fa-spinner animate-spin text-xl text-orange-500 mb-3 block"></i>
-                Waiting for live orders from database node...
+        <div id="admin-orders-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="col-span-full text-center py-12 glass-card rounded-3xl text-slate-500 font-semibold text-xs">
+                <i class="fa-solid fa-spinner animate-spin text-lg mb-2 block text-orange-500"></i> Loading Live Server Database...
             </div>
         </div>
+    </main>
 
-        <div id="panel-archive-orders" class="max-w-4xl mx-auto space-y-6 hidden">
-            
-            <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-5 shadow-2xl grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                
-                <div>
-                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Search Order Content</label>
-                    <div class="relative flex items-center">
-                        <i class="fa-solid fa-search absolute left-3.5 text-slate-600 text-xs"></i>
-                        <input type="text" id="archive-search-input" onkeyup="applyHistoryFilterPipelineNode()" placeholder="ID ya Dish search karein..." class="w-full bg-slate-900 border border-white/5 rounded-xl py-3 pl-9 pr-4 text-xs font-bold focus:outline-none focus:border-orange-500/30 text-white placeholder-slate-600">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Date Frame Range Selector</label>
-                    <select id="archive-date-filter" onchange="applyHistoryFilterPipelineNode()" class="w-full bg-slate-900 border border-white/5 rounded-xl py-3 px-3 text-xs font-bold focus:outline-none focus:border-orange-500/30 text-white cursor-pointer appearance-none">
-                        <option value="all">All Lifetime Logged Data</option>
-                        <option value="today">Today (आज का हिसाब)</option>
-                        <option value="yesterday">Yesterday (कल का हिसाब)</option>
-                        <option value="month">This Month (इस महीने का)</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Budget/Amount Threshold Selector</label>
-                    <select id="archive-budget-filter" onchange="applyHistoryFilterPipelineNode()" class="w-full bg-slate-900 border border-white/5 rounded-xl py-3 px-3 text-xs font-bold focus:outline-none focus:border-orange-500/30 text-white cursor-pointer appearance-none">
-                        <option value="0">All Price Slating Brackets</option>
-                        <option value="100">₹100 + Orders Only</option>
-                        <option value="200">₹200 + Orders Only</option>
-                        <option value="500">₹500 + Orders Only</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-slate-900/50 border border-white/[0.04] p-4 rounded-xl text-left">
-                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block">Total Filtered Orders Count</span>
-                    <span id="analytics-total-count" class="text-xl font-black text-white mt-1 block">0</span>
-                </div>
-                <div class="bg-slate-900/50 border border-white/[0.04] p-4 rounded-xl text-left">
-                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block">Total Business Accumulated (₹)</span>
-                    <span id="analytics-total-revenue" class="text-xl font-black text-emerald-400 mt-1 block">₹0</span>
-                </div>
-            </div>
-
-            <div id="archive-history-feed-inject" class="space-y-4">
-                </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, set, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
+    <script>
         const firebaseConfig = { databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        const adminMenuArray = [
-            { id: 1, name: "Veg Biryani" }, { id: 2, name: "Soya Chaap Biryani" }, { id: 3, name: "Hyderabadi Dum Biryani" },
-            { id: 4, name: "Special Thali" }, { id: 5, name: "Golden Thali" }, { id: 6, name: "Makhmali Malai Chaap Gravy" },
-            { id: 7, name: "Mushroom Masala" }, { id: 8, name: "Matar Mushroom" }, { id: 9, name: "Malai Kofta" },
-            { id: 10, name: "Handi Paneer" }, { id: 11, name: "Veg Kofta" }, { id: 12, name: "Dum Aloo" },
-            { id: 13, name: "Kashmiri Dum Aloo" }, { id: 14, name: "Jeera Aloo" }, { id: 15, name: "Veg Mixed" },
-            { id: 16, name: "Green Garden Salad" }, { id: 17, name: "Papad Dry" }, { id: 18, name: "Masala Papad" },
-            { id: 19, name: "Plain Curd" }, { id: 20, name: "Boondi Raita" }, { id: 21, name: "Mint Raita" },
-            { id: 22, name: "Mixed Fruit Raita" }, { id: 23, name: "Tandoori Roti" }, { id: 24, name: "Butter Tandoori Roti" },
-            { id: 25, name: "Missi Roti" }, { id: 26, name: "Plain Naan" }, { id: 27, name: "Butter Naan" },
-            { id: 28, name: "Garlic Naan" }, { id: 29, name: "Plain Kulcha" }, { id: 30, name: "Special Stuff Paratha" },
-            { id: 31, name: "Stuffed Paneer Paratha" }, { id: 32, name: "Onion Missi Roti" }, { id: 33, name: "Lachha Paratha" },
-            { id: 34, name: "Pudina Paratha" }, { id: 35, name: "Mirchi Paratha" }, { id: 36, name: "Paneer Naan" },
-            { id: 37, name: "Dahi Kebab" }, { id: 38, name: "Makhmali Malai Chaap" }, { id: 39, name: "Hariyali Paneer Tikka" },
-            { id: 40, name: "Paneer Tikka" }, { id: 41, name: "Mushroom Tikka" }, { id: 42, name: "Veg Manchurian Dry" },
-            { id: 43, name: "Paneer Manchurian Dry" }, { id: 44, name: "Paneer Chilli Dry" }, { id: 45, name: "Plain Rice" },
-            { id: 46, name: "Jeera Rice" }, { id: 47, name: "Veg Pulao" }, { id: 48, name: "Matar Pulao" },
-            { id: 49, name: "Kashmiri Pulao" }, { id: 50, name: "French Fries" }, { id: 51, name: "Paneer Pakoda (8 pcs)" },
-            { id: 52, name: "Spring Roll" }, { id: 53, name: "Stuffed Paneer Kulcha" }, { id: 54, name: "Aloo Stuffed Kulcha" }
-        ];
+        // LIVE FEED SYNCHRONIZER
+        db.ref('orders').on('value', (snapshot) => {
+            const data = snapshot.val() || {};
+            const grid = document.getElementById('admin-orders-grid');
+            grid.innerHTML = "";
 
-        let standardKnownOrderCount = 0;
-        let internalInitialLoadLock = true;
-        window.historyCacheArrayNodeStore = []; // Memory cache layer to handle instant filter slicing logic operations
+            let total = 0, pending = 0, transit = 0, revenue = 0;
 
-        window.verifyKitchenGateAccessPIN = function() {
-            const inputVal = document.getElementById('master-pin-input').value.trim();
-            const errorMsg = document.getElementById('auth-error-msg');
-            if(inputVal === "2310") {
-                errorMsg.className = "hidden";
-                document.getElementById('security-gate').classList.add('opacity-0', 'pointer-events-none');
-                const mainPanel = document.getElementById('main-dashboard-panel');
-                mainPanel.classList.remove('pointer-events-none', 'opacity-0');
-                requestScreenWakeLockMatrixNode(); buildInventoryStockSwitchRoomNode(); initializeDatabaseIncomingStreamNode();
-            } else { errorMsg.classList.remove('hidden'); document.getElementById('master-pin-input').value = ""; }
-        }
+            const sortedKeys = Object.keys(data).sort((a, b) => data[b].timestamp - data[a].timestamp);
 
-        function buildInventoryStockSwitchRoomNode() {
-            const container = document.getElementById('inventory-switches-loop');
-            onValue(ref(db, 'menu_stock'), (snapshot) => {
-                const stockData = snapshot.val() || {}; container.innerHTML = "";
-                adminMenuArray.forEach(item => {
-                    const isAvailable = stockData[item.id] !== false;
-                    container.innerHTML += `<div class="stock-item-node-wrapper bg-slate-900 border border-white/[0.03] px-4 py-3 rounded-xl flex items-center justify-between transition-all duration-200" data-name="${item.name.toLowerCase()}"><span class="text-xs font-bold text-slate-200">${item.name}</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" ${isAvailable ? 'checked' : ''} onchange="mutateDishStockAvailabilityNode(${item.id}, this.checked)"><div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500 peer-checked:after:bg-black peer-checked:after:border-black"></div></label></div>`;
-                });
-            }, { onlyOnce: true });
-        }
-
-        window.mutateDishStockAvailabilityNode = function(dishId, checkState) {
-            set(ref(db, `menu_stock/${dishId}`), checkState);
-        }
-
-        window.toggleInventoryControlPanelNode = function() {
-            const panel = document.getElementById('inventory-stock-panel'); panel.classList.toggle('hidden');
-            document.getElementById('stock-search-bar').value = ""; window.searchStockDishNode();
-        }
-
-        // Live Mode view tab switching controller framework
-        window.switchDashboardViewTabModeNode = function(targetTabMode) {
-            const btnActive = document.getElementById('tab-btn-active'); const btnArchive = document.getElementById('tab-btn-archive');
-            const panelActive = document.getElementById('panel-active-orders'); const panelArchive = document.getElementById('panel-archive-orders');
-
-            if(targetTabMode === 'active') {
-                btnActive.className = "text-xs font-black border-b-2 border-orange-500 pb-3 px-2 text-orange-500 tracking-wider uppercase flex items-center gap-2";
-                btnArchive.className = "text-xs font-bold text-slate-400 pb-3 px-2 tracking-wider uppercase flex items-center gap-2 hover:text-white transition";
-                panelActive.classList.remove('hidden'); panelArchive.classList.add('hidden');
-            } else {
-                btnArchive.className = "text-xs font-black border-b-2 border-orange-500 pb-3 px-2 text-orange-500 tracking-wider uppercase flex items-center gap-2";
-                btnActive.className = "text-xs font-bold text-slate-400 pb-3 px-2 tracking-wider uppercase flex items-center gap-2 hover:text-white transition";
-                panelActive.classList.add('hidden'); panelArchive.classList.remove('hidden');
-                
-                // Fire cold-sync on-demand query pulling from deep data structures only upon view focus request
-                syncFullHistoricalArchiveTerminalNode();
-            }
-        }
-
-        function syncFullHistoricalArchiveTerminalNode() {
-            const feedInject = document.getElementById('archive-history-feed-inject');
-            feedInject.innerHTML = `<div class="text-center text-slate-500 text-xs py-8"><i class="fa-solid fa-circle-notch animate-spin text-orange-500 mr-2"></i> Fetching deep server database nodes safely...</div>`;
-            
-            // Explicitly fetch the raw database structure to isolate production environments from live performance drags
-            get(ref(db, 'orders')).then((snapshot) => {
-                const data = snapshot.val();
-                if(!data) { feedInject.innerHTML = `<div class="text-center text-slate-500 py-6 text-xs">No archival data trees parsed on database yet.</div>`; return; }
-                
-                // Map the full structure object payload directly into local cache matrix memory arrays
-                window.historyCacheArrayNodeStore = Object.keys(data).map(key => data[key]);
-                window.applyHistoryFilterPipelineNode();
-            });
-        }
-
-        // Complex multi-constraint array filtering architecture sequence
-        window.applyHistoryFilterPipelineNode = function() {
-            const searchVal = document.getElementById('archive-search-input').value.toLowerCase().trim();
-            const dateVal = document.getElementById('archive-date-filter').value;
-            const budgetVal = parseInt(document.getElementById('archive-budget-filter').value);
-            const feedInject = document.getElementById('archive-history-feed-inject');
-
-            const now = new Date();
-            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const startOfYesterday = startOfToday - (24 * 60 * 60 * 1000);
-            const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-
-            // Slices and transforms array nodes instantly across multi-bound inputs safely
-            let filteredResults = window.historyCacheArrayNodeStore.filter(order => {
-                // Constraint Layer 1: Global string parsing regex matching
-                const matchesSearch = order.id.toLowerCase().includes(searchVal) || order.items.toLowerCase().includes(searchVal);
-                
-                // Constraint Layer 2: Financial range minimum selection
-                const matchesBudget = order.total >= budgetVal;
-                
-                // Constraint Layer 3: Linear timestamp node validation mapping
-                let matchesDate = true;
-                if(dateVal === 'today') matchesDate = order.timestamp >= startOfToday;
-                else if(dateVal === 'yesterday') matchesDate = order.timestamp >= startOfYesterday && order.timestamp < startOfToday;
-                else if(dateVal === 'month') matchesDate = order.timestamp >= startOfThisMonth;
-
-                return matchesSearch && matchesBudget && matchesDate;
-            });
-
-            // Sort results array dynamically ensuring most recent timestamps load first linearly
-            filteredResults.sort((a, b) => b.timestamp - a.timestamp);
-
-            // Compute realtime financial summary stats
-            let calculatedRevenue = 0;
-            filteredResults.forEach(order => calculatedRevenue += order.total);
-            document.getElementById('analytics-total-count').innerText = filteredResults.length;
-            document.getElementById('analytics-total-revenue').innerText = `₹${calculatedRevenue.toLocaleString('en-IN')}`;
-
-            if(filteredResults.length === 0) {
-                feedInject.innerHTML = `<div class="text-center text-slate-500 py-12 text-xs border border-dashed border-white/5 rounded-2xl"><i class="fa-solid fa-folder-open block text-base mb-2 text-slate-600"></i> No historical matches verify input matrix states.</div>`;
-                return;
+            if(sortedKeys.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 glass-card rounded-3xl text-slate-500 font-bold text-xs">No active orders placed yet.</div>`;
             }
 
-            feedInject.innerHTML = "";
-            filteredResults.forEach(order => {
-                const formattedDate = new Date(order.timestamp).toLocaleString('en-IN', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
-                let statusStyle = "bg-amber-500/10 border-amber-500/20 text-amber-400";
-                if(order.status === 'cooking') statusStyle = "bg-orange-500/10 border-orange-500/20 text-orange-400";
-                if(order.status === 'dispatched') statusStyle = "bg-blue-500/10 border-blue-500/20 text-blue-400";
-                if(order.status === 'delivered') statusStyle = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 opacity-60";
+            sortedKeys.forEach(id => {
+                const order = data[id];
+                total++;
+                if (order.status === 'placed' || order.status === 'cooking') pending++;
+                if (order.status === 'dispatched') transit++;
+                if (order.status === 'delivered') revenue += parseInt(order.total || 0);
 
-                feedInject.innerHTML += `
-                    <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-4 flex flex-col gap-3">
-                        <div class="flex justify-between items-center text-xs border-b border-white/5 pb-2">
-                            <div><span class="font-black text-white tracking-wide">${order.id}</span><span class="text-slate-500 block text-[11px] mt-0.5">${formattedDate}</span></div>
-                            <span class="text-[9px] font-black uppercase px-2.5 py-1 rounded-md border ${statusStyle}">${order.status}</span>
+                // Pure layout style structure logic with status color configurations
+                let statusColor = "border-amber-500/30 text-amber-400 bg-amber-500/5";
+                if(order.status === 'cooking') statusColor = "border-orange-500/30 text-orange-400 bg-orange-500/5";
+                if(order.status === 'dispatched') statusColor = "border-blue-500/30 text-blue-400 bg-blue-500/5";
+                if(order.status === 'delivered') statusColor = "border-emerald-500/30 text-emerald-400 bg-emerald-500/5";
+
+                const timeStr = new Date(order.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                grid.innerHTML += `
+                    <div class="glass-card p-6 rounded-[2rem] flex flex-col justify-between border border-white/[0.04] hover:border-orange-500/20 transition-all duration-300 shadow-2xl">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="text-base font-black text-white tracking-tight">${order.id}</h4>
+                                    <span class="text-[10px] font-mono font-bold text-slate-500"><i class="fa-regular fa-clock"></i> ${timeStr}</span>
+                                </div>
+                                <span class="text-[10px] font-extrabold px-3 py-1.5 rounded-xl uppercase tracking-wide border ${statusColor}">
+                                    ${order.status}
+                                </span>
+                            </div>
+
+                            <div class="bg-black/20 border border-white/[0.02] p-3.5 rounded-2xl mb-4 space-y-1.5 text-xs">
+                                <p class="text-slate-400"><b>👤 Name:</b> <span class="text-white font-bold">${order.custName || 'N/A'}</span></p>
+                                <p class="text-slate-400"><b>📞 Phone:</b> <a href="tel:${order.custPhone}" class="text-blue-400 font-mono font-bold underline">${order.custPhone || 'N/A'}</a></p>
+                                <p class="text-slate-400"><b>📦 Type:</b> <span class="bg-white/5 px-2 py-0.5 rounded text-[10px] font-black text-orange-400 uppercase">${order.custType || 'DineIn'}</span></p>
+                                <p class="text-slate-400"><b>📍 Table/Addr:</b> <span class="text-amber-400 font-semibold">${order.custLoc || 'N/A'}</span></p>
+                                ${order.utr && order.utr !== 'COD_MODE' ? `<p class="text-slate-400 truncate"><b>💳 UPI UTR:</b> <span class="text-purple-400 font-mono font-bold">${order.utr}</span></p>` : ''}
+                            </div>
+
+                            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Basket Food Items:</p>
+                            <div class="bg-slate-950/60 border border-white/[0.03] p-3 rounded-xl font-bold text-xs text-slate-200 mb-4 whitespace-pre-line leading-relaxed">
+                                ${order.items}
+                            </div>
                         </div>
-                        <div class="text-xs text-slate-300 bg-slate-950 p-2.5 rounded-xl border border-white/[0.02] font-semibold">${order.items}</div>
-                        <div class="flex justify-between items-center text-xs font-bold">
-                            <div class="text-slate-400">Mode: <span class="text-slate-200">${order.payment}</span> <span class="text-slate-600 font-mono text-[10px] ml-2 truncate max-w-[120px]">UTR: ${order.utr}</span></div>
-                            <div class="text-orange-500 font-black text-base">₹${order.total}</div>
+
+                        <div class="border-t border-white/[0.04] pt-4 flex flex-col gap-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] font-black text-slate-500 uppercase">Total Invoice:</span>
+                                <span class="text-2xl font-black text-orange-500 brand-font">₹${order.total}</span>
+                            </div>
+                            
+                            <div class="flex gap-2">
+                                <select onchange="updateStatusNode('${order.id}', this.value)" class="bg-slate-900 border border-white/10 text-white font-bold text-xs rounded-xl px-3 py-2.5 w-full focus:outline-none focus:border-orange-500">
+                                    <option value="placed" ${order.status==='placed'?'selected':''}>Placed (Received)</option>
+                                    <option value="cooking" ${order.status==='cooking'?'selected':''}>Cooking In Kitchen</option>
+                                    <option value="dispatched" ${order.status==='dispatched'?'selected':''}>Out For Delivery</option>
+                                    <option value="delivered" ${order.status==='delivered'?'selected':''}>Delivered Fine</option>
+                                </select>
+                                <button onclick="deleteOrderNode('${order.id}')" class="bg-red-500/10 hover:bg-red-500 border border-red-500/20 hover:text-white text-red-400 px-3.5 rounded-xl transition-all duration-200" title="Delete Archive">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
             });
+
+            // Counters Update Trigger Node
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-pending').innerText = pending;
+            document.getElementById('stat-transit').innerText = transit;
+            document.getElementById('stat-revenue').innerText = "₹" + revenue;
+        });
+
+        // UPDATE ORDER STATUS TRIGGER
+        window.updateStatusNode = function(id, val) {
+            db.ref('orders/' + id).update({ status: val });
         }
 
-        function initializeDatabaseIncomingStreamNode() {
-            const optimizedQueryNode = query(ref(db, 'orders'), limitToLast(30));
-            onValue(optimizedQueryNode, (snapshot) => {
-                const data = snapshot.val(); const feed = document.getElementById('panel-active-orders');
-                if(!data) { feed.innerHTML = `<div class="text-center text-slate-500 py-12">No active records parsed.</div>`; return; }
-                const emptyState = document.getElementById('empty-state-msg'); if(emptyState) emptyState.style.display = 'none';
-                feed.innerHTML = ""; const sortedIds = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp);
-                if(!internalInitialLoadLock && sortedIds.length > standardKnownOrderCount) { playAlertSoundNotification(); }
-                standardKnownOrderCount = sortedIds.length; internalInitialLoadLock = false;
-                sortedIds.forEach(id => {
-                    const order = data[id]; let statusBadgeStyle = "bg-amber-500/10 border-amber-500/20 text-amber-400";
-                    if(order.status === 'cooking') statusBadgeStyle = "bg-orange-500/10 border-orange-500/20 text-orange-400";
-                    if(order.status === 'dispatched') statusBadgeStyle = "bg-blue-500/10 border-blue-500/20 text-blue-400";
-                    if(order.status === 'delivered') statusBadgeStyle = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 opacity-40";
-                    feed.innerHTML += `<div class="bg-slate-900/60 border border-white/5 rounded-2xl p-5 flex flex-col gap-4"><div class="flex justify-between items-start border-b border-white/5 pb-3"><div><span class="text-xs font-black text-slate-500">ORDER REFF ID</span><h3 class="text-base font-black text-white tracking-wide mt-0.5">${order.id}</h3></div><span class="text-[10px] font-black uppercase px-3 py-1 rounded-lg border ${statusBadgeStyle}">${order.status}</span></div><div><p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Dishes List Loaded:</p><p class="text-sm font-semibold text-white mt-1 bg-slate-950 p-3 rounded-xl border border-white/[0.03]">${order.items}</p></div><div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs font-bold text-slate-400 bg-slate-950/40 p-3 rounded-xl"><div>Total Payable: <span class="text-orange-500 font-extrabold text-sm block mt-0.5">₹${order.total}</span></div><div>Method: <span class="text-white block mt-1">${order.payment}</span></div><div class="col-span-2 md:col-span-1">UTR Link Reference: <span class="text-slate-300 block font-mono mt-1 text-[11px] truncate">${order.utr}</span></div></div><div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mt-2"><button onclick="updateOrderStatus('${order.id}', 'cooking', 15)" class="bg-orange-500 text-black font-extrabold text-xs py-3 rounded-xl hover:bg-orange-600 transition active:scale-95">Accept (15m)</button><button onclick="updateOrderStatus('${order.id}', 'cooking', 25)" class="bg-amber-500 text-black font-extrabold text-xs py-3 rounded-xl hover:bg-amber-600 transition active:scale-95">Accept (25m)</button><button onclick="updateOrderStatus('${order.id}', 'dispatched', 0)" class="bg-blue-600 text-white font-extrabold text-xs py-3 rounded-xl hover:bg-blue-700 transition active:scale-95">Out For Delivery</button><button onclick="updateOrderStatus('${order.id}', 'delivered', 0)" class="bg-emerald-600 text-white font-extrabold text-xs py-3 rounded-xl hover:bg-emerald-700 transition active:scale-95">Delivered ✓</button></div></div>`;
-                });
-            });
+        // PURGE ARCHIVE CONTROLLER NODE
+        window.deleteOrderNode = function(id) {
+            if(confirm("Kya aap sach me is order ko delete/clear karna chahte hain?")) {
+                db.ref('orders/' + id).remove();
+            }
         }
-
-        window.updateOrderStatus = function(id, nextStatus, timerMins) { update(ref(db, 'orders/' + id), { status: nextStatus, prepTime: timerMins }); }
-    </script>
-
-    <script>
-        let customAudioUncachedContext = null; let globalWakeLockAnchorInstance = null;
-        window.searchStockDishNode = function() {
-            const input = document.getElementById('stock-search-bar').value.toLowerCase().trim(); const items = document.getElementsByClassName('stock-item-node-wrapper');
-            for (let i = 0; i < items.length; i++) { const dishName = items[i].getAttribute('data-name'); if (dishName.includes(input)) { items[i].style.display = "flex"; } else { items[i].style.display = "none"; } }
-        }
-        async function requestScreenWakeLockMatrixNode() { try { if ('wakeLock' in navigator) { globalWakeLockAnchorInstance = await navigator.wakeLock.request('screen'); document.getElementById('wake-lock-status').classList.remove('hidden'); } } catch (err) { console.log(err.message); } }
-        document.addEventListener('visibilitychange', async () => { if (globalWakeLockAnchorInstance !== null && document.visibilityState === 'visible') { await requestScreenWakeLockMatrixNode(); } });
-        function unlockAudioEngineSystem(btnElement) { try { customAudioUncachedContext = new (window.AudioContext || window.webkitAudioContext)(); btnElement.className = "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2"; btnElement.innerHTML = `<i class="fa-solid fa-bell"></i> SOUND ENGINE ONLINE`; btnElement.disabled = true; let osc = customAudioUncachedContext.createOscillator(); osc.connect(customAudioUncachedContext.destination); osc.start(0); osc.stop(0.1); } catch(e) { console.error(e); } }
-        function playAlertSoundNotification() {
-            if(!customAudioUncachedContext) return;
-            try {
-                let time = customAudioUncachedContext.currentTime; let osc1 = customAudioUncachedContext.createOscillator(); let gain1 = customAudioUncachedContext.createGain();
-                osc1.type = "sine"; osc1.frequency.setValueAtTime(987.77, time); gain1.gain.setValueAtTime(0.4, time); gain1.gain.exponentialRampToValueAtTime(0.01, time + 0.4); osc1.connect(gain1); gain1.connect(customAudioUncachedContext.destination); osc1.start(time); osc1.stop(time + 0.4);
-                let osc2 = customAudioUncachedContext.createOscillator(); let gain2 = customAudioUncachedContext.createGain();
-                osc2.type = "sine"; osc2.frequency.setValueAtTime(1318.51, time + 0.15); gain2.gain.setValueAtTime(0.4, time + 0.15); gain2.gain.exponentialRampToValueAtTime(0.01, time + 0.55); osc2.connect(gain2); gain2.connect(customAudioUncachedContext.destination); osc2.start(time + 0.15); osc2.stop(time + 0.55);
-            } catch(e) { console.log(e); }
-        }
-        document.getElementById('master-pin-input').addEventListener('keypress', function(e) { if(e.key === 'Enter') { verifyKitchenGateAccessPIN(); } });
     </script>
 </body>
 </html>
