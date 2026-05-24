@@ -10,7 +10,7 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
         .brand-font-premium { font-family: 'Playfair Display SC', serif; }
-        .glass-premium { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.04); }
+        .glass-premium { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur-28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.04); }
         .glass-header { background: rgba(3, 7, 18, 0.82); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scroll-bar-width: none; }
@@ -27,6 +27,19 @@
 
     <div class="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-gradient-to-tr from-orange-600/10 to-transparent rounded-full blur-[140px] pointer-events-none z-0 drift"></div>
     <div class="fixed bottom-[10%] right-[-10%] w-[50vw] h-[50vw] bg-gradient-to-br from-blue-600/5 to-orange-500/10 rounded-full blur-[120px] pointer-events-none z-0 drift" style="animation-delay: -5s;"></div>
+
+    <div id="mini-tracker-bar" class="fixed bottom-6 right-4 left-4 sm:left-auto sm:w-80 bg-slate-950/95 border border-orange-500/40 p-4 rounded-2xl shadow-2xl flex items-center justify-between z-50 hidden transition-all duration-300 hover:border-orange-500 cursor-pointer secure-pulse" onclick="maximizeTrackingViewNode()">
+        <div class="flex items-center gap-3 truncate">
+            <div class="h-9 w-9 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-500 flex-shrink-0">
+                <i class="fa-solid fa-bowl-food animate-pulse text-sm"></i>
+            </div>
+            <div class="truncate">
+                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Active Order Status</p>
+                <h4 id="mini-status-text" class="text-xs font-black text-white mt-0.5 uppercase tracking-wide truncate">Connecting...</h4>
+            </div>
+        </div>
+        <span class="text-[9px] font-black bg-gradient-to-r from-orange-500 to-orange-600 text-black px-3 py-1.5 rounded-xl uppercase whitespace-nowrap tracking-wide shadow-md">Track Live</span>
+    </div>
 
     <div id="store-front-view">
         <div class="relative z-50 bg-gradient-to-r from-[#2c1d11] via-[#f97316] to-[#1e293b] text-white text-[10px] font-extrabold tracking-[0.2em] py-2.5 text-center uppercase shadow-2xl">
@@ -107,7 +120,10 @@
                 <div><h3 class="font-bold text-sm text-white transition-colors duration-300" id="title-delivered">Delivered Successfully</h3><p class="text-xs text-slate-400 mt-0.5">Swaad ka lutf uthaiye! Shukriya.</p></div>
             </div>
         </div>
-        <button onclick="clearActiveOrderBackupTerminalNode()" class="mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50"><i class="fa-solid fa-house-chimney"></i> Back to Menu</button>
+        
+        <button id="tracking-exit-btn" onclick="minimizeTrackingViewNode()" class="mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50 transition">
+            <i class="fa-solid fa-house-chimney"></i> Back to Menu (Keep Tracking)
+        </button>
     </div>
 
     <div id="checkout-bar" class="fixed bottom-0 left-0 right-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -198,7 +214,6 @@
                         prepTime: 0,
                         timestamp: Date.now()
                     }).then(() => {
-                        // Secure persistence logic into the phone storage memory bank
                         localStorage.setItem('active_secondwife_order_id', orderId);
                         launchOrderTrackingInterfaceNode(orderId);
                     });
@@ -206,9 +221,10 @@
             });
         }
 
-        function launchOrderTrackingInterfaceNode(orderId) {
+        window.launchOrderTrackingInterfaceNode = function(orderId) {
             document.getElementById('store-front-view').classList.add('hidden');
             document.getElementById('checkout-bar').classList.add('translate-y-full');
+            document.getElementById('mini-tracker-bar').classList.add('hidden'); // Hide mini if full screen is active
             document.getElementById('tracking-screen-view').classList.remove('hidden');
             document.getElementById('track-order-id').innerText = `Order ID: ${orderId}`;
             listenToOrderLive(orderId);
@@ -221,30 +237,47 @@
 
                 const status = data.status;
                 const pCard = document.getElementById('status-card-glow');
+                const miniStatusText = document.getElementById('mini-status-text');
+                const exitBtn = document.getElementById('tracking-exit-btn');
 
                 resetTrackingUIVisuals();
 
                 if(status === 'placed') {
                     activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-amber-500', 'text-amber-400');
                     pCard.className = "absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-2xl";
+                    miniStatusText.innerText = "Order Placed (Pending)";
+                    
+                    exitBtn.innerHTML = "<i class='fa-solid fa-house-chimney'></i> Back to Menu (Keep Tracking)";
+                    exitBtn.setAttribute('onclick', 'minimizeTrackingViewNode()');
+                    exitBtn.className = "mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50 transition";
                 } else if(status === 'cooking') {
                     activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-cooking', 'icon-cooking', 'title-cooking', 'bg-orange-500 animate-bounce', 'text-orange-400 font-black text-sm scale-105');
                     pCard.className = "absolute top-0 right-0 w-32 h-32 bg-orange-500/30 rounded-full blur-2xl";
                     if(data.prepTime > 0) {
                         document.getElementById('cooking-timer-text').innerHTML = `🔥 Chef are cooking. *Estimated completion time: ${data.prepTime} Mins*`;
+                        miniStatusText.innerText = `Chef Cooking (${data.prepTime}m)`;
+                    } else {
+                        miniStatusText.innerText = "Cooking in Kitchen";
                     }
                 } else if(status === 'dispatched') {
-                    activateTrackingStep('step-placed', 'icon-placed', 'bg-emerald-500', 'text-emerald-400');
+                    activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-cooking', 'icon-cooking', 'title-cooking', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-dispatched', 'icon-dispatched', 'title-dispatched', 'bg-blue-500 animate-pulse scale-105', 'text-blue-400 font-black');
                     pCard.className = "absolute top-0 right-0 w-32 h-32 bg-blue-500/30 rounded-full blur-2xl";
+                    miniStatusText.innerText = "Out For Delivery 🚀";
                 } else if(status === 'delivered') {
-                    activateTrackingStep('step-placed', 'icon-placed', 'bg-emerald-500', 'text-emerald-400');
+                    activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-cooking', 'icon-cooking', 'title-cooking', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-dispatched', 'icon-dispatched', 'title-dispatched', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-delivered', 'icon-delivered', 'title-delivered', 'bg-emerald-500 secure-pulse scale-105', 'text-emerald-400 font-black');
                     pCard.className = "absolute top-0 right-0 w-32 h-32 bg-emerald-500/30 rounded-full blur-2xl";
+                    miniStatusText.innerText = "Order Delivered ✓";
+                    
+                    // Mutate exit control node explicitly for final archival wipe state
+                    exitBtn.innerHTML = "<i class='fa-solid fa-square-check'></i> Finish & Clear Order";
+                    exitBtn.setAttribute('onclick', 'clearActiveOrderBackupTerminalNode()');
+                    exitBtn.className = "mt-8 text-xs font-black text-black border border-emerald-500 px-6 py-3 rounded-xl bg-emerald-500 secure-pulse transition cursor-pointer";
                 }
             });
         }
@@ -277,10 +310,22 @@
             document.getElementById(titleId).className = `font-bold text-sm ${textClass}`;
         }
 
-        // CORES ENGINE CHECK: Cold-boot auto persistence sequence check layer
         const structuralCheckId = localStorage.getItem('active_secondwife_order_id');
         if(structuralCheckId) {
-            launchOrderTrackingInterfaceNode(structuralCheckId);
+            window.launchOrderTrackingInterfaceNode(structuralCheckId);
+        }
+
+        window.minimizeTrackingViewNode = function() {
+            document.getElementById('tracking-screen-view').classList.add('hidden');
+            document.getElementById('store-front-view').classList.remove('hidden');
+            document.getElementById('mini-tracker-bar').classList.remove('hidden'); // Reveal floating shortcut badge node
+        }
+
+        window.maximizeTrackingViewNode = function() {
+            const activeId = localStorage.getItem('active_secondwife_order_id');
+            if(activeId) {
+                window.launchOrderTrackingInterfaceNode(activeId);
+            }
         }
 
         window.clearActiveOrderBackupTerminalNode = function() {
@@ -344,7 +389,7 @@
             { id: 51, cat: "snacks", name: "Paneer Pakoda (8 pcs)", price: 199 },
             { id: 52, cat: "snacks", name: "Spring Roll", price: 129 },
             { id: 53, cat: "snacks", name: "Stuffed Paneer Kulcha", price: 79 },
-            { id: 55, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
+            { id: 54, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
         ];
 
         window.cart = {};
