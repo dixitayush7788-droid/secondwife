@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECOND WIFE | Admin Control Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -36,6 +36,7 @@
     </div>
 
     <div id="main-dashboard-panel" class="opacity-0 transition-opacity duration-700 pointer-events-none">
+        
         <header class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-white/5 pb-5 mb-6 gap-4">
             <div>
                 <h1 class="text-2xl font-black text-orange-500 tracking-tight">KITCHEN ADMIN DASHBOARD</h1>
@@ -69,17 +70,74 @@
                 </div>
         </section>
 
-        <main class="max-w-4xl mx-auto space-y-4" id="admin-orders-feed">
+        <div class="max-w-4xl mx-auto mb-6 flex gap-3 border-b border-white/5 pb-1">
+            <button id="tab-btn-active" onclick="switchDashboardViewTabModeNode('active')" class="text-xs font-black border-b-2 border-orange-500 pb-3 px-2 text-orange-500 tracking-wider uppercase flex items-center gap-2">
+                <i class="fa-solid fa-fire-burner text-sm"></i> Active Feeds (Realtime)
+            </button>
+            <button id="tab-btn-archive" onclick="switchDashboardViewTabModeNode('archive')" class="text-xs font-bold text-slate-400 pb-3 px-2 tracking-wider uppercase flex items-center gap-2 hover:text-white transition">
+                <i class="fa-solid fa-box-archive text-sm"></i> Orders History & Archive Matrix
+            </button>
+        </div>
+
+        <div id="panel-active-orders" class="max-w-4xl mx-auto space-y-4">
             <div class="text-center text-slate-500 text-sm py-12" id="empty-state-msg">
                 <i class="fa-solid fa-spinner animate-spin text-xl text-orange-500 mb-3 block"></i>
                 Waiting for live orders from database node...
             </div>
-        </main>
+        </div>
+
+        <div id="panel-archive-orders" class="max-w-4xl mx-auto space-y-6 hidden">
+            
+            <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-5 shadow-2xl grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                
+                <div>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Search Order Content</label>
+                    <div class="relative flex items-center">
+                        <i class="fa-solid fa-search absolute left-3.5 text-slate-600 text-xs"></i>
+                        <input type="text" id="archive-search-input" onkeyup="applyHistoryFilterPipelineNode()" placeholder="ID ya Dish search karein..." class="w-full bg-slate-900 border border-white/5 rounded-xl py-3 pl-9 pr-4 text-xs font-bold focus:outline-none focus:border-orange-500/30 text-white placeholder-slate-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Date Frame Range Selector</label>
+                    <select id="archive-date-filter" onchange="applyHistoryFilterPipelineNode()" class="w-full bg-slate-900 border border-white/5 rounded-xl py-3 px-3 text-xs font-bold focus:outline-none focus:border-orange-500/30 text-white cursor-pointer appearance-none">
+                        <option value="all">All Lifetime Logged Data</option>
+                        <option value="today">Today (आज का हिसाब)</option>
+                        <option value="yesterday">Yesterday (कल का हिसाब)</option>
+                        <option value="month">This Month (इस महीने का)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Budget/Amount Threshold Selector</label>
+                    <select id="archive-budget-filter" onchange="applyHistoryFilterPipelineNode()" class="w-full bg-slate-900 border border-white/5 rounded-xl py-3 px-3 text-xs font-bold focus:outline-none focus:border-orange-500/30 text-white cursor-pointer appearance-none">
+                        <option value="0">All Price Slating Brackets</option>
+                        <option value="100">₹100 + Orders Only</option>
+                        <option value="200">₹200 + Orders Only</option>
+                        <option value="500">₹500 + Orders Only</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-900/50 border border-white/[0.04] p-4 rounded-xl text-left">
+                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block">Total Filtered Orders Count</span>
+                    <span id="analytics-total-count" class="text-xl font-black text-white mt-1 block">0</span>
+                </div>
+                <div class="bg-slate-900/50 border border-white/[0.04] p-4 rounded-xl text-left">
+                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider block">Total Business Accumulated (₹)</span>
+                    <span id="analytics-total-revenue" class="text-xl font-black text-emerald-400 mt-1 block">₹0</span>
+                </div>
+            </div>
+
+            <div id="archive-history-feed-inject" class="space-y-4">
+                </div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, set, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = { databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" };
         const app = initializeApp(firebaseConfig);
@@ -108,171 +166,181 @@
 
         let standardKnownOrderCount = 0;
         let internalInitialLoadLock = true;
+        window.historyCacheArrayNodeStore = []; // Memory cache layer to handle instant filter slicing logic operations
 
         window.verifyKitchenGateAccessPIN = function() {
             const inputVal = document.getElementById('master-pin-input').value.trim();
             const errorMsg = document.getElementById('auth-error-msg');
-            
             if(inputVal === "2310") {
                 errorMsg.className = "hidden";
                 document.getElementById('security-gate').classList.add('opacity-0', 'pointer-events-none');
-                
                 const mainPanel = document.getElementById('main-dashboard-panel');
                 mainPanel.classList.remove('pointer-events-none', 'opacity-0');
-                
-                requestScreenWakeLockMatrixNode();
-                buildInventoryStockSwitchRoomNode();
-                initializeDatabaseIncomingStreamNode();
-            } else {
-                errorMsg.classList.remove('hidden');
-                document.getElementById('master-pin-input').value = "";
-            }
+                requestScreenWakeLockMatrixNode(); buildInventoryStockSwitchRoomNode(); initializeDatabaseIncomingStreamNode();
+            } else { errorMsg.classList.remove('hidden'); document.getElementById('master-pin-input').value = ""; }
         }
 
         function buildInventoryStockSwitchRoomNode() {
             const container = document.getElementById('inventory-switches-loop');
-            container.innerHTML = "";
-            
             onValue(ref(db, 'menu_stock'), (snapshot) => {
-                const stockData = snapshot.val() || {};
-                container.innerHTML = "";
-                
+                const stockData = snapshot.val() || {}; container.innerHTML = "";
                 adminMenuArray.forEach(item => {
                     const isAvailable = stockData[item.id] !== false;
-                    // Added unique class names and lookup attributes data parameters to fuel quick search mappings
-                    container.innerHTML += `
-                        <div class="stock-item-node-wrapper bg-slate-900 border border-white/[0.03] px-4 py-3 rounded-xl flex items-center justify-between transition-all duration-200" data-name="${item.name.toLowerCase()}">
-                            <span class="text-xs font-bold text-slate-200">${item.name}</span>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" ${isAvailable ? 'checked' : ''} onchange="mutateDishStockAvailabilityNode(${item.id}, this.checked)">
-                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500 peer-checked:after:bg-black peer-checked:after:border-black"></div>
-                            </label>
-                        </div>
-                    `;
+                    container.innerHTML += `<div class="stock-item-node-wrapper bg-slate-900 border border-white/[0.03] px-4 py-3 rounded-xl flex items-center justify-between transition-all duration-200" data-name="${item.name.toLowerCase()}"><span class="text-xs font-bold text-slate-200">${item.name}</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" ${isAvailable ? 'checked' : ''} onchange="mutateDishStockAvailabilityNode(${item.id}, this.checked)"><div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500 peer-checked:after:bg-black peer-checked:after:border-black"></div></label></div>`;
                 });
             }, { onlyOnce: true });
         }
 
         window.mutateDishStockAvailabilityNode = function(dishId, checkState) {
-            set(ref(db, `menu_stock/${dishId}`), checkState).then(() => {
-                console.log(`Dish ${dishId} sync status: ${checkState}`);
-            });
+            set(ref(db, `menu_stock/${dishId}`), checkState);
         }
 
         window.toggleInventoryControlPanelNode = function() {
-            const panel = document.getElementById('inventory-stock-panel');
-            panel.classList.toggle('hidden');
-            // Clear input context dynamically upon pane closure requests
-            document.getElementById('stock-search-bar').value = "";
-            searchStockDishNode();
+            const panel = document.getElementById('inventory-stock-panel'); panel.classList.toggle('hidden');
+            document.getElementById('stock-search-bar').value = ""; window.searchStockDishNode();
+        }
+
+        // Live Mode view tab switching controller framework
+        window.switchDashboardViewTabModeNode = function(targetTabMode) {
+            const btnActive = document.getElementById('tab-btn-active'); const btnArchive = document.getElementById('tab-btn-archive');
+            const panelActive = document.getElementById('panel-active-orders'); const panelArchive = document.getElementById('panel-archive-orders');
+
+            if(targetTabMode === 'active') {
+                btnActive.className = "text-xs font-black border-b-2 border-orange-500 pb-3 px-2 text-orange-500 tracking-wider uppercase flex items-center gap-2";
+                btnArchive.className = "text-xs font-bold text-slate-400 pb-3 px-2 tracking-wider uppercase flex items-center gap-2 hover:text-white transition";
+                panelActive.classList.remove('hidden'); panelArchive.classList.add('hidden');
+            } else {
+                btnArchive.className = "text-xs font-black border-b-2 border-orange-500 pb-3 px-2 text-orange-500 tracking-wider uppercase flex items-center gap-2";
+                btnActive.className = "text-xs font-bold text-slate-400 pb-3 px-2 tracking-wider uppercase flex items-center gap-2 hover:text-white transition";
+                panelActive.classList.add('hidden'); panelArchive.classList.remove('hidden');
+                
+                // Fire cold-sync on-demand query pulling from deep data structures only upon view focus request
+                syncFullHistoricalArchiveTerminalNode();
+            }
+        }
+
+        function syncFullHistoricalArchiveTerminalNode() {
+            const feedInject = document.getElementById('archive-history-feed-inject');
+            feedInject.innerHTML = `<div class="text-center text-slate-500 text-xs py-8"><i class="fa-solid fa-circle-notch animate-spin text-orange-500 mr-2"></i> Fetching deep server database nodes safely...</div>`;
+            
+            // Explicitly fetch the raw database structure to isolate production environments from live performance drags
+            get(ref(db, 'orders')).then((snapshot) => {
+                const data = snapshot.val();
+                if(!data) { feedInject.innerHTML = `<div class="text-center text-slate-500 py-6 text-xs">No archival data trees parsed on database yet.</div>`; return; }
+                
+                // Map the full structure object payload directly into local cache matrix memory arrays
+                window.historyCacheArrayNodeStore = Object.keys(data).map(key => data[key]);
+                window.applyHistoryFilterPipelineNode();
+            });
+        }
+
+        // Complex multi-constraint array filtering architecture sequence
+        window.applyHistoryFilterPipelineNode = function() {
+            const searchVal = document.getElementById('archive-search-input').value.toLowerCase().trim();
+            const dateVal = document.getElementById('archive-date-filter').value;
+            const budgetVal = parseInt(document.getElementById('archive-budget-filter').value);
+            const feedInject = document.getElementById('archive-history-feed-inject');
+
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const startOfYesterday = startOfToday - (24 * 60 * 60 * 1000);
+            const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+            // Slices and transforms array nodes instantly across multi-bound inputs safely
+            let filteredResults = window.historyCacheArrayNodeStore.filter(order => {
+                // Constraint Layer 1: Global string parsing regex matching
+                const matchesSearch = order.id.toLowerCase().includes(searchVal) || order.items.toLowerCase().includes(searchVal);
+                
+                // Constraint Layer 2: Financial range minimum selection
+                const matchesBudget = order.total >= budgetVal;
+                
+                // Constraint Layer 3: Linear timestamp node validation mapping
+                let matchesDate = true;
+                if(dateVal === 'today') matchesDate = order.timestamp >= startOfToday;
+                else if(dateVal === 'yesterday') matchesDate = order.timestamp >= startOfYesterday && order.timestamp < startOfToday;
+                else if(dateVal === 'month') matchesDate = order.timestamp >= startOfThisMonth;
+
+                return matchesSearch && matchesBudget && matchesDate;
+            });
+
+            // Sort results array dynamically ensuring most recent timestamps load first linearly
+            filteredResults.sort((a, b) => b.timestamp - a.timestamp);
+
+            // Compute realtime financial summary stats
+            let calculatedRevenue = 0;
+            filteredResults.forEach(order => calculatedRevenue += order.total);
+            document.getElementById('analytics-total-count').innerText = filteredResults.length;
+            document.getElementById('analytics-total-revenue').innerText = `₹${calculatedRevenue.toLocaleString('en-IN')}`;
+
+            if(filteredResults.length === 0) {
+                feedInject.innerHTML = `<div class="text-center text-slate-500 py-12 text-xs border border-dashed border-white/5 rounded-2xl"><i class="fa-solid fa-folder-open block text-base mb-2 text-slate-600"></i> No historical matches verify input matrix states.</div>`;
+                return;
+            }
+
+            feedInject.innerHTML = "";
+            filteredResults.forEach(order => {
+                const formattedDate = new Date(order.timestamp).toLocaleString('en-IN', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+                let statusStyle = "bg-amber-500/10 border-amber-500/20 text-amber-400";
+                if(order.status === 'cooking') statusStyle = "bg-orange-500/10 border-orange-500/20 text-orange-400";
+                if(order.status === 'dispatched') statusStyle = "bg-blue-500/10 border-blue-500/20 text-blue-400";
+                if(order.status === 'delivered') statusStyle = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 opacity-60";
+
+                feedInject.innerHTML += `
+                    <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-4 flex flex-col gap-3">
+                        <div class="flex justify-between items-center text-xs border-b border-white/5 pb-2">
+                            <div><span class="font-black text-white tracking-wide">${order.id}</span><span class="text-slate-500 block text-[11px] mt-0.5">${formattedDate}</span></div>
+                            <span class="text-[9px] font-black uppercase px-2.5 py-1 rounded-md border ${statusStyle}">${order.status}</span>
+                        </div>
+                        <div class="text-xs text-slate-300 bg-slate-950 p-2.5 rounded-xl border border-white/[0.02] font-semibold">${order.items}</div>
+                        <div class="flex justify-between items-center text-xs font-bold">
+                            <div class="text-slate-400">Mode: <span class="text-slate-200">${order.payment}</span> <span class="text-slate-600 font-mono text-[10px] ml-2 truncate max-w-[120px]">UTR: ${order.utr}</span></div>
+                            <div class="text-orange-500 font-black text-base">₹${order.total}</div>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         function initializeDatabaseIncomingStreamNode() {
-            onValue(ref(db, 'orders'), (snapshot) => {
-                const data = snapshot.val();
-                const feed = document.getElementById('admin-orders-feed');
-                if(!data) { feed.innerHTML = `<div class="text-center text-slate-500 py-12">No active database records logged yet.</div>`; return; }
-
-                const emptyState = document.getElementById('empty-state-msg');
-                if(emptyState) emptyState.style.display = 'none';
-                feed.innerHTML = ""; 
-
-                const sortedIds = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp);
+            const optimizedQueryNode = query(ref(db, 'orders'), limitToLast(30));
+            onValue(optimizedQueryNode, (snapshot) => {
+                const data = snapshot.val(); const feed = document.getElementById('panel-active-orders');
+                if(!data) { feed.innerHTML = `<div class="text-center text-slate-500 py-12">No active records parsed.</div>`; return; }
+                const emptyState = document.getElementById('empty-state-msg'); if(emptyState) emptyState.style.display = 'none';
+                feed.innerHTML = ""; const sortedIds = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp);
                 if(!internalInitialLoadLock && sortedIds.length > standardKnownOrderCount) { playAlertSoundNotification(); }
-                standardKnownOrderCount = sortedIds.length;
-                internalInitialLoadLock = false;
-
+                standardKnownOrderCount = sortedIds.length; internalInitialLoadLock = false;
                 sortedIds.forEach(id => {
-                    const order = data[id];
-                    let statusBadgeStyle = "bg-amber-500/10 border-amber-500/20 text-amber-400";
+                    const order = data[id]; let statusBadgeStyle = "bg-amber-500/10 border-amber-500/20 text-amber-400";
                     if(order.status === 'cooking') statusBadgeStyle = "bg-orange-500/10 border-orange-500/20 text-orange-400";
                     if(order.status === 'dispatched') statusBadgeStyle = "bg-blue-500/10 border-blue-500/20 text-blue-400";
                     if(order.status === 'delivered') statusBadgeStyle = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 opacity-40";
-
-                    feed.innerHTML += `
-                        <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-5 flex flex-col gap-4">
-                            <div class="flex justify-between items-start border-b border-white/5 pb-3">
-                                <div><span class="text-xs font-black text-slate-500">ORDER REFF ID</span><h3 class="text-base font-black text-white tracking-wide mt-0.5">${order.id}</h3></div>
-                                <span class="text-[10px] font-black uppercase px-3 py-1 rounded-lg border ${statusBadgeStyle}">${order.status}</span>
-                            </div>
-                            <div><p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Dishes List Loaded:</p><p class="text-sm font-semibold text-white mt-1 bg-slate-950 p-3 rounded-xl border border-white/[0.03]">${order.items}</p></div>
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs font-bold text-slate-400 bg-slate-950/40 p-3 rounded-xl">
-                                <div>Total Payable: <span class="text-orange-500 font-extrabold text-sm block mt-0.5">₹${order.total}</span></div>
-                                <div>Method: <span class="text-white block mt-1">${order.payment}</span></div>
-                                <div class="col-span-2 md:col-span-1">UTR Link Reference: <span class="text-slate-300 block font-mono mt-1 text-[11px] truncate">${order.utr}</span></div>
-                            </div>
-                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mt-2">
-                                <button onclick="updateOrderStatus('${order.id}', 'cooking', 15)" class="bg-orange-500 text-black font-extrabold text-xs py-3 rounded-xl hover:bg-orange-600 transition active:scale-95">Accept (15m)</button>
-                                <button onclick="updateOrderStatus('${order.id}', 'cooking', 25)" class="bg-amber-500 text-black font-extrabold text-xs py-3 rounded-xl hover:bg-amber-600 transition active:scale-95">Accept (25m)</button>
-                                <button onclick="updateOrderStatus('${order.id}', 'dispatched', 0)" class="bg-blue-600 text-white font-extrabold text-xs py-3 rounded-xl hover:bg-blue-700 transition active:scale-95">Out For Delivery</button>
-                                <button onclick="updateOrderStatus('${order.id}', 'delivered', 0)" class="bg-emerald-600 text-white font-extrabold text-xs py-3 rounded-xl hover:bg-emerald-700 transition active:scale-95">Delivered ✓</button>
-                            </div>
-                        </div>
-                    `;
+                    feed.innerHTML += `<div class="bg-slate-900/60 border border-white/5 rounded-2xl p-5 flex flex-col gap-4"><div class="flex justify-between items-start border-b border-white/5 pb-3"><div><span class="text-xs font-black text-slate-500">ORDER REFF ID</span><h3 class="text-base font-black text-white tracking-wide mt-0.5">${order.id}</h3></div><span class="text-[10px] font-black uppercase px-3 py-1 rounded-lg border ${statusBadgeStyle}">${order.status}</span></div><div><p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Dishes List Loaded:</p><p class="text-sm font-semibold text-white mt-1 bg-slate-950 p-3 rounded-xl border border-white/[0.03]">${order.items}</p></div><div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs font-bold text-slate-400 bg-slate-950/40 p-3 rounded-xl"><div>Total Payable: <span class="text-orange-500 font-extrabold text-sm block mt-0.5">₹${order.total}</span></div><div>Method: <span class="text-white block mt-1">${order.payment}</span></div><div class="col-span-2 md:col-span-1">UTR Link Reference: <span class="text-slate-300 block font-mono mt-1 text-[11px] truncate">${order.utr}</span></div></div><div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mt-2"><button onclick="updateOrderStatus('${order.id}', 'cooking', 15)" class="bg-orange-500 text-black font-extrabold text-xs py-3 rounded-xl hover:bg-orange-600 transition active:scale-95">Accept (15m)</button><button onclick="updateOrderStatus('${order.id}', 'cooking', 25)" class="bg-amber-500 text-black font-extrabold text-xs py-3 rounded-xl hover:bg-amber-600 transition active:scale-95">Accept (25m)</button><button onclick="updateOrderStatus('${order.id}', 'dispatched', 0)" class="bg-blue-600 text-white font-extrabold text-xs py-3 rounded-xl hover:bg-blue-700 transition active:scale-95">Out For Delivery</button><button onclick="updateOrderStatus('${order.id}', 'delivered', 0)" class="bg-emerald-600 text-white font-extrabold text-xs py-3 rounded-xl hover:bg-emerald-700 transition active:scale-95">Delivered ✓</button></div></div>`;
                 });
             });
         }
 
-        window.updateOrderStatus = function(id, nextStatus, timerMins) {
-            update(ref(db, 'orders/' + id), { status: nextStatus, prepTime: timerMins });
-        }
+        window.updateOrderStatus = function(id, nextStatus, timerMins) { update(ref(db, 'orders/' + id), { status: nextStatus, prepTime: timerMins }); }
     </script>
 
     <script>
-        let customAudioUncachedContext = null;
-        let globalWakeLockAnchorInstance = null;
-
-        // Dynamic multi-element live filter tracking function logic
+        let customAudioUncachedContext = null; let globalWakeLockAnchorInstance = null;
         window.searchStockDishNode = function() {
-            const input = document.getElementById('stock-search-bar').value.toLowerCase().trim();
-            const items = document.getElementsByClassName('stock-item-node-wrapper');
-            
-            for (let i = 0; i < items.length; i++) {
-                const dishName = items[i].getAttribute('data-name');
-                if (dishName.includes(input)) {
-                    items[i].style.display = "flex";
-                } else {
-                    items[i].style.display = "none";
-                }
-            }
+            const input = document.getElementById('stock-search-bar').value.toLowerCase().trim(); const items = document.getElementsByClassName('stock-item-node-wrapper');
+            for (let i = 0; i < items.length; i++) { const dishName = items[i].getAttribute('data-name'); if (dishName.includes(input)) { items[i].style.display = "flex"; } else { items[i].style.display = "none"; } }
         }
-
-        async function requestScreenWakeLockMatrixNode() {
-            try {
-                if ('wakeLock' in navigator) { globalWakeLockAnchorInstance = await navigator.wakeLock.request('screen'); document.getElementById('wake-lock-status').classList.remove('hidden'); }
-            } catch (err) { console.log(err.message); }
-        }
-
-        document.addEventListener('visibilitychange', async () => {
-            if (globalWakeLockAnchorInstance !== null && document.visibilityState === 'visible') { await requestScreenWakeLockMatrixNode(); }
-        });
-
-        function unlockAudioEngineSystem(btnElement) {
-            try {
-                customAudioUncachedContext = new (window.AudioContext || window.webkitAudioContext)();
-                btnElement.className = "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2";
-                btnElement.innerHTML = `<i class="fa-solid fa-bell"></i> SOUND ENGINE ONLINE`;
-                btnElement.disabled = true;
-                let osc = customAudioUncachedContext.createOscillator(); osc.connect(customAudioUncachedContext.destination); osc.start(0); osc.stop(0.1);
-            } catch(e) { console.error(e); }
-        }
-
+        async function requestScreenWakeLockMatrixNode() { try { if ('wakeLock' in navigator) { globalWakeLockAnchorInstance = await navigator.wakeLock.request('screen'); document.getElementById('wake-lock-status').classList.remove('hidden'); } } catch (err) { console.log(err.message); } }
+        document.addEventListener('visibilitychange', async () => { if (globalWakeLockAnchorInstance !== null && document.visibilityState === 'visible') { await requestScreenWakeLockMatrixNode(); } });
+        function unlockAudioEngineSystem(btnElement) { try { customAudioUncachedContext = new (window.AudioContext || window.webkitAudioContext)(); btnElement.className = "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2"; btnElement.innerHTML = `<i class="fa-solid fa-bell"></i> SOUND ENGINE ONLINE`; btnElement.disabled = true; let osc = customAudioUncachedContext.createOscillator(); osc.connect(customAudioUncachedContext.destination); osc.start(0); osc.stop(0.1); } catch(e) { console.error(e); } }
         function playAlertSoundNotification() {
             if(!customAudioUncachedContext) return;
             try {
-                let time = customAudioUncachedContext.currentTime;
-                let osc1 = customAudioUncachedContext.createOscillator(); let gain1 = customAudioUncachedContext.createGain();
-                osc1.type = "sine"; osc1.frequency.setValueAtTime(987.77, time); gain1.gain.setValueAtTime(0.4, time);
-                gain1.gain.exponentialRampToValueAtTime(0.01, time + 0.4); osc1.connect(gain1); gain1.connect(customAudioUncachedContext.destination);
-                osc1.start(time); osc1.stop(time + 0.4);
-
+                let time = customAudioUncachedContext.currentTime; let osc1 = customAudioUncachedContext.createOscillator(); let gain1 = customAudioUncachedContext.createGain();
+                osc1.type = "sine"; osc1.frequency.setValueAtTime(987.77, time); gain1.gain.setValueAtTime(0.4, time); gain1.gain.exponentialRampToValueAtTime(0.01, time + 0.4); osc1.connect(gain1); gain1.connect(customAudioUncachedContext.destination); osc1.start(time); osc1.stop(time + 0.4);
                 let osc2 = customAudioUncachedContext.createOscillator(); let gain2 = customAudioUncachedContext.createGain();
-                osc2.type = "sine"; osc2.frequency.setValueAtTime(1318.51, time + 0.15); gain2.gain.setValueAtTime(0.4, time + 0.15);
-                gain2.gain.exponentialRampToValueAtTime(0.01, time + 0.55); osc2.connect(gain2); gain2.connect(customAudioUncachedContext.destination);
-                osc2.start(time + 0.15); osc2.stop(time + 0.55);
+                osc2.type = "sine"; osc2.frequency.setValueAtTime(1318.51, time + 0.15); gain2.gain.setValueAtTime(0.4, time + 0.15); gain2.gain.exponentialRampToValueAtTime(0.01, time + 0.55); osc2.connect(gain2); gain2.connect(customAudioUncachedContext.destination); osc2.start(time + 0.15); osc2.stop(time + 0.55);
             } catch(e) { console.log(e); }
         }
-
         document.getElementById('master-pin-input').addEventListener('keypress', function(e) { if(e.key === 'Enter') { verifyKitchenGateAccessPIN(); } });
     </script>
 </body>
