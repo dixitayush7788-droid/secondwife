@@ -91,7 +91,7 @@
             <section id="section-starters" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍢 STARTERS & TIKKA</h2><div id="starters-container" class="grid gap-3.5"></div></section>
             <section id="section-breads" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🫓 TANDOORI BREADS</h2><div id="breads-container" class="grid gap-3.5"></div></section>
             <section id="section-snacks" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍟 SNACKS & KULCHA</h2><div id="snacks-container" class="grid gap-3.5"></div></section>
-            <section id="section-rice" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍚 RICE VARIETIES</h2><div id="rice-container" class="grid gap-3.5"></div></section>
+            <section id="section-rice" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍚 Rice Varieties</h2><div id="rice-container" class="grid gap-3.5"></div></section>
             <section id="section-side" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🥗 SALAD & RAITA</h2><div id="side-container" class="grid gap-3.5"></div></section>
         </div>
     </div>
@@ -164,6 +164,18 @@
                 <button id="tab-srv-dine" onclick="setServiceModeTypeNode('DineIn')" class="bg-orange-500 text-black font-extrabold text-xs py-2.5 rounded-xl transition">🍽️ Dine-In / Table</button>
                 <button id="tab-srv-delv" onclick="setServiceModeTypeNode('Delivery')" class="bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl transition">🚀 Home Delivery</button>
             </div>
+
+            <div id="geo-location-container" class="hidden flex flex-col gap-2 transition-all duration-300">
+                <div class="flex justify-between items-center">
+                    <button type="button" onclick="fetchNativeDeviceGPSCoordinatesNode(this)" class="bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 text-blue-400 font-extrabold text-[10px] px-3 py-2 rounded-xl flex items-center gap-1.5 transition active:scale-95">
+                        <i class="fa-solid fa-location-crosshairs animate-pulse"></i> 📍 Use My Current Location
+                    </button>
+                    <button type="button" id="btn-prev-location-pill" onclick="injectPreviousSavedLocationNode()" class="hidden bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-orange-400 font-black text-[10px] px-3 py-2 rounded-xl transition active:scale-95 truncate max-w-[180px]">
+                        <i class="fa-solid fa-clock-rotate-left"></i> 🕒 Purana Address use karein
+                    </button>
+                </div>
+            </div>
+
             <input type="text" id="cust-input-location" onkeyup="validateOnlineLock()" placeholder="Table Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 transition-all font-semibold">
         </div>
 
@@ -199,7 +211,7 @@
             </div>
         </div>
 
-        <button id="checkout-btn" onclick="sendOrder()" class="secure-pulse w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2.5 tracking-wide">
+        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-3 cursor-not-allowed opacity-60" disabled>
             <i class="fa-solid fa-fire text-lg"></i> REALIZE REALTIME CLOUD ORDER
         </button>
     </div>
@@ -239,7 +251,6 @@
             Object.keys(window.cart).forEach(key => totalBill += (window.cart[key].price * window.cart[key].qty));
             if(totalBill < 100) { alert(`Minimum order threshold is ₹100.`); return; }
 
-            // Pull validated string nodes explicitly out of display modules
             const nameVal = document.getElementById('cust-input-name').value.trim();
             const phoneVal = document.getElementById('cust-input-phone').value.trim();
             const locVal = document.getElementById('cust-input-location').value.trim();
@@ -256,7 +267,6 @@
                     const nextOrderNum = result.snapshot.val();
                     const orderId = "SW-" + String(nextOrderNum).padStart(6, '0');
 
-                    // Synchronize and write full customer identity directly to data structures
                     set(ref(db, 'orders/' + orderId), {
                         id: orderId,
                         items: itemsString,
@@ -274,6 +284,11 @@
                         localStorage.setItem('active_secondwife_order_id', orderId);
                         localStorage.setItem('secondwife_tracker_state', 'full'); 
                         
+                        // Smart memory block tracking updates: Lock current address safely into persistent layers
+                        if(window.serviceModeTypeNode === 'Delivery') {
+                            localStorage.setItem('secondwife_saved_delivery_address', locVal);
+                        }
+
                         let orderHistory = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
                         if(!orderHistory.includes(orderId)){
                             orderHistory.push(orderId);
@@ -413,7 +428,7 @@
                     if(order.status === 'cooking') statusColor = "text-orange-400 bg-orange-500/10 border-orange-500/20";
                     if(order.status === 'dispatched') statusColor = "text-blue-400 bg-blue-500/10 border-blue-500/20";
                     if(order.status === 'delivered') statusColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-                    container.innerHTML += `<div class="bg-slate-900/90 border border-white/5 rounded-xl p-4 space-y-3"><div class="flex justify-between items-center text-[11px] border-b border-white/5 pb-2"><div><span class="font-black text-white block">${order.id}</span><span class="text-slate-500 font-medium block mt-0.5">${formattedDate}</span></div><span class="uppercase font-black text-[9px] px-2.5 py-1 rounded-md border ${statusColor}">${order.status}</span></div><div class="text-xs font-medium text-slate-300 bg-slate-950/60 p-2.5 rounded-lg border border-white/[0.02]">${order.items}</div><div class="flex justify-between items-center text-xs font-bold pt-1"><div class="text-slate-400">Mode: <span class="text-slate-200">${order.payment}</span> <span class="text-slate-600 font-mono text-[10px]">Name: ${order.custName || 'N/A'}</span></div><div class="text-right text-orange-500 font-black text-sm">₹${order.total}</div></div></div>`;
+                    container.innerHTML += `<div class="bg-slate-900/90 border border-white/5 rounded-xl p-4 space-y-3"><div class="flex justify-between items-center text-[11px] border-b border-white/5 pb-2"><div><span class="font-black text-white block">${order.id}</span><span class="text-slate-500 font-medium block mt-0.5">${formattedDate}</span></div><span class="uppercase font-black text-[9px] px-2.5 py-1 rounded-md border ${statusColor}">${order.status}</span></div><div class="text-xs font-medium text-slate-300 bg-slate-950/60 p-2.5 rounded-lg border border-white/[0.02]">${order.items}</div><div class="flex justify-between items-center text-xs font-bold pt-1"><div class="text-slate-400">Mode: <span class="text-slate-200">${order.payment}</span> <span class="text-slate-600 font-mono">Name: ${order.custName || 'N/A'}</span></div><div class="text-right text-orange-500 font-black text-sm">₹${order.total}</div></div></div>`;
                 });
             });
         }
@@ -443,10 +458,10 @@
             { id: 20, cat: "side", name: "Boondi Raita", price: 109 },
             { id: 21, cat: "side", name: "Mint Raita", price: 109 },
             { id: 22, cat: "side", name: "Mixed Fruit Raita", price: 149 },
-            { id: 23, cat: "breads", name: "Tandoori Roti", price: 12 },
+            { id: 23, text: "naan", cat: "breads", name: "Tandoori Roti", price: 12 },
             { id: 24, cat: "breads", name: "Butter Tandoori Roti", price: 14 },
             { id: 25, cat: "breads", name: "Missi Roti", price: 35 },
-            { id: 26, text: "naan", cat: "breads", name: "Plain Naan", price: 35 },
+            { id: 26, cat: "breads", name: "Plain Naan", price: 35 },
             { id: 27, cat: "breads", name: "Butter Naan", price: 45 },
             { id: 28, cat: "breads", name: "Garlic Naan", price: 49 },
             { id: 29, cat: "breads", name: "Plain Kulcha", price: 49 },
@@ -478,24 +493,91 @@
         ];
 
         window.cart = {}; window.selectedMethod = "COD";
-        window.serviceModeTypeNode = "DineIn"; // Pre-configured matrix default state
+        window.serviceModeTypeNode = "DineIn"; 
 
         window.setServiceModeTypeNode = function(mode) {
             window.serviceModeTypeNode = mode;
             const btnDine = document.getElementById('tab-srv-dine');
             const btnDelv = document.getElementById('tab-srv-delv');
             const locInput = document.getElementById('cust-input-location');
+            const geoBox = document.getElementById('geo-location-container');
 
             if(mode === 'DineIn') {
                 btnDine.className = "bg-orange-500 text-black font-extrabold text-xs py-2.5 rounded-xl transition";
                 btnDelv.className = "bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl transition";
                 locInput.placeholder = "Table Number daalein...";
+                geoBox.classList.add('hidden'); // Hide GPS options if dine in
             } else {
                 btnDelv.className = "bg-orange-500 text-black font-extrabold text-xs py-2.5 rounded-xl transition";
                 btnDine.className = "bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl transition";
                 locInput.placeholder = "Full Home Delivery Address daalein...";
+                geoBox.classList.remove('hidden'); // Reveal GPS suite
+                
+                // Assert if historical records exist in storage to light up shortcut pill
+                const savedAddress = localStorage.getItem('secondwife_saved_delivery_address');
+                const pillBtn = document.getElementById('btn-prev-location-pill');
+                if(savedAddress && pillBtn) {
+                    pillBtn.classList.remove('hidden');
+                    pillBtn.title = savedAddress;
+                }
             }
+            locInput.value = "";
             validateOnlineLock();
+        }
+
+        // HTML5 NATIVE HIGH ACCURACY GEOLOCATION MATRIX SEQUENCER ENGINE
+        window.fetchNativeDeviceGPSCoordinatesNode = function(btnElement) {
+            const originalHTML = btnElement.innerHTML;
+            const locInput = document.getElementById('cust-input-location');
+            
+            if (!navigator.geolocation) {
+                alert("GPS Geolocation is not supported by your phone browser layer.");
+                return;
+            }
+
+            btnElement.disabled = true;
+            btnElement.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Fetching GPS...`;
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    try {
+                        // Reverse Geocoding pipeline utilizing high performance free Nominatim OpenStreetMap node structures
+                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`);
+                        const data = await response.json();
+                        
+                        if(data && data.display_name) {
+                            // Extract clear localized addresses text cleanly mapping to input box
+                            locInput.value = data.display_name;
+                            console.log("GPS Address string set successfully:", data.display_name);
+                        } else {
+                            locInput.value = `GPS Coords: Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`;
+                        }
+                    } catch (error) {
+                        locInput.value = `GPS Coords: Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`;
+                    }
+                    
+                    btnElement.disabled = false;
+                    btnElement.innerHTML = originalHTML;
+                    validateOnlineLock();
+                },
+                (error) => {
+                    alert("GPS Permission Denied. Please type your home address manually inside the box.");
+                    btnElement.disabled = false;
+                    btnElement.innerHTML = originalHTML;
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        window.injectPreviousSavedLocationNode = function() {
+            const savedAddress = localStorage.getItem('secondwife_saved_delivery_address');
+            if(savedAddress) {
+                document.getElementById('cust-input-location').value = savedAddress;
+                validateOnlineLock();
+            }
         }
 
         function scrollToSection(id, element) {
@@ -546,12 +628,8 @@
 
         function openCartDrawer() { if (Object.keys(window.cart).length > 0) document.getElementById('checkout-bar').classList.remove('translate-y-full'); }
         function closeCartDrawer() { document.getElementById('checkout-bar').classList.add('translate-y-full'); }
-        
-        window.closeHistoryDrawerNode = function() { document.getElementById('history-drawer').classList.add('translate-y-full'); }
-
         function togglePaymentView(method) { window.selectedMethod = method; const payBlock = document.getElementById('online-pay-block'); if (method === 'Online') { payBlock.classList.remove('hidden'); document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer"; document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer"; } else { payBlock.classList.add('hidden'); document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer"; document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer"; } validateOnlineLock(); }
         
-        // Strict operational layout form criteria validator node locks
         window.validateOnlineLock = function() {
             const btn = document.getElementById('checkout-btn');
             const name = document.getElementById('cust-input-name').value.trim();
