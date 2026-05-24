@@ -4,61 +4,42 @@
     <meta charset="UTF-8">
     <title>Second Wife Cafe</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-900 text-white p-4">
-    <h1 class="text-2xl font-bold">Second Wife Cafe Menu</h1>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, runTransaction, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        const db = getDatabase(initializeApp({ databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" }));
+        window.db = db; window.ref = ref; window.set = set; window.runTransaction = runTransaction;
+    </script>
+</head>
+<body class="bg-gray-900 text-white p-4">
+    <div id="store-front-view">
+        <h1 class="text-2xl font-bold">Second Wife Menu</h1>
+        <div id="biryani-container"></div>
+        <button onclick="document.getElementById('checkout-bar').classList.remove('translate-y-full')" class="bg-green-500 p-4 w-full mt-4">Checkout</button>
+    </div>
 
-        const firebaseConfig = { databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+    <div id="checkout-bar" class="fixed bottom-0 left-0 right-0 p-5 bg-gray-800 translate-y-full transition-transform">
+        <input type="text" id="cust-input-name" placeholder="Naam" class="w-full p-2 mb-2 bg-black rounded">
+        <input type="tel" id="cust-input-phone" placeholder="Mobile" class="w-full p-2 mb-2 bg-black rounded">
+        <input type="text" id="cust-input-location" placeholder="Address/Table" class="w-full p-2 mb-2 bg-black rounded">
+        <button onclick="sendOrder()" class="w-full bg-orange-500 p-3 rounded font-bold">PLACE ORDER</button>
+    </div>
 
+    <script>
+        window.cart = { 1: { name: "Veg Biryani", price: 199, qty: 1 } };
         window.sendOrder = function() {
-            let totalBill = 0;
-            Object.keys(window.cart).forEach(key => totalBill += (window.cart[key].price * window.cart[key].qty));
-            if(totalBill < 100) { alert(`Minimum order threshold is ₹100.`); return; }
+            const nameVal = document.getElementById('cust-input-name').value;
+            const phoneVal = document.getElementById('cust-input-phone').value;
+            const locVal = document.getElementById('cust-input-location').value;
+            
+            if(!nameVal || phoneVal.length < 10) { alert("Details sahi bharo!"); return; }
 
-            const nameVal = document.getElementById('cust-input-name').value.trim();
-            const phoneVal = document.getElementById('cust-input-phone').value.trim();
-            const locVal = document.getElementById('cust-input-location').value.trim();
-
-            if(nameVal === "" || phoneVal.length < 10 || locVal === "") {
-                alert("Bhai, Name, Phone aur Address/Table bharo pehle!");
-                return;
-            }
-
-            let itemsString = "";
-            Object.keys(window.cart).forEach(key => { itemsString += `${window.cart[key].name} (x${window.cart[key].qty}), `; });
-            const utrVal = window.selectedMethod === 'Online' ? document.getElementById('utr-input').value.trim() : "COD_MODE";
-
-            const counterRef = ref(db, 'order_counter');
-            runTransaction(counterRef, (currentValue) => {
-                return (currentValue || 0) + 1;
-            }).then((result) => {
-                if (result.committed) {
-                    const nextOrderNum = result.snapshot.val();
-                    const orderId = "SW-" + String(nextOrderNum).padStart(6, '0');
-
-                    set(ref(db, 'orders/' + orderId), {
-                        id: orderId,
-                        items: itemsString,
-                        total: totalBill,
-                        payment: window.selectedMethod,
-                        utr: utrVal,
-                        status: "placed",
-                        custName: nameVal,
-                        custPhone: phoneVal,
-                        custType: window.serviceModeTypeNode || "DineIn",
-                        custLoc: locVal,
-                        timestamp: Date.now()
-                    }).then(() => {
-                        localStorage.setItem('active_secondwife_order_id', orderId);
-                        alert("Order Successful!");
-                        window.location.reload();
-                    });
-                }
+            runTransaction(window.ref(window.db, 'order_counter'), (curr) => (curr || 0) + 1).then((res) => {
+                const orderId = "SW-" + String(res.snapshot.val()).padStart(6, '0');
+                window.set(window.ref(window.db, 'orders/' + orderId), {
+                    id: orderId, custName: nameVal, custPhone: phoneVal, custLoc: locVal,
+                    items: "Veg Biryani", total: 199, status: "placed", timestamp: Date.now()
+                }).then(() => { alert("Order Success!"); location.reload(); });
             });
         }
     </script>
