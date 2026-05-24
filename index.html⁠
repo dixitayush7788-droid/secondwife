@@ -57,7 +57,7 @@
 
         <header class="py-12 px-6 text-center relative max-w-xl mx-auto z-10">
             <span class="text-[9px] font-extrabold uppercase tracking-[0.25em] text-orange-400 bg-orange-500/10 border border-orange-500/20 px-4 py-2 rounded-full backdrop-blur-md">Kanpur's Finest Dining System</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white mt-6 leading-tight brand-font-premium">Swaad Jo Bane <span class="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 italic underline decoration-wavy underline-offset-8 decoration-orange-500/40">Aapki Pehli</span> Pasand!</h1>
+            <h1 class="text-4xl font-extrabold tracking-tight text-white mt-6 leading-tight brand-font-premium">Swaad Jo Bane <span class="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 italic underline decoration-wavy underline-offset-8 decoration-orange-500/40">Aapki Pehli</span> Pasand!</h1>
             <p class="text-slate-400 text-xs mt-6 font-medium leading-relaxed max-w-xs mx-auto"><i class="fa-solid fa-location-dot text-red-500"></i> R.R. Galaxy, Near Pratap Hotel, Shyam Nagar, Kanpur.</p>
         </header>
 
@@ -180,13 +180,14 @@
             let itemsString = "";
             Object.keys(window.cart).forEach(key => { itemsString += `${window.cart[key].name} (x${window.cart[key].qty}), `; });
 
-            const utrVal = selectedMethod === 'Online' ? document.getElementById('utr-input').value.trim() : "COD_MODE";
+            // Fixed window explicit scope resolution mapping for strict mode compatibility
+            const utrVal = window.selectedMethod === 'Online' ? document.getElementById('utr-input').value.trim() : "COD_MODE";
 
             set(ref(db, 'orders/' + orderId), {
                 id: orderId,
                 items: itemsString,
                 total: totalBill,
-                payment: selectedMethod,
+                payment: window.selectedMethod,
                 utr: utrVal,
                 status: "placed",
                 prepTime: 0,
@@ -199,7 +200,7 @@
                 
                 listenToOrderLive(orderId);
                 
-                let whatsappText = `🍽️ *NEW ONLINE ORDER - SECOND WIFE*%0AOrder ID: *${orderId}*%0AItems: ${itemsString}%0AMode: ${selectedMethod}%0ATotal: ₹${totalBill}`;
+                let whatsappText = `🍽️ *NEW ONLINE ORDER - SECOND WIFE*%0AOrder ID: *${orderId}*%0AItems: ${itemsString}%0AMode: ${window.selectedMethod}%0ATotal: ₹${totalBill}`;
                 window.open(`https://wa.me/918467895365?text=${whatsappText}`, '_blank');
             });
         }
@@ -305,7 +306,7 @@
             { id: 51, cat: "snacks", name: "Paneer Pakoda (8 pcs)", price: 199 },
             { id: 52, cat: "snacks", name: "Spring Roll", price: 129 },
             { id: 53, cat: "snacks", name: "Stuffed Paneer Kulcha", price: 79 },
-            { id: 54, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
+            { id: 55, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
         ];
 
         window.cart = {};
@@ -331,7 +332,7 @@
                         <div class="flex items-center gap-2.5">
                             <button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-8 h-8 bg-slate-800 text-slate-200 font-extrabold rounded-xl hidden">-</button>
                             <span id="qty-${item.id}" class="font-black text-xs text-white hidden">0</span>
-                            <button onclick="changeQty(${item.id}, 1)" class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-sm rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 shadow-md shadow-orange-500/10">
+                            <button onclick="changeQty(${item.id}, 1)" class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-sm rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.88] shadow-md shadow-orange-500/10">
                                 <i class="fa-solid fa-plus text-xs"></i>
                             </button>
                         </div>
