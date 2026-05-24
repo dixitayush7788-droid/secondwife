@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECOND WIFE Cafe & Restaurant | Premium Order Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .logo-script { font-family: 'Dancing Script', cursive; }
+        .glow-orange { box-shadow: 0 0 30px rgba(249, 115, 22, 0.35); }
+        .glow-card:hover { box-shadow: 0 0 20px rgba(249, 115, 22, 0.15); border-color: rgba(249, 115, 22, 0.4); }
+        .glass-header { background: rgba(3, 7, 18, 0.88); backdrop-blur: 20px; }
+    </style>
+</head>
+<body class="bg-[#030712] text-slate-100 antialiased selection:bg-orange-500 selection:text-black">
+
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-tr from-orange-600/10 to-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-[80vh] right-0 w-80 h-80 bg-gradient-to-br from-red-600/5 to-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="bg-gradient-to-r from-[#4a3629] via-orange-600 to-red-600 text-white px-4 py-2 text-center text-xs font-extrabold tracking-widest uppercase shadow-md">
+        ✨ Elite Taste Destination • Shyam Nagar, Kanpur • 3.8 ⭐
+    </div>
+
+    <nav class="sticky top-0 z-50 glass-header border-b border-white/5 px-4 py-3 flex justify-between items-center shadow-lg">
+        <div class="flex items-center gap-2.5">
+            <div class="w-11 h-11 rounded-full bg-[#3d271d] border border-orange-500/20 flex items-center justify-center shadow-md flex-shrink-0">
+                <i class="fa-solid fa-utensils text-sm text-[#cca47c]"></i>
+            </div>
+            <div class="flex flex-col justify-center">
+                <span class="logo-script text-2xl font-bold leading-none text-white tracking-wide">Second Wife</span>
+                <span class="text-[9px] font-black tracking-[0.18em] text-[#4d7cb2] uppercase mt-0.5">Café & Restaurant</span>
+            </div>
+        </div>
+        
+        <div onclick="openCartDrawer()" class="relative bg-gradient-to-b from-slate-900 to-slate-950 p-3 rounded-2xl border border-white/10 shadow-inner group transition-all duration-300 hover:border-orange-500/40 cursor-pointer">
+            <i class="fa-solid fa-basket-shopping text-lg text-orange-500 group-hover:scale-110 transition-transform"></i>
+            <span id="cart-count" class="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-red-500 to-orange-500 text-white text-[10px] font-black h-5 w-5 rounded-full flex items-center justify-center hidden border border-[#030712]">0</span>
+        </div>
+    </nav>
+
+    <header class="py-12 px-6 text-center relative max-w-xl mx-auto">
+        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-400 bg-orange-500/10 border border-orange-500/20 px-4 py-2 rounded-full">Premium Fine Dine Experience</span>
+        <h1 class="text-4xl font-black tracking-tight text-white mt-5 leading-tight logo-script">Swaad Jo Bane <span class="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-400 italic underline decoration-wavy underline-offset-8 decoration-orange-500/50">Aapki Pehli</span> Pasand!</h1>
+        <p class="text-slate-400 text-xs md:text-sm mt-6 font-medium leading-relaxed"><i class="fa-solid fa-location-dot text-red-500"></i> R.R. Galaxy, Near Pratap Hotel, Devki Nagar, Shyam Nagar, Kanpur.</p>
+        <div class="flex justify-center items-center gap-4 mt-4 text-xs font-bold text-slate-400">
+            <span class="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20"><i class="fa-solid fa-circle text-[8px] animate-ping"></i> Open Now</span>
+            <span>•</span>
+            <span><i class="fa-solid fa-clock text-orange-500"></i> 11:30 AM – 11:30 PM</span>
+        </div>
+    </header>
+
+    <div class="max-w-xl mx-auto px-4 mb-10">
+        <div class="relative flex items-center group">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 text-slate-500 group-focus-within:text-orange-500 transition-colors text-sm"></i>
+            <input type="text" id="search-bar" onkeyup="searchDish()" placeholder="Biryani, Paneer, Naan ya Starters dhoondein..." class="w-full bg-slate-900/80 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-orange-500/60 focus:bg-slate-900 transition-all shadow-inner placeholder-slate-500 font-medium">
+        </div>
+    </div>
+
+    <main class="max-w-xl mx-auto px-4 pb-64 space-y-10">
+
+        <section class="menu-section bg-gradient-to-b from-slate-900/40 to-slate-950/40 border border-white/[0.02] p-5 rounded-[2rem] shadow-xl backdrop-blur-md">
+            <h2 class="text-sm font-black text-orange-400 tracking-[0.15em] mb-5 flex items-center gap-2.5 border-b border-white/5 pb-3 uppercase">
+                <span class="p-2 bg-orange-500/10 rounded-xl text-base">🍲</span> BIRYANI SPECIALS
+            </h2>
+            <div id="biryani-container" class="grid gap-3.5"></div>
+        </section>
+
+        <section class="menu-section bg-gradient-to-b from-slate-900/40 to-slate-950/40 border border-white/[0.02] p-5 rounded-[2rem] shadow-xl backdrop-blur-md">
+            <h2 class="text-sm font-black text-orange-400 tracking-[0.15em] mb-5 flex items-center gap-2.5 border-b border-white/5 pb-3 uppercase">
+                <span class="p-2 bg-orange-500/10 rounded-xl text-base">🍽️</span> PREMIUM THALI
+            </h2>
+            <div id="thali-container" class="grid gap-3.5"></div>
+        </section>
+
+        <section class="menu-section bg-gradient-to-b from-slate-900/40 to-slate-950/40 border border-white/[0.02] p-5 rounded-[2rem] shadow-xl backdrop-blur-md">
+            <h2 class="text-sm font-black text-orange-400 tracking-[0.15em] mb-5 flex items-center gap-2.5 border-b border-white/5 pb-3 uppercase">
+                <span class="p-2 bg-orange-500/10 rounded-xl text-base">🍛</span> MAIN COURSE
+            </h2>
+            <div id="main-container" class="grid gap-3.5"></div>
+        </section>
+
+        <section class="menu-section bg-gradient-to-b from-slate-900/40 to-slate-950/40 border border-white/[0.02] p-5 rounded-[2rem] shadow-xl backdrop-blur-md">
+            <h2 class="text-sm font-black text-orange-400 tracking-[0.15em] mb-5 flex items-center gap-2.5 border-b border-white/5 pb-3 uppercase">
+                <span class="p-2 bg-orange-500/10 rounded-xl text-base">🍢</span> STARTERS & TIKKA
+            </h2>
+            <div id="starters-container" class="grid gap-3.5"></div>
+        </section>
+
+        <section class="menu-section bg-gradient-to-b from-slate-900/40 to-slate-950/40 border border-white/[0.02] p-5 rounded-[2rem] shadow-xl backdrop-blur-md">
+            <h2 class="text-sm font-black text-orange-400 tracking-[0.15em] mb-5 flex items-center gap-2.5 border-b border-white/5 pb-3 uppercase">
+                <span class="p-2 bg-orange-500/10 rounded-xl text-base">🫓</span> TANDOORI BREADS
+            </h2>
+            <div id="breads-container" class="grid gap-3.5"></div>
+        </section>
+
+        <section class="menu-section bg-gradient-to-b from-slate-900/40 to-slate-950/40 border border-white/[0.02] p-5 rounded-[2rem] shadow-xl backdrop-blur-md">
+            <h2 class="text-sm font-black text-orange-400 tracking-[0.15em] mb-5 flex items-center gap-2.5 border-b border-white/5 pb-3 uppercase">
+                <span class="p-2 bg-orange-500/10 rounded-xl text-base">🍟</span> SNACKS & KULCHA
+            </h2>
+            <div id="snacks-container" class="grid gap-3.5"></div>
+        </section>
+
+        <section class="menu-section bg-gradient-to-b from-slate-900/40 to-slate-950/40 border border-white/[0.02] p-5 rounded-[2rem] shadow-xl backdrop-blur-md">
+            <h2 class="text-sm font-black text-orange-400 tracking-[0.15em] mb-5 flex items-center gap-2.5 border-b border-white/5 pb-3 uppercase">
+                <span class="p-2 bg-orange-500/10 rounded-xl text-base">🍚</span> RICE VARIETIES
+            </h2>
+            <div id="rice-container" class="grid gap-3.5"></div>
+        </section>
+
+        <section class="menu-section bg-gradient-to-b from-slate-900/40 to-slate-950/40 border border-white/[0.02] p-5 rounded-[2rem] shadow-xl backdrop-blur-md">
+            <h2 class="text-sm font-black text-orange-400 tracking-[0.15em] mb-5 flex items-center gap-2.5 border-b border-white/5 pb-3 uppercase">
+                <span class="p-2 bg-orange-500/10 rounded-xl text-base">🥗</span> SALAD & RAITA
+            </h2>
+            <div id="side-container" class="grid gap-3.5"></div>
+        </section>
+
+    </main>
+
+    <div id="checkout-bar" class="fixed bottom-0 left-0 right-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-300 z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[90vh] overflow-y-auto shadow-2xl">
+        
+        <div class="w-full max-w-md flex justify-between items-center mb-3 border-b border-white/5 pb-2">
+            <span class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Review Your Basket</span>
+            <button onclick="closeCartDrawer()" class="h-8 w-8 bg-slate-900 border border-white/5 text-slate-400 hover:text-orange-500 font-bold rounded-full flex items-center justify-center transition active:scale-90">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+
+        <div class="w-full max-w-md flex justify-between items-center mb-5 px-1">
+            <div>
+                <p id="cart-summary" class="text-sm font-bold text-slate-300">0 Items Selected</p>
+                <p class="text-[10px] text-emerald-400 font-bold mt-0.5"><i class="fa-solid fa-shield-halved"></i> Secured Transaction Processing</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs font-semibold text-slate-500 uppercase">Total Bill</p>
+                <p id="cart-total" class="text-3xl font-black text-orange-500 logo-script">₹0</p>
+            </div>
+        </div>
+
+        <div class="w-full max-w-md mb-5">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Choose Payment Mode:</p>
+            <div class="grid grid-cols-2 gap-3.5">
+                <label class="flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3 rounded-2xl cursor-pointer transition-all shadow-md" id="label-cod">
+                    <input type="radio" name="payment-method" value="COD" checked onclick="togglePaymentView('COD')" class="accent-orange-500 h-4 w-4">
+                    <span class="font-bold text-xs md:text-sm text-white">Cash On Delivery</span>
+                </label>
+                <label class="flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3 rounded-2xl cursor-pointer transition-all" id="label-online">
+                    <input type="radio" name="payment-method" value="Online" onclick="togglePaymentView('Online')" class="accent-orange-500 h-4 w-4">
+                    <span class="font-bold text-xs md:text-sm text-white">Online UPI QR</span>
+                </label>
+            </div>
+        </div>
+
+        <div id="online-pay-block" class="w-full max-w-md hidden transition-all duration-300">
+            <div id="qr-box" class="w-full bg-white text-black p-5 rounded-2xl flex flex-col items-center justify-center mb-4 border border-slate-200 shadow-2xl">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2.5">Scan QR to Transfer Bill Amount</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife%20Cafe" alt="UPI QR" class="w-44 h-44 object-contain">
+                <p class="text-xs font-black text-emerald-600 mt-3 flex items-center gap-1.5 animate-pulse"><i class="fa-solid fa-qrcode text-sm"></i> SCAN VIA ANY UPI APP</p>
+            </div>
+
+            <div class="w-full bg-slate-900 border border-red-500/30 p-4 rounded-2xl mb-4">
+                <label class="block text-[10px] font-black text-orange-400 uppercase tracking-widest mb-1.5">Enter Payment UTR / Transaction ID:</label>
+                <input type="text" id="utr-input" onkeyup="validateOnlineLock()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-orange-500 transition-all font-semibold tracking-wide placeholder-slate-600">
+                <p id="utr-alert" class="text-[10px] font-bold text-red-400 mt-1.5"><i class="fa-solid fa-lock"></i> Payment verify hone tak order locked rahega</p>
+            </div>
+        </div>
+
+        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4 rounded-2xl font-extrabold text-base flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-green-500/10 tracking-wide">
+            <i class="fa-brands fa-whatsapp text-2xl"></i> PLACE ORDER ON WHATSAPP
+        </button>
+    </div>
+
+    <script>
+        const fullMenu = [
+            { id: 1, cat: "biryani", name: "Veg Biryani", price: 199 },
+            { id: 2, cat: "biryani", name: "Soya Chaap Biryani", price: 229 },
+            { id: 3, cat: "biryani", name: "Hyderabadi Dum Biryani", price: 230 },
+            { id: 4, cat: "thali", name: "Special Thali", price: 260 },
+            { id: 5, cat: "thali", name: "Golden Thali", price: 299 },
+            { id: 6, cat: "main", name: "Makhmali Malai Chaap Gravy", price: 289 },
+            { id: 7, cat: "main", name: "Mushroom Masala", price: 179 },
+            { id: 8, cat: "main", name: "Matar Mushroom", price: 179 },
+            { id: 9, cat: "main", name: "Malai Kofta", price: 189 },
+            { id: 10, cat: "main", name: "Handi Paneer", price: 179 },
+            { id: 11, cat: "main", name: "Veg Kofta", price: 169 },
+            { id: 12, cat: "main", name: "Dum Aloo", price: 269 },
+            { id: 13, cat: "main", name: "Kashmiri Dum Aloo", price: 279 },
+            { id: 14, cat: "main", name: "Jeera Aloo", price: 169 },
+            { id: 15, cat: "main", name: "Veg Mixed", price: 149 },
+            { id: 16, cat: "side", name: "Green Garden Salad", price: 69 },
+            { id: 17, cat: "side", name: "Papad Dry", price: 29 },
+            { id: 18, cat: "side", name: "Masala Papad", price: 45 },
+            { id: 19, cat: "side", name: "Plain Curd", price: 99 },
+            { id: 20, cat: "side", name: "Boondi Raita", price: 109 },
+            { id: 21, cat: "side", name: "Mint Raita", price: 109 },
+            { id: 22, cat: "side", name: "Mixed Fruit Raita", price: 149 },
+            { id: 23, cat: "breads", name: "Tandoori Roti", price: 12 },
+            { id: 24, cat: "breads", name: "Butter Tandoori Roti", price: 14 },
+            { id: 25, cat: "breads", name: "Missi Roti", price: 35 },
+            { id: 26, cat: "breads", name: "Plain Naan", price: 35 },
+            { id: 27, cat: "breads", name: "Butter Naan", price: 45 },
+            { id: 28, cat: "breads", name: "Garlic Naan", price: 49 },
+            { id: 29, cat: "breads", name: "Plain Kulcha", price: 49 },
+            { id: 30, cat: "breads", name: "Special Stuff Paratha", price: 69 },
+            { id: 31, cat: "breads", name: "Stuffed Paneer Paratha", price: 69 },
+            { id: 32, cat: "breads", name: "Onion Missi Roti", price: 35 },
+            { id: 33, cat: "breads", name: "Lachha Paratha", price: 45 },
+            { id: 34, cat: "breads", name: "Pudina Paratha", price: 49 },
+            { id: 35, cat: "breads", name: "Mirchi Paratha", price: 49 },
+            { id: 36, cat: "breads", name: "Paneer Naan", price: 55 },
+            { id: 37, cat: "starters", name: "Dahi Kebab", price: 229 },
+            { id: 38, cat: "starters", name: "Makhmali Malai Chaap", price: 279 },
+            { id: 39, cat: "starters", name: "Hariyali Paneer Tikka", price: 269 },
+            { id: 40, cat: "starters", name: "Paneer Tikka", price: 269 },
+            { id: 41, cat: "starters", name: "Mushroom Tikka", price: 269 },
+            { id: 42, cat: "starters", name: "Veg Manchurian Dry", price: 239 },
+            { id: 43, cat: "starters", name: "Paneer Manchurian Dry", price: 269 },
+            { id: 44, cat: "starters", name: "Paneer Chilli Dry", price: 269 },
+            { id: 45, cat: "rice", name: "Plain Rice", price: 89 },
+            { id: 46, cat: "rice", name: "Jeera Rice", price: 99 },
+            { id: 47, cat: "rice", name: "Veg Pulao", price: 149 },
+            { id: 48, cat: "rice", name: "Matar Pulao", price: 139 },
+            { id: 49, cat: "rice", name: "Kashmiri Pulao", price: 169 },
+            { id: 50, cat: "snacks", name: "French Fries", price: 139 },
+            { id: 51, cat: "snacks", name: "Paneer Pakoda (8 pcs)", price: 199 },
+            { id: 52, cat: "snacks", name: "Spring Roll", price: 129 },
+            { id: 53, cat: "snacks", name: "Stuffed Paneer Kulcha", price: 79 },
+            { id: 54, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
+        ];
+
+        let cart = {};
+        let selectedMethod = "COD";
+
+        function renderMenu() {
+            fullMenu.forEach(item => {
+                const container = document.getElementById(`${item.cat}-container`);
+                if(!container) return;
+                container.innerHTML += `
+                    <div class="dish-card glow-card bg-[#0b0f19]/60 border border-white/[0.03] p-4 rounded-2xl flex justify-between items-center transition-all duration-300" data-name="${item.name.toLowerCase()}">
+                        <div>
+                            <h3 class="font-bold text-slate-100 text-sm md:text-base tracking-tight">${item.name}</h3>
+                            <p class="text-orange-500 font-black text-sm mt-0.5">₹${item.price}</p>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold rounded-xl flex items-center justify-center border border-white/5 transition hidden">-</button>
+                            <span id="qty-${item.id}" class="font-black text-sm text-white hidden">0</span>
+                            <button onclick="changeQty(${item.id}, 1)" class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 text-black font-black text-lg rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-md shadow-orange-500/10">
+                                <i class="fa-solid fa-plus text-xs text-white"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function changeQty(id, delta) {
+            const item = fullMenu.find(i => i.id === id);
+            if (!cart[id]) cart[id] = { name: item.name, price: item.price, qty: 0 };
+            cart[id].qty += delta;
+            if (cart[id].qty <= 0) delete cart[id];
+            updateCartUI(id, delta);
+        }
+
+        function updateCartUI(id, delta) {
+            const qtyText = document.getElementById(`qty-${id}`);
+            const minusBtn = document.getElementById(`minus-${id}`);
+            const currentQty = cart[id] ? cart[id].qty : 0;
+
+            if (qtyText && minusBtn) {
+                if (currentQty > 0) {
+                    qtyText.innerText = currentQty;
+                    qtyText.classList.remove('hidden');
+                    minusBtn.classList.remove('hidden');
+                } else {
+                    qtyText.classList.add('hidden');
+                    minusBtn.classList.add('hidden');
+                }
+            }
+
+            let totalItems = 0;
+            let totalPrice = 0;
+            Object.keys(cart).forEach(key => {
+                totalItems += cart[key].qty;
+                totalPrice += (cart[key].price * cart[key].qty);
+            });
+
+            const badge = document.getElementById('cart-count');
+            const bar = document.getElementById('checkout-bar');
+            
+            if (totalItems > 0) {
+                badge.innerText = totalItems;
+                badge.classList.remove('hidden');
+                if (delta > 0) {
+                    bar.classList.remove('translate-y-full');
+                }
+                document.getElementById('cart-summary').innerText = `${totalItems} ${totalItems === 1 ? 'Dish' : 'Dishes'} Selected`;
+                document.getElementById('cart-total').innerText = `₹${totalPrice}`;
+            } else {
+                badge.classList.add('hidden');
+                bar.classList.add('translate-y-full');
+            }
+            validateOnlineLock();
+        }
+
+        function openCartDrawer() {
+            let totalItems = 0;
+            Object.keys(cart).forEach(key => totalItems += cart[key].qty);
+            if (totalItems > 0) {
+                document.getElementById('checkout-bar').classList.remove('translate-y-full');
+            } else {
+                alert("Aapka basket khali hai! Pehle menu se items select karein.");
+            }
+        }
+
+        function closeCartDrawer() {
+            document.getElementById('checkout-bar').classList.add('translate-y-full');
+        }
+
+        function togglePaymentView(method) {
+            selectedMethod = method;
+            const payBlock = document.getElementById('online-pay-block');
+            const labelCod = document.getElementById('label-cod');
+            const labelOnline = document.getElementById('label-online');
+
+            if (method === 'Online') {
+                payBlock.classList.remove('hidden');
+                labelOnline.className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3 rounded-2xl cursor-pointer transition-all shadow-md";
+                labelCod.className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3 rounded-2xl cursor-pointer transition-all";
+            } else {
+                payBlock.classList.add('hidden');
+                labelCod.className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3 rounded-2xl cursor-pointer transition-all shadow-md";
+                labelOnline.className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3 rounded-2xl cursor-pointer transition-all";
+            }
+            validateOnlineLock();
+        }
+
+        function validateOnlineLock() {
+            const btn = document.getElementById('checkout-btn');
+            const utrInput = document.getElementById('utr-input').value.trim();
+            const alertBox = document.getElementById('utr-alert');
+
+            if (selectedMethod === 'Online') {
+                if (utrInput.length < 4) {
+                    btn.disabled = true;
+                    btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 cursor-not-allowed opacity-60";
+                    alertBox.innerHTML = "<i class='fa-solid fa-lock text-red-400'></i> Enter Transaction ID to unlock WhatsApp button";
+                    alertBox.className = "text-[10px] font-bold text-red-400 mt-1.5";
+                } else {
+                    btn.disabled = false;
+                    btn.className = "w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4 rounded-2xl font-extrabold text-base flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-lg tracking-wide";
+                    alertBox.innerHTML = "<i class='fa-solid fa-lock-open text-emerald-400'></i> Payment details locked successfully! Ready to send.";
+                    alertBox.className = "text-[10px] font-bold text-emerald-400 mt-1.5";
+                }
+            } else {
+                btn.disabled = false;
+                btn.className = "w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4 rounded-2xl font-extrabold text-base flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-lg tracking-wide";
+            }
+        }
+
+        function searchDish() {
+            const input = document.getElementById('search-bar').value.toLowerCase();
+            const cards = document.getElementsByClassName('dish-card');
+            for (let i = 0; i < cards.length; i++) {
+                if (!cards[i].getAttribute('data-name').includes(input)) {
+                    cards[i].style.display = "none";
+                } else {
+                    cards[i].style.display = "flex";
+                }
+            }
+        }
+
+        function sendOrder() {
+            if (Object.keys(cart).length === 0) return;
+            let orderText = "🍽️ *NEW ONLINE ORDER - SECOND WIFE*%0A━━━━━━━━━━━━━━━━━━━━%0A";
+            let index = 1;
+            let finalTotal = 0;
+
+            Object.keys(cart).forEach(key => {
+                const item = cart[key];
+                const itemTotal = item.price * item.qty;
+                finalTotal += itemTotal;
+                orderText += `${index}. *${item.name}* [x${item.qty}] - ₹${itemTotal}%0A`;
+                index++;
+            });
+
+            orderText += "━━━━━━━━━━━━━━━━━━━━%0A";
+            
+            if (selectedMethod === 'Online') {
+                const utrVal = document.getElementById('utr-input').value.trim();
+                orderText += `💳 *PAYMENT MODE:* 🟢 *ONLINE UPI QR PAID*%0A`;
+                orderText += `🆔 *TXN / UTR NO:* \`${utrVal}\`%0A`;
+            } else {
+                orderText += `💳 *PAYMENT MODE:* 🔴 *CASH ON DELIVERY (COD)*%0A`;
+            }
+
+            orderText += `💰 *TOTAL AMOUNT: ₹${finalTotal}*%0A━━━━━━━━━━━━━━━━━━━━%0APlease process my order!`;
+            
+            const targetNumber = "918467895365";
+            window.open(`https://wa.me/${targetNumber}?text=${orderText}`, '_blank');
+        }
+
+        window.onload = renderMenu;
+    </script>
+</body>
+</html>
