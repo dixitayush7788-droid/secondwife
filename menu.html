@@ -28,7 +28,7 @@
     <div class="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-gradient-to-tr from-orange-600/10 to-transparent rounded-full blur-[140px] pointer-events-none z-0 drift"></div>
     <div class="fixed bottom-[10%] right-[-10%] w-[50vw] h-[50vw] bg-gradient-to-br from-blue-600/5 to-orange-500/10 rounded-full blur-[120px] pointer-events-none z-0 drift" style="animation-delay: -5s;"></div>
 
-    <div id="mini-tracker-bar" class="fixed bottom-6 right-4 left-4 sm:left-auto sm:w-80 bg-slate-950/95 border border-orange-500/40 p-4 rounded-2xl shadow-2xl flex items-center justify-between z-50 hidden cursor-pointer secure-pulse" onclick="maximizeTrackingViewNode()">
+    <div id="mini-tracker-bar" class="fixed bottom-6 right-4 left-4 sm:left-auto sm:w-80 glass-header border border-orange-500/40 p-4 rounded-2xl shadow-2xl flex items-center justify-between z-50 hidden transition-all duration-300 hover:border-orange-500 cursor-pointer secure-pulse" onclick="maximizeTrackingViewNode()">
         <div class="flex items-center gap-3 truncate">
             <div class="h-9 w-9 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-500 flex-shrink-0">
                 <i class="fa-solid fa-bowl-food animate-pulse text-sm"></i>
@@ -55,14 +55,14 @@
                 <div onclick="openHistoryDrawerNode()" class="bg-white/[0.01] border border-white/5 p-4 rounded-2xl shadow-xl transition active:scale-90 hover:border-orange-500/30 cursor-pointer text-slate-400 hover:text-white">
                     <i class="fa-solid fa-clock-rotate-left text-lg"></i>
                 </div>
-                <div onclick="openCartDrawer()" class="relative bg-white/[0.01] border border-white/5 p-4 rounded-2xl shadow-2xl transition active:scale-90 hover:border-orange-500/30 cursor-pointer group secure-pulse">
+                <div onclick="openCartDrawer()" class="relative bg-white/[0.01] border border-white/5 p-4 rounded-2xl shadow-2xl transition active:scale-90 cursor-pointer group secure-pulse">
                     <i class="fa-solid fa-basket-shopping text-xl text-orange-500"></i>
                     <span id="cart-count" class="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-red-600 text-black text-[10px] font-black h-5 w-5 rounded-full flex items-center justify-center hidden border border-[#030712]">0</span>
                 </div>
             </div>
         </nav>
 
-        <div class="sticky top-[80px] z-40 glass-header border-b border-white/[0.02] py-3 px-4 overflow-x-auto hide-scrollbar flex gap-2.5">
+        <div class="sticky top-[75px] z-40 glass-header border-b border-white/[0.02] py-3 px-4 overflow-x-auto hide-scrollbar flex gap-2.5">
             <button onclick="scrollToSection('section-biryani', this)" class="category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap">🍲 Biryani Special</button>
             <button onclick="scrollToSection('section-thali', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍽️ Thali Menu</button>
             <button onclick="scrollToSection('section-main', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍛 Main Course</button>
@@ -127,7 +127,7 @@
         </div>
         
         <button id="tracking-exit-btn" onclick="minimizeTrackingViewNode()" class="mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50 transition">
-            <i class="fa-solid fa-house-chimney"></i> Back to Menu (Keep Tracking)
+            <i class="fa-solid fa-house-chimney"></i> Back to Menu
         </button>
     </div>
 
@@ -136,9 +136,7 @@
             <span class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em] flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left"></i> Your Past Orders History</span>
             <button onclick="document.getElementById('history-drawer').classList.add('translate-y-full')" class="h-8 w-8 bg-slate-900 border border-white/5 text-slate-400 hover:text-orange-500 font-bold rounded-full flex items-center justify-center transition active:scale-90">✕</button>
         </div>
-        <div class="w-full max-w-md space-y-3 overflow-y-auto pr-1" id="history-items-container">
-            <p class="text-center text-xs text-slate-500 py-8">No previous orders logged from this phone terminal node.</p>
-        </div>
+        <div class="w-full max-w-md space-y-3 overflow-y-auto pr-1" id="history-items-container"></div>
     </div>
 
     <div id="checkout-bar" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[95vh] overflow-y-auto shadow-2xl max-w-xl mx-auto">
@@ -158,18 +156,18 @@
         </div>
 
         <div class="w-full max-w-md bg-slate-900/60 border border-white/5 p-4 rounded-2xl mb-4 space-y-3 text-left">
-            <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest"><i class="fa-solid fa-user-pen"></i> Customer Details Required:</p>
+            <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest"><i class="fa-solid fa-user-pen"></i> Enter Customer Identity Info:</p>
             <input type="text" id="cust-name" onkeyup="validateFormStateNode()" placeholder="Aapka Naam (Your Name)..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold">
             <input type="tel" id="cust-phone" maxlength="10" onkeyup="validateFormStateNode()" placeholder="10-Digit Mobile Number..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-mono font-bold">
             
             <div class="grid grid-cols-2 gap-2.5 pt-1">
-                <button type="button" id="tab-srv-dine" onclick="setServiceModeTypeNode('DineIn')" class="bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl transition">🍽️ Dine-In / Table</button>
-                <button type="button" id="tab-srv-delv" onclick="setServiceModeTypeNode('Delivery')" class="bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl transition">🚀 Home Delivery</button>
+                <button type="button" id="tab-srv-dine" onclick="setServiceModeTypeNode('DineIn')" class="bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl transition w-full">Dine-In / Table</button>
+                <button type="button" id="tab-srv-delv" onclick="setServiceModeTypeNode('Delivery')" class="bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl transition w-full">Home Delivery</button>
             </div>
 
             <div id="geo-location-container" class="hidden flex justify-between items-center pt-1 gap-2">
-                <button type="button" onclick="fetchNativeGPSCoordinatesNode(this)" class="bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold text-[10px] px-3 py-2 rounded-xl transition w-full"><i class="fa-solid fa-location-crosshairs animate-pulse"></i> 📍 Use Current Location</button>
-                <button type="button" id="btn-prev-location-pill" onclick="injectCachedPastAddressNode()" class="hidden bg-orange-500/10 border border-orange-500/20 text-orange-400 font-black text-[10px] px-3 py-2 rounded-xl transition w-full truncate"><i class="fa-solid fa-clock-rotate-left"></i> 🕒 Purana Address</button>
+                <button type="button" onclick="fetchNativeGPSCoordinatesNode(this)" class="bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold text-[10px] px-3 py-2 rounded-xl transition w-full">📍 Use Current GPS Location</button>
+                <button type="button" id="btn-prev-location-pill" onclick="injectCachedPastAddressNode()" class="hidden bg-orange-500/10 border border-orange-500/20 text-orange-400 font-black text-[10px] px-3 py-2 rounded-xl transition w-full truncate">🕒 Purana Address</button>
             </div>
             <input type="text" id="cust-loc" onkeyup="validateFormStateNode()" placeholder="Table Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold">
         </div>
@@ -183,11 +181,11 @@
             <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Select Payment Mode:</p>
             <div class="grid grid-cols-2 gap-3">
                 <label class="flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer" id="label-cod">
-                    <input type="radio" name="payment-method" value="COD" checked onclick="togglePaymentView('COD')" class="accent-orange-500 h-4 w-4">
+                    <input type="radio" name="payment-method" value="COD" checked onclick="togglePaymentView('COD')">
                     <span class="font-bold text-xs text-white">Cash On Delivery</span>
                 </label>
                 <label class="flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer" id="label-online">
-                    <input type="radio" name="payment-method" value="Online" onclick="togglePaymentView('Online')" class="accent-orange-500 h-4 w-4">
+                    <input type="radio" name="payment-method" value="Online" onclick="togglePaymentView('Online')">
                     <span class="font-bold text-xs text-white">Online UPI QR</span>
                 </label>
             </div>
@@ -195,23 +193,24 @@
 
         <div id="online-pay-block" class="w-full max-w-md hidden transition-all duration-300">
             <div id="qr-box" class="w-full bg-white text-black p-5 rounded-2xl flex flex-col items-center justify-center mb-4 border border-slate-200">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Scan QR code to pay bill</p>
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" alt="UPI QR" class="w-40 h-40 object-contain">
-                <p class="text-xs font-black text-emerald-600 mt-2.5 flex items-center gap-1.5 animate-pulse"><i class="fa-solid fa-qrcode"></i> SCAN VIA ANY UPI APP</p>
+                <p class="text-xs font-black text-emerald-600 mt-2.5 animate-pulse">SCAN VIA ANY UPI APP</p>
             </div>
             <div class="w-full bg-slate-900 border border-white/5 p-4 rounded-2xl mb-4">
-                <label class="block text-[9px] font-black text-orange-400 uppercase tracking-widest mb-1.5">Enter Payment UTR / Transaction ID:</label>
-                <input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 transition-all">
-                <p id="utr-alert" class="text-[9px] font-bold text-red-400 mt-1.5"><i class="fa-solid fa-lock"></i> Payment detail verify hone tak button lock rahega</p>
+                <input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold">
             </div>
         </div>
 
-        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-3 cursor-not-allowed opacity-60" disabled>
-            <i class="fa-solid fa-fire text-lg"></i> REALIZE REALTIME CLOUD ORDER
-        </button>
+        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-3 cursor-not-allowed opacity-60" disabled>REALIZE REALTIME CLOUD ORDER</button>
     </div>
 
     <script>
+        const firebaseConfig = { databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        window.cart = {}; window.selectedMethod = "COD"; window.serviceModeTypeNode = "DineIn";
+
         const fullMenu = [
             { id: 1, cat: "biryani", name: "Veg Biryani", price: 199 },
             { id: 2, cat: "biryani", name: "Soya Chaap Biryani", price: 229 },
@@ -269,9 +268,6 @@
             { id: 54, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
         ];
 
-        const db = firebase.initializeApp({ databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" }).database();
-        window.selectedMethod = "COD"; window.serviceModeTypeNode = "DineIn";
-
         function renderInterfaceMenuRoom() {
             ['biryani', 'thali', 'main', 'starters', 'breads', 'snacks', 'rice', 'side'].forEach(c => {
                 const container = document.getElementById(`${c}-container`); if(container) container.innerHTML = "";
@@ -296,19 +292,12 @@
             });
 
             db.ref('menu_stock').on('value', (snapshot) => {
-                const stockData = snapshot.val() || {};
+                const stock = snapshot.val() || {};
                 fullMenu.forEach(item => {
-                    const cardNode = document.getElementById(`dish-node-card-${item.id}`);
-                    const plusBtn = document.getElementById(`plus-btn-node-${item.id}`);
-                    const priceTag = document.getElementById(`price-tag-node-${item.id}`);
-                    if(cardNode && plusBtn && priceTag) {
-                        if(stockData[item.id] === false) {
-                            cardNode.classList.add('opacity-30', 'pointer-events-none'); plusBtn.disabled = true;
-                            priceTag.innerHTML = `<span class="text-red-500 text-[10px] font-black uppercase tracking-wider bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">Out of Stock</span>`;
-                        } else {
-                            cardNode.classList.remove('opacity-30', 'pointer-events-none'); plusBtn.disabled = false;
-                            priceTag.innerHTML = `₹${item.price}`;
-                        }
+                    const card = document.getElementById(`dish-node-card-${item.id}`); const btn = document.getElementById(`plus-btn-node-${item.id}`); const tag = document.getElementById(`price-tag-node-${item.id}`);
+                    if(card && btn && tag) {
+                        if(stock[item.id] === false) { card.classList.add('opacity-30', 'pointer-events-none'); btn.disabled = true; tag.innerHTML = `<span class="text-red-500 text-[10px] font-black uppercase">Out of Stock</span>`; }
+                        else { card.classList.remove('opacity-30', 'pointer-events-none'); btn.disabled = false; tag.innerHTML = `₹${item.price}`; }
                     }
                 });
             });
@@ -318,18 +307,18 @@
             const item = fullMenu.find(i => i.id === id); if (!window.cart[id]) window.cart[id] = { name: item.name, price: item.price, qty: 0 };
             window.cart[id].qty += delta; if (window.cart[id].qty <= 0) delete window.cart[id];
             
-            const qtyText = document.getElementById(`qty-${id}`); const minusBtn = document.getElementById(`minus-${id}`);
-            const currentQty = window.cart[id] ? window.cart[id].qty : 0;
-            if (qtyText && minusBtn) { if (currentQty > 0) { qtyText.innerText = currentQty; qtyText.classList.remove('hidden'); minusBtn.classList.remove('hidden'); } else { qtyText.classList.add('hidden'); minusBtn.classList.add('hidden'); } }
-            
-            let totalItems = 0; let totalPrice = 0; Object.keys(window.cart).forEach(key => { totalItems += window.cart[key].qty; totalPrice += (window.cart[key].price * window.cart[key].qty); });
+            const qTxt = document.getElementById(`qty-${id}`); const mBtn = document.getElementById('minus-' + id);
+            const curr = window.cart[id] ? window.cart[id].qty : 0;
+            if(qTxt && mBtn) { if(curr > 0) { qTxt.innerText = curr; qTxt.classList.remove('hidden'); mBtn.classList.remove('hidden'); } else { qTxt.classList.add('hidden'); mBtn.classList.add('hidden'); } }
+
+            let tItems = 0; let tPrice = 0; Object.keys(window.cart).forEach(k => { tItems += window.cart[k].qty; tPrice += (window.cart[k].price * window.cart[k].qty); });
             const badge = document.getElementById('cart-count'); const bar = document.getElementById('checkout-bar');
-            if (totalItems > 0) { badge.innerText = totalItems; badge.classList.remove('hidden'); if (delta > 0) { bar.classList.remove('translate-y-full'); } document.getElementById('cart-summary').innerText = `${totalItems} Dishes Selected`; document.getElementById('cart-total').innerText = `₹${totalPrice}`; }
+            if(tItems > 0) { badge.innerText = tItems; badge.classList.remove('hidden'); if(delta > 0) bar.classList.remove('translate-y-full'); document.getElementById('cart-summary').innerText = `${tItems} Dishes Selected`; document.getElementById('cart-total').innerText = `₹${tPrice}`; }
             else { badge.classList.add('hidden'); bar.classList.add('translate-y-full'); }
 
             const pBar = document.getElementById('delivery-progress'); const msg = document.getElementById('delivery-msg');
-            if(totalPrice < 100) { pBar.style.width = `${totalPrice}%`; msg.innerHTML = `Shop ₹${100 - totalPrice} more to unlock delivery`; }
-            else if (totalPrice < 299) { pBar.style.width = `${(totalPrice/299)*100}%`; msg.innerHTML = `Add ₹${299 - totalPrice} for FREE delivery!`; }
+            if(tPrice < 100) { pBar.style.width = `${tPrice}%`; msg.innerHTML = `Shop ₹${100 - tPrice} more to unlock delivery`; }
+            else if(tPrice < 299) { pBar.style.width = `${(tPrice/299)*100}%`; msg.innerHTML = `Add ₹${299 - tPrice} for FREE delivery!`; }
             else { pBar.style.width = '100%'; msg.innerHTML = "🎉 FREE delivery unlocked!"; }
             validateFormStateNode();
         }
@@ -346,36 +335,22 @@
                 btnDelv.className = "bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl transition w-full";
                 btnDine.className = "bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl transition w-full";
                 locInput.placeholder = "Full Home Delivery Address daalein..."; geoBox.classList.remove('hidden');
-                const savedAddress = localStorage.getItem('sw_cached_delivery_address');
-                if(savedAddress) { const pillBtn = document.getElementById('btn-prev-location-pill'); pillBtn.classList.remove('hidden'); pillBtn.title = savedAddress; }
+                const saved = localStorage.getItem('sw_cached_delivery_address');
+                if(saved) { document.getElementById('btn-prev-location-pill').classList.remove('hidden'); }
             }
             locInput.value = ""; validateFormStateNode();
         }
 
-        // AUTO HTTPS FAILSAFE DEVICE GEOLOCATION DECODER
         window.fetchNativeGPSCoordinatesNode = function(btn) {
-            if (!navigator.geolocation) return alert("GPS is not supported."); const originalHTML = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Fetching Location...`;
-            
-            // Reconfigured precision matrix logic to bypass automatic browser security drops
-            navigator.geolocation.getCurrentPosition(async (position) => {
+            if (!navigator.geolocation) return alert("GPS is not supported."); const old = btn.innerHTML;
+            btn.innerHTML = "Tracking GPS...";
+            navigator.geolocation.getCurrentPosition(async (p) => {
                 try {
-                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}&addressdetails=1`);
-                    const data = await response.json();
-                    if(data && data.display_name) {
-                        document.getElementById('cust-loc').value = data.display_name;
-                    } else {
-                        document.getElementById('cust-loc').value = `Kanpur (GPS: ${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)})`;
-                    }
-                } catch (error) { 
-                    document.getElementById('cust-loc').value = `Kanpur Layout Area Coords Node`;
-                }
-                btn.innerHTML = originalHTML; validateFormStateNode();
-            }, (err) => {
-                // Tactical Failsafe Layer: Browser location permission blocks handle
-                alert("GPS Denied! Please setting check karein ya address manually type karein.");
-                btn.innerHTML = originalHTML;
-            }, { enableHighAccuracy: true, timeout: 7000 });
+                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
+                    const d = await r.json(); document.getElementById('cust-loc').value = d.display_name || "Kanpur GPS Location";
+                } catch(e) { document.getElementById('cust-loc').value = `GPS Coords Locked`; }
+                btn.innerHTML = old; validateFormStateNode();
+            }, () => { alert("GPS Denied! Turn location services on."); btn.innerHTML = old; }, { enableHighAccuracy: true });
         }
 
         window.injectCachedPastAddressNode = function() { document.getElementById('cust-loc').value = localStorage.getItem('sw_cached_delivery_address'); validateFormStateNode(); }
@@ -383,108 +358,98 @@
         window.closeCartDrawer = function() { document.getElementById('checkout-bar').classList.add('translate-y-full'); }
 
         window.togglePaymentView = function(method) {
-            window.selectedMethod = method; const payBlock = document.getElementById('online-pay-block');
-            if (method === 'Online') { payBlock.classList.remove('hidden'); document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer w-full"; document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer w-full"; }
-            else { payBlock.classList.add('hidden'); document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer w-full"; document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer w-full"; }
+            window.selectedMethod = method; const block = document.getElementById('online-pay-block');
+            if(method === 'Online') { block.classList.remove('hidden'); document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer w-full"; document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900 border-2 border-transparent p-3.5 rounded-2xl cursor-pointer w-full"; }
+            else { block.classList.add('hidden'); document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer w-full"; document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900 border-2 border-transparent p-3.5 rounded-2xl cursor-pointer w-full"; }
             validateFormStateNode();
         }
 
         window.validateFormStateNode = function() {
-            const btn = document.getElementById('checkout-btn'); 
-            const name = document.getElementById('cust-name').value.trim();
-            const phone = document.getElementById('cust-phone').value.trim(); 
-            const location = document.getElementById('cust-loc').value.trim();
-            const utrInput = document.getElementById('utr-input').value.trim();
+            const btn = document.getElementById('checkout-btn'); const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim(); const loc = document.getElementById('cust-loc').value.trim();
+            const utr = document.getElementById('utr-input').value.trim();
             
-            let formIsValid = name.length >= 2 && phone.length === 10 && location.length >= 1;
-            let paymentIsValid = (window.selectedMethod === 'COD') || (window.selectedMethod === 'Online' && utrInput.length >= 4);
+            let formOk = name.length >= 2 && phone.length === 10 && loc.length >= 1;
+            let payOk = (window.selectedMethod === 'COD') || (window.selectedMethod === 'Online' && utr.length >= 4);
             
-            if (formIsValid && paymentIsValid && Object.keys(window.cart).length > 0) { 
-                btn.disabled = false; 
-                btn.className = "secure-pulse w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-3 tracking-wide cursor-pointer"; 
-            } else { 
-                btn.disabled = true; 
-                btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-3 cursor-not-allowed opacity-60"; 
-            }
+            if(formOk && payOk && Object.keys(window.cart).length > 0) { btn.disabled = false; btn.className = "w-full bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center tracking-wide cursor-pointer shadow-lg"; }
+            else { btn.disabled = true; btn.className = "w-full bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-3 cursor-not-allowed opacity-60"; }
         }
 
         window.sendOrder = function() {
-            let totalBill = 0; Object.keys(window.cart).forEach(key => totalBill += (window.cart[key].price * window.cart[key].qty));
-            const nameVal = document.getElementById('cust-name').value.trim(); 
-            const phoneVal = document.getElementById('cust-phone').value.trim(); 
-            const locVal = document.getElementById('cust-loc').value.trim(); 
-            const utrVal = window.selectedMethod === 'Online' ? document.getElementById('utr-input').value.trim() : "COD_MODE";
-            
-            let itemsString = ""; Object.keys(window.cart).forEach(key => { itemsString += `${window.cart[key].name} (x${window.cart[key].qty}), `; });
+            let total = 0; Object.keys(window.cart).forEach(k => total += (window.cart[k].price * window.cart[k].qty));
+            const name = document.getElementById('cust-name').value.trim(); const phone = document.getElementById('cust-phone').value.trim(); const loc = document.getElementById('cust-loc').value.trim(); const utr = window.selectedMethod === 'Online' ? document.getElementById('utr-input').value.trim() : "COD_MODE";
+            let itemsStr = ""; Object.keys(window.cart).forEach(k => { itemsStr += `${window.cart[k].name} (x${window.cart[k].qty}), `; });
 
-            db.ref('order_counter').transaction((c) => (c || 0) + 1).then((result) => {
-                if (result.committed) {
-                    const orderId = "SW-" + String(result.snapshot.val()).padStart(6, '0');
-                    
-                    // Fixed explicitly structural schema definition mapping to clear the isolation
-                    db.ref('orders/' + orderId).set({ 
-                        id: orderId, 
-                        items: itemsString, 
-                        total: totalBill, 
-                        payment: window.selectedMethod, 
-                        utr: utrVal, 
-                        status: "placed", 
-                        prepTime: 0, 
-                        custName: nameVal, 
-                        custPhone: phoneVal, 
-                        custType: window.serviceModeTypeNode, 
-                        custLoc: locVal, 
-                        timestamp: Date.now() 
-                    }).then(() => {
-                        localStorage.setItem('active_secondwife_order_id', orderId); localStorage.setItem('secondwife_tracker_state', 'full');
-                        if(window.serviceModeTypeNode === 'Delivery') localStorage.setItem('sw_cached_delivery_address', locVal);
-                        
-                        let orderHistory = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
-                        if(!orderHistory.includes(orderId)){ orderHistory.push(orderId); localStorage.setItem('secondwife_order_history', JSON.stringify(orderHistory)); }
-                        launchOrderTrackingInterfaceNode(orderId);
+            db.ref('order_counter').transaction(c => (c || 0) + 1).then(res => {
+                if(res.committed) {
+                    const id = "SW-" + String(res.snapshot.val()).padStart(6, '0');
+                    db.ref('orders/' + id).set({ id, items: itemsStr, total, payment: window.selectedMethod, utr, status: "placed", prepTime: 0, custName: name, custPhone: phone, custType: window.serviceModeTypeNode, custLoc: loc, timestamp: Date.now() }).then(() => {
+                        localStorage.setItem('active_secondwife_order_id', id); localStorage.setItem('secondwife_tracker_state', 'full');
+                        if(window.serviceModeTypeNode === 'Delivery') localStorage.setItem('sw_cached_delivery_address', loc);
+                        let hist = JSON.parse(localStorage.getItem('secondwife_order_history')) || []; if(!hist.includes(id)){ hist.push(id); localStorage.setItem('secondwife_order_history', JSON.stringify(hist)); }
+                        launchOrderTrackingInterfaceNode(id);
                     });
                 }
             });
         }
 
-        window.launchOrderTrackingInterfaceNode = function(orderId) {
-            document.getElementById('store-front-view').classList.add('hidden'); document.getElementById('checkout-bar').classList.add('translate-y-full'); document.getElementById('mini-tracker-bar').classList.add('hidden'); document.getElementById('tracking-screen-view').classList.remove('hidden'); document.getElementById('track-order-id').innerText = `Order ID: ${orderId}`; listenToOrderLive(orderId);
+        window.launchOrderTrackingInterfaceNode = function(id) {
+            document.getElementById('store-front-view').classList.add('hidden'); document.getElementById('checkout-bar').classList.add('translate-y-full'); document.getElementById('mini-tracker-bar').classList.add('hidden'); document.getElementById('tracking-screen-view').classList.remove('hidden'); document.getElementById('track-order-id').innerText = `Order ID: ${id}`; listenToOrderLive(id);
         }
 
-        function listenToOrderLive(orderId) {
-            db.ref('orders/' + orderId).on('value', (snapshot) => {
-                const data = snapshot.val(); if(!data) return;
-                const status = data.status; const pCard = document.getElementById('status-card-glow'); const miniStatusText = document.getElementById('mini-status-text'); const exitBtn = document.getElementById('tracking-exit-btn');
-                resetTrackingUIVisuals();
-                if(status === 'placed') { activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-amber-500', 'text-amber-400'); pCard.className = "absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-2xl"; miniStatusText.innerText = "Order Placed"; exitBtn.setAttribute('onclick', 'minimizeTrackingViewNode()'); exitBtn.className = "mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50 transition"; exitBtn.innerHTML = "Back to Menu"; }
-                else if(status === 'cooking') { activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-emerald-500', 'text-emerald-400'); activateTrackingStep('step-cooking', 'icon-cooking', 'title-cooking', 'bg-orange-500 animate-bounce', 'text-orange-400 font-black'); pCard.className = "absolute top-0 right-0 w-32 h-32 bg-orange-500/30 rounded-full blur-2xl"; if(data.prepTime > 0) { document.getElementById('cooking-timer-text').innerHTML = `🔥 Chef are cooking. *Est: ${data.prepTime} Mins*`; miniStatusText.innerText = `Cooking (${data.prepTime}m)`; } else { miniStatusText.innerText = "Cooking"; } }
-                else if(status === 'dispatched') { activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-emerald-500', 'text-emerald-400'); activateTrackingStep('step-cooking', 'icon-cooking', 'title-cooking', 'bg-emerald-500', 'text-emerald-400'); activateTrackingStep('step-dispatched', 'icon-dispatched', 'title-dispatched', 'bg-blue-500 animate-pulse', 'text-blue-400 font-black'); pCard.className = "absolute top-0 right-0 w-32 h-32 bg-blue-500/30 rounded-full blur-2xl"; miniStatusText.innerText = "Out For Delivery 🚀"; }
-                else if(status === 'delivered') { activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-emerald-500', 'text-emerald-400'); activateTrackingStep('step-cooking', 'icon-cooking', 'title-cooking', 'bg-emerald-500', 'text-emerald-400'); activateTrackingStep('step-dispatched', 'icon-dispatched', 'title-dispatched', 'bg-emerald-500', 'text-emerald-400'); activateTrackingStep('step-delivered', 'icon-delivered', 'title-delivered', 'bg-emerald-500 secure-pulse', 'text-emerald-400 font-black'); pCard.className = "absolute top-0 right-0 w-32 h-32 bg-emerald-500/30 rounded-full blur-2xl"; miniStatusText.innerText = "Delivered ✓"; exitBtn.innerHTML = "Finish & Clear Order"; exitBtn.setAttribute('onclick', 'clearActiveOrderBackupTerminalNode()'); exitBtn.className = "mt-8 text-xs font-black text-black border border-emerald-500 px-6 py-3 rounded-xl bg-emerald-500 secure-pulse transition cursor-pointer"; }
+        function listenToOrderLive(id) {
+            db.ref('orders/' + id).on('value', (s) => {
+                const d = s.val(); if(!d) return;
+                const pCard = document.getElementById('status-card-glow'); const mini = document.getElementById('mini-status-text'); const exit = document.getElementById('tracking-exit-btn');
+                document.getElementById('step-placed').className = d.status==='placed'?"flex gap-4 items-start font-black text-amber-400 scale-105":"opacity-40 flex gap-4 items-start";
+                document.getElementById('step-cooking').className = d.status==='cooking'?"flex gap-4 items-start font-black text-orange-400 scale-105":"opacity-40 flex gap-4 items-start";
+                if(d.status==='cooking' && d.prepTime>0) document.getElementById('cooking-timer-text').innerHTML = `🔥 Chef are cooking. *Est: ${d.prepTime} Mins*`;
+                document.getElementById('step-dispatched').className = d.status==='dispatched'?"flex gap-4 items-start font-black text-blue-400 scale-105":"opacity-40 flex gap-4 items-start";
+                document.getElementById('step-delivered').className = d.status==='delivered'?"flex gap-4 items-start font-black text-emerald-400 scale-105":"opacity-40 flex gap-4 items-start";
+                
+                if(d.status==='placed') mini.innerText="Order Placed"; else if(d.status==='cooking') mini.innerText=`Cooking (${d.prepTime}m)`; else if(d.status==='dispatched') mini.innerText="Out For Delivery 🚀"; else if(d.status==='delivered') { mini.innerText="Delivered ✓"; exit.innerHTML = "Finish & Clear Order"; exit.setAttribute('onclick', 'clearActiveOrderBackupTerminalNode()'); exit.className = "mt-8 text-xs font-black text-black border border-emerald-500 px-6 py-3 rounded-xl bg-emerald-500 transition cursor-pointer w-full"; }
             });
         }
 
-        function resetTrackingUIVisuals() { ['step-placed', 'step-cooking', 'step-dispatched', 'step-delivered'].forEach(id => { document.getElementById(id).classList.add('opacity-40'); }); }
-        function activateTrackingStep(stepId, iconId, titleId, bgClass, textClass) { document.getElementById(stepId).classList.remove('opacity-40'); document.getElementById(iconId).className = `w-8 h-8 rounded-full ${bgClass.split(' ')[0]} flex items-center justify-center font-black text-sm text-black flex-shrink-0`; document.getElementById(titleId).className = `font-bold text-sm ${textClass}`; }
         window.minimizeTrackingViewNode = function() { localStorage.setItem('secondwife_tracker_state', 'mini'); document.getElementById('tracking-screen-view').classList.add('hidden'); document.getElementById('store-front-view').classList.remove('hidden'); document.getElementById('mini-tracker-bar').classList.remove('hidden'); }
-        window.maximizeTrackingViewNode = function() { const activeId = localStorage.getItem('active_secondwife_order_id'); if(activeId) { localStorage.setItem('secondwife_tracker_state', 'full'); launchOrderTrackingInterfaceNode(activeId); } }
+        window.maximizeTrackingViewNode = function() { const id = localStorage.getItem('active_secondwife_order_id'); if(id) { localStorage.setItem('secondwife_tracker_state', 'full'); launchOrderTrackingInterfaceNode(id); } }
         window.clearActiveOrderBackupTerminalNode = function() { localStorage.removeItem('active_secondwife_order_id'); localStorage.removeItem('secondwife_tracker_state'); window.location.reload(); }
 
         window.openHistoryDrawerNode = function() {
-            document.getElementById('history-drawer').classList.remove('translate-y-full'); const container = document.getElementById('history-items-container'); const historyList = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
-            if(historyList.length === 0) { container.innerHTML = `<p class="text-center text-xs text-slate-500 py-12">No past orders found.</p>`; return; }
+            document.getElementById('history-drawer').classList.remove('translate-y-full'); const container = document.getElementById('history-items-container'); const list = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
+            if(list.length === 0) { container.innerHTML = `<p class="text-center text-xs text-slate-500 py-12">No past orders found.</p>`; return; }
             container.innerHTML = `Syncing history...`;
-            Promise.all(historyList.map(id => db.ref('orders/' + id).once('value').then(snap => snap.val()))).then(results => {
-                container.innerHTML = ""; results.filter(r => r !== null).sort((a,b) => b.timestamp - a.timestamp).forEach(order => {
-                    container.innerHTML += `<div class="bg-slate-900 border border-white/5 rounded-xl p-4 text-xs mb-2"><div class="flex justify-between border-b border-white/5 pb-1 font-bold"><span>${order.id}</span><span class="text-orange-500">₹${order.total}</span></div><p class="text-slate-400 mt-1">${order.items}</p><p class="text-[10px] text-slate-500 mt-1">STATUS: ${order.status.toUpperCase()}</p></div>`;
+            Promise.all(list.map(id => db.ref('orders/' + id).once('value').then(snap => snap.val()))).then(res => {
+                container.innerHTML = ""; res.filter(r => r !== null).sort((a,b) => b.timestamp - a.timestamp).forEach(o => {
+                    container.innerHTML += `<div class="bg-slate-900 border border-white/5 rounded-xl p-4 text-xs mb-2"><div class="flex justify-between border-b border-white/5 pb-1 font-bold"><span>${o.id}</span><span class="text-orange-500">₹${o.total}</span></div><p class="text-slate-400 mt-1">${o.items}</p><p class="text-[10px] text-slate-500 mt-1">STATUS: ${o.status.toUpperCase()}</p></div>`;
                 });
             });
         }
 
-        window.scrollToSection = function(id, element) { const target = document.getElementById(id); if(target) { window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); } document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40"); element.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5"; }
-        window.searchDish = function() { const input = document.getElementById('search-bar').value.toLowerCase(); const cards = document.getElementsByClassName('dish-card'); for (let i = 0; i < cards.length; i++) { cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "flex" : "none"; } }
+        window.scrollToSection = function(id, el) { const target = document.getElementById(id); if(target) { window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); } document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40"); el.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5"; }
+        
+        window.searchDish = function() { 
+            const input = document.getElementById('search-bar').value.toLowerCase().trim(); 
+            const cards = document.getElementsByClassName('dish-card'); 
+            for (let i = 0; i < cards.length; i++) { 
+                cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "flex" : "none"; 
+            } 
+        }
 
-        const structuralCheckId = localStorage.getItem('active_secondwife_order_id'); const internalSavedViewState = localStorage.getItem('secondwife_tracker_state');
-        if(structuralCheckId) { if(internalSavedViewState === 'mini') { document.getElementById('store-front-view').classList.remove('hidden'); document.getElementById('mini-tracker-bar').classList.remove('hidden'); launchOrderTrackingInterfaceNode(structuralCheckId); document.getElementById('tracking-screen-view').classList.add('hidden'); } else { launchOrderTrackingInterfaceNode(structuralCheckId); } }
+        // PERFECT PERSISTENCE SECURITY INITIALIZATION - PREVENTS COLD BOOT BLANK SCREEN CRASH
+        const activeId = localStorage.getItem('active_secondwife_order_id'); 
+        const viewState = localStorage.getItem('secondwife_tracker_state');
+        if(activeId) { 
+            if(viewState === 'mini') { 
+                document.getElementById('store-front-view').classList.remove('hidden'); 
+                document.getElementById('mini-tracker-bar').classList.remove('hidden'); 
+                document.getElementById('tracking-screen-view').classList.add('hidden');
+                listenToOrderLive(activeId);
+            } else { 
+                launchOrderTrackingInterfaceNode(activeId); 
+            } 
+        }
 
         window.onload = renderInterfaceMenuRoom;
     </script>
