@@ -1,62 +1,66 @@
-// GitHub par menu.html ke andar ye updated sendOrder function use karein:
-window.sendOrder = function() {
-    let totalBill = 0;
-    Object.keys(window.cart).forEach(key => totalBill += (window.cart[key].price * window.cart[key].qty));
-    if(totalBill < 100) { alert(`Minimum order threshold is ₹100.`); return; }
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Second Wife Cafe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-4">
+    <h1 class="text-2xl font-bold">Second Wife Cafe Menu</h1>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, runTransaction, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const nameVal = document.getElementById('cust-input-name').value.trim();
-    const phoneVal = document.getElementById('cust-input-phone').value.trim();
-    const locVal = document.getElementById('cust-input-location').value.trim();
+        const firebaseConfig = { databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-    // VALIDATION CHECK
-    if(nameVal === "" || phoneVal.length < 10 || locVal === "") {
-        alert("Bhai, Name, Phone aur Address/Table bharo pehle!");
-        return;
-    }
+        window.sendOrder = function() {
+            let totalBill = 0;
+            Object.keys(window.cart).forEach(key => totalBill += (window.cart[key].price * window.cart[key].qty));
+            if(totalBill < 100) { alert(`Minimum order threshold is ₹100.`); return; }
 
-    let itemsString = "";
-    Object.keys(window.cart).forEach(key => { itemsString += `${window.cart[key].name} (x${window.cart[key].qty}), `; });
-    const utrVal = window.selectedMethod === 'Online' ? document.getElementById('utr-input').value.trim() : "COD_MODE";
+            const nameVal = document.getElementById('cust-input-name').value.trim();
+            const phoneVal = document.getElementById('cust-input-phone').value.trim();
+            const locVal = document.getElementById('cust-input-location').value.trim();
 
-    const counterRef = ref(db, 'order_counter');
-    runTransaction(counterRef, (currentValue) => {
-        return (currentValue || 0) + 1;
-    }).then((result) => {
-        if (result.committed) {
-            const nextOrderNum = result.snapshot.val();
-            const orderId = "SW-" + String(nextOrderNum).padStart(6, '0');
+            if(nameVal === "" || phoneVal.length < 10 || locVal === "") {
+                alert("Bhai, Name, Phone aur Address/Table bharo pehle!");
+                return;
+            }
 
-            // Data write operation
-            set(ref(db, 'orders/' + orderId), {
-                id: orderId,
-                items: itemsString,
-                total: totalBill,
-                payment: window.selectedMethod,
-                utr: utrVal,
-                status: "placed",
-                prepTime: 0,
-                custName: nameVal,
-                custPhone: phoneVal,
-                custType: window.serviceModeTypeNode || "DineIn",
-                custLoc: locVal,
-                timestamp: Date.now()
-            }).then(() => {
-                localStorage.setItem('active_secondwife_order_id', orderId);
-                localStorage.setItem('secondwife_tracker_state', 'full'); 
-                
-                let orderHistory = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
-                if(!orderHistory.includes(orderId)){
-                    orderHistory.push(orderId);
-                    localStorage.setItem('secondwife_order_history', JSON.stringify(orderHistory));
+            let itemsString = "";
+            Object.keys(window.cart).forEach(key => { itemsString += `${window.cart[key].name} (x${window.cart[key].qty}), `; });
+            const utrVal = window.selectedMethod === 'Online' ? document.getElementById('utr-input').value.trim() : "COD_MODE";
+
+            const counterRef = ref(db, 'order_counter');
+            runTransaction(counterRef, (currentValue) => {
+                return (currentValue || 0) + 1;
+            }).then((result) => {
+                if (result.committed) {
+                    const nextOrderNum = result.snapshot.val();
+                    const orderId = "SW-" + String(nextOrderNum).padStart(6, '0');
+
+                    set(ref(db, 'orders/' + orderId), {
+                        id: orderId,
+                        items: itemsString,
+                        total: totalBill,
+                        payment: window.selectedMethod,
+                        utr: utrVal,
+                        status: "placed",
+                        custName: nameVal,
+                        custPhone: phoneVal,
+                        custType: window.serviceModeTypeNode || "DineIn",
+                        custLoc: locVal,
+                        timestamp: Date.now()
+                    }).then(() => {
+                        localStorage.setItem('active_secondwife_order_id', orderId);
+                        alert("Order Successful!");
+                        window.location.reload();
+                    });
                 }
-                
-                // Success feedback
-                alert("Order Successful!");
-                launchOrderTrackingInterfaceNode(orderId);
-            }).catch((err) => {
-                console.error("Firebase Write Error:", err);
-                alert("Database Error: " + err.message);
             });
         }
-    });
-}
+    </script>
+</body>
+</html>
