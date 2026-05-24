@@ -18,7 +18,7 @@
     <div id="security-gate" class="fixed inset-0 z-[100] glass-gate flex flex-col items-center justify-center p-4 transition-all duration-500">
         <div class="w-full max-w-sm bg-slate-900/80 border border-white/10 rounded-3xl p-8 text-center shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-red-600"></div>
-            <div class="h-14 w-14 bg-orange-500/10 border border-orange-500/30 text-orange-500 rounded-2xl flex items-center justify-center text-xl mx-auto mb-5 shadow-lg space-y-2">
+            <div class="h-14 w-14 bg-orange-500/10 border border-orange-500/30 text-orange-500 rounded-2xl flex items-center justify-center text-xl mx-auto mb-5 shadow-lg">
                 <i class="fa-solid fa-user-shield"></i>
             </div>
             <h2 class="text-xl font-black text-white tracking-tight">KITCHEN AUTHENTICATION</h2>
@@ -54,10 +54,16 @@
             </div>
         </header>
 
-        <section id="inventory-stock-panel" class="max-w-4xl mx-auto bg-slate-950 border border-white/10 rounded-2xl p-5 mb-8 hidden transition-all duration-300">
-            <div class="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
-                <h2 class="text-sm font-black text-orange-400 tracking-wider uppercase"><i class="fa-solid fa-sliders mr-1.5"></i> Live Stock Control Room</h2>
-                <span class="text-[10px] font-bold text-slate-500">Turn toggle OFF to instant disable dish in menu</span>
+        <section id="inventory-stock-panel" class="max-w-4xl mx-auto bg-slate-950 border border-white/10 rounded-2xl p-5 mb-8 hidden transition-all duration-300 shadow-2xl">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-white/5 pb-4 mb-4 gap-3">
+                <div>
+                    <h2 class="text-sm font-black text-orange-400 tracking-wider uppercase flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> Live Stock Control Room</h2>
+                    <p class="text-[10px] font-bold text-slate-500 mt-0.5">Turn toggle OFF to instant disable dish in menu</p>
+                </div>
+                <div class="relative w-full sm:w-64 group">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600 text-xs transition-colors group-focus-within:text-orange-500"></i>
+                    <input type="text" id="stock-search-bar" onkeyup="searchStockDishNode()" placeholder="Dish ka naam dhoondein..." class="w-full bg-slate-900 border border-white/5 rounded-xl py-2.5 pl-9 pr-4 text-xs text-white focus:outline-none focus:border-orange-500/40 transition-all font-semibold placeholder-slate-600 focus:bg-slate-950">
+                </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1 hide-scrollbar" id="inventory-switches-loop">
                 </div>
@@ -127,15 +133,15 @@
             const container = document.getElementById('inventory-switches-loop');
             container.innerHTML = "";
             
-            // Sync current active stock snapshot state matrix from database node
             onValue(ref(db, 'menu_stock'), (snapshot) => {
                 const stockData = snapshot.val() || {};
                 container.innerHTML = "";
                 
                 adminMenuArray.forEach(item => {
-                    const isAvailable = stockData[item.id] !== false; // Default true if node undefined
+                    const isAvailable = stockData[item.id] !== false;
+                    // Added unique class names and lookup attributes data parameters to fuel quick search mappings
                     container.innerHTML += `
-                        <div class="bg-slate-900 border border-white/[0.03] px-4 py-3 rounded-xl flex items-center justify-between">
+                        <div class="stock-item-node-wrapper bg-slate-900 border border-white/[0.03] px-4 py-3 rounded-xl flex items-center justify-between transition-all duration-200" data-name="${item.name.toLowerCase()}">
                             <span class="text-xs font-bold text-slate-200">${item.name}</span>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer" ${isAvailable ? 'checked' : ''} onchange="mutateDishStockAvailabilityNode(${item.id}, this.checked)">
@@ -149,13 +155,16 @@
 
         window.mutateDishStockAvailabilityNode = function(dishId, checkState) {
             set(ref(db, `menu_stock/${dishId}`), checkState).then(() => {
-                console.log(`Dish ID ${dishId} availability synchronized status: ${checkState}`);
+                console.log(`Dish ${dishId} sync status: ${checkState}`);
             });
         }
 
         window.toggleInventoryControlPanelNode = function() {
             const panel = document.getElementById('inventory-stock-panel');
             panel.classList.toggle('hidden');
+            // Clear input context dynamically upon pane closure requests
+            document.getElementById('stock-search-bar').value = "";
+            searchStockDishNode();
         }
 
         function initializeDatabaseIncomingStreamNode() {
@@ -213,13 +222,25 @@
         let customAudioUncachedContext = null;
         let globalWakeLockAnchorInstance = null;
 
+        // Dynamic multi-element live filter tracking function logic
+        window.searchStockDishNode = function() {
+            const input = document.getElementById('stock-search-bar').value.toLowerCase().trim();
+            const items = document.getElementsByClassName('stock-item-node-wrapper');
+            
+            for (let i = 0; i < items.length; i++) {
+                const dishName = items[i].getAttribute('data-name');
+                if (dishName.includes(input)) {
+                    items[i].style.display = "flex";
+                } else {
+                    items[i].style.display = "none";
+                }
+            }
+        }
+
         async function requestScreenWakeLockMatrixNode() {
             try {
-                if ('wakeLock' in navigator) {
-                    globalWakeLockAnchorInstance = await navigator.wakeLock.request('screen');
-                    document.getElementById('wake-lock-status').classList.remove('hidden');
-                }
-            } catch (err) { console.log("Wake Lock issue:", err.message); }
+                if ('wakeLock' in navigator) { globalWakeLockAnchorInstance = await navigator.wakeLock.request('screen'); document.getElementById('wake-lock-status').classList.remove('hidden'); }
+            } catch (err) { console.log(err.message); }
         }
 
         document.addEventListener('visibilitychange', async () => {
@@ -232,8 +253,7 @@
                 btnElement.className = "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2";
                 btnElement.innerHTML = `<i class="fa-solid fa-bell"></i> SOUND ENGINE ONLINE`;
                 btnElement.disabled = true;
-                let osc = customAudioUncachedContext.createOscillator();
-                osc.connect(customAudioUncachedContext.destination); osc.start(0); osc.stop(0.1);
+                let osc = customAudioUncachedContext.createOscillator(); osc.connect(customAudioUncachedContext.destination); osc.start(0); osc.stop(0.1);
             } catch(e) { console.error(e); }
         }
 
