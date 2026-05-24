@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECOND WIFE | Admin Control Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+</head>
+<body class="bg-[#020617] text-slate-100 min-h-screen p-6">
+
+    <header class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-white/5 pb-5 mb-8 gap-4">
+        <div>
+            <h1 class="text-2xl font-black text-orange-500 tracking-tight">KITCHEN ADMIN DASHBOARD</h1>
+            <p class="text-xs text-slate-400 mt-1">Second Wife Cafe Realtime Incoming Tracker Pipeline Node</p>
+        </div>
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button onclick="unlockAudioEngineSystem(this)" class="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-600 text-black font-black text-xs px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-lg animate-pulse" id="audio-lock-btn">
+                <i class="fa-solid fa-volume-high"></i> ACTIVATE AUDIO ALARM
+            </button>
+            <div class="hidden sm:flex bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-xs px-4 py-2.5 rounded-xl items-center gap-2 whitespace-nowrap">
+                <div class="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></div> LIVE PIPELINE LINKED
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto space-y-4" id="admin-orders-feed">
+        <div class="text-center text-slate-500 text-sm py-12" id="empty-state-msg">
+            <i class="fa-solid fa-spinner animate-spin text-xl text-orange-500 mb-3 block"></i>
+            Waiting for live orders from database node...
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = { databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let standardKnownOrderCount = 0;
+        let internalInitialLoadLock = true;
+
+        // Main Live Engine Node listener - handles zero refresh UI mutations
+        onValue(ref(db, 'orders'), (snapshot) => {
+            const data = snapshot.val();
+            const feed = document.getElementById('admin-orders-feed');
+            
+            if(!data) {
+                feed.innerHTML = `<div class="text-center text-slate-500 py-12">No active database records logged yet.</div>`;
+                return;
+            }
+
+            const emptyState = document.getElementById('empty-state-msg');
+            if(emptyState) emptyState.style.display = 'none';
+            feed.innerHTML = ""; 
+
+            const sortedIds = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp);
+            
+            // Check count shifts instantly and trigger ring system
+            if(!internalInitialLoadLock && sortedIds.length > standardKnownOrderCount) {
+                playAlertSoundNotification();
+            }
+            standardKnownOrderCount = sortedIds.length;
+            internalInitialLoadLock = false;
+
+            sortedIds.forEach(id => {
+                const order = data[id];
+                
+                let statusBadgeStyle = "bg-amber-500/10 border-amber-500/20 text-amber-400";
+                if(order.status === 'cooking') statusBadgeStyle = "bg-orange-500/10 border-orange-500/20 text-orange-400";
+                if(order.status === 'dispatched') statusBadgeStyle = "bg-blue-500/10 border-blue-500/20 text-blue-400";
+                if(order.status === 'delivered') statusBadgeStyle = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 opacity-40";
+
+                feed.innerHTML += `
+                    <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-5 flex flex-col md:flex-between gap-4 transition hover:border-white/10">
+                        <div class="flex justify-between items-start border-b border-white/5 pb-3">
+                            <div>
+                                <span class="text-xs font-black text-slate-500">ORDER REFF ID</span>
+                                <h3 class="text-base font-black text-white tracking-wide mt-0.5">${order.id}</h3>
+                            </div>
+                            <span class="text-[10px] font-black uppercase px-3 py-1 rounded-lg border ${statusBadgeStyle}">${order.status}</span>
+                        </div>
+                        
+                        <div class="py-2">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Dishes List Loaded:</p>
+                            <p class="text-sm font-semibold text-white mt-1 bg-slate-950 p-3 rounded-xl border border-white/[0.03]">${order.items}</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs font-bold text-slate-400 bg-slate-950/40 p-3 rounded-xl">
+                            <div>Total Payable: <span class="text-orange-500 font-extrabold text-sm block mt-0.5">₹${order.total}</span></div>
+                            <div>Method: <span class="text-white block mt-1">${order.payment}</span></div>
+                            <div class="col-span-2 md:col-span-1">UTR Link Reference: <span class="text-slate-300 block font-mono mt-1 text-[11px] truncate">${order.utr}</span></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mt-2">
+                            <button onclick="updateOrderStatus('${order.id}', 'cooking', 15)" class="bg-orange-500 text-black font-extrabold text-xs py-3 rounded-xl hover:bg-orange-600 transition active:scale-95">Accept (15m)</button>
+                            <button onclick="updateOrderStatus('${order.id}', 'cooking', 25)" class="bg-amber-500 text-black font-extrabold text-xs py-3 rounded-xl hover:bg-amber-600 transition active:scale-95">Accept (25m)</button>
+                            <button onclick="updateOrderStatus('${order.id}', 'dispatched', 0)" class="bg-blue-600 text-white font-extrabold text-xs py-3 rounded-xl hover:bg-blue-700 transition active:scale-95">Out For Delivery</button>
+                            <button onclick="updateOrderStatus('${order.id}', 'delivered', 0)" class="bg-emerald-600 text-white font-extrabold text-xs py-3 rounded-xl hover:bg-emerald-700 transition active:scale-95">Delivered ✓</button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        window.updateOrderStatus = function(id, nextStatus, timerMins) {
+            update(ref(db, 'orders/' + id), {
+                status: nextStatus,
+                prepTime: timerMins
+            }).then(() => console.log(`Pipeline mutation synced to child node ID ${id}`));
+        }
+    </script>
+
+    <script>
+        let customAudioUncachedContext = null;
+
+        // Force browser to unlock explicit audio streams bypassing sandbox restrictions
+        function unlockAudioEngineSystem(btnElement) {
+            try {
+                customAudioUncachedContext = new (window.AudioContext || window.webkitAudioContext)();
+                btnElement.className = "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2";
+                btnElement.innerHTML = `<i class="fa-solid fa-bell"></i> SOUND ENGINE ONLINE`;
+                btnElement.disabled = true;
+                
+                // Play dummy transient wave to assert execution privileges
+                let osc = customAudioUncachedContext.createOscillator();
+                osc.connect(customAudioUncachedContext.destination);
+                osc.start(0);
+                osc.stop(0.1);
+            } catch(e) { console.error("Audio activation error node context:", e); }
+        }
+
+        function playAlertSoundNotification() {
+            if(!customAudioUncachedContext) return;
+            try {
+                // High frequency dual-pulse restaurant order alarm mapping
+                let time = customAudioUncachedContext.currentTime;
+                
+                let osc1 = customAudioUncachedContext.createOscillator();
+                let gain1 = customAudioUncachedContext.createGain();
+                osc1.type = "sine";
+                osc1.frequency.setValueAtTime(987.77, time); // B5 Note
+                gain1.gain.setValueAtTime(0.4, time);
+                gain1.gain.exponentialRampToValueAtTime(0.01, time + 0.4);
+                osc1.connect(gain1);
+                gain1.connect(customAudioUncachedContext.destination);
+                osc1.start(time);
+                osc1.stop(time + 0.4);
+
+                let osc2 = customAudioUncachedContext.createOscillator();
+                let gain2 = customAudioUncachedContext.createGain();
+                osc2.type = "sine";
+                osc2.frequency.setValueAtTime(1318.51, time + 0.15); // E6 Note High chime
+                gain2.gain.setValueAtTime(0.4, time + 0.15);
+                gain2.gain.exponentialRampToValueAtTime(0.01, time + 0.55);
+                osc2.connect(gain2);
+                gain2.connect(customAudioUncachedContext.destination);
+                osc2.start(time + 0.15);
+                osc2.stop(time + 0.55);
+            } catch(e) { console.log("Sound engine firing error node block:", e); }
+        }
+    </script>
+</body>
+</html>
