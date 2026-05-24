@@ -139,7 +139,7 @@
         </div>
     </div>
 
-    <div id="checkout-bar" class="fixed bottom-0 left-0 right-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[90vh] overflow-y-auto shadow-2xl">
+    <div id="checkout-bar" class="fixed bottom-0 left-0 right-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[95vh] overflow-y-auto shadow-2xl">
         <div class="w-full max-w-md flex justify-between items-center mb-3 border-b border-white/5 pb-2.5">
             <span class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Review Basket</span>
             <button onclick="closeCartDrawer()" class="h-8 w-8 bg-slate-900 border border-white/5 text-slate-400 hover:text-orange-500 font-bold rounded-full flex items-center justify-center transition active:scale-90">✕</button>
@@ -155,12 +155,24 @@
             </div>
         </div>
 
-        <div class="w-full max-w-md flex justify-between items-center mb-5 px-1">
+        <div class="w-full max-w-md bg-slate-900/60 border border-white/5 p-4 rounded-2xl mb-4 space-y-3">
+            <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest">Customer Details Required:</p>
+            <input type="text" id="cust-input-name" onkeyup="validateOnlineLock()" placeholder="Aapka Naam (Your Name)..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 transition-all font-semibold">
+            <input type="tel" id="cust-input-phone" maxlength="10" onkeyup="validateOnlineLock()" placeholder="10-Digit Mobile Number..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 transition-all font-mono font-bold">
+            
+            <div class="grid grid-cols-2 gap-2.5 pt-1">
+                <button id="tab-srv-dine" onclick="setServiceModeTypeNode('DineIn')" class="bg-orange-500 text-black font-extrabold text-xs py-2.5 rounded-xl transition">🍽️ Dine-In / Table</button>
+                <button id="tab-srv-delv" onclick="setServiceModeTypeNode('Delivery')" class="bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl transition">🚀 Home Delivery</button>
+            </div>
+            <input type="text" id="cust-input-location" onkeyup="validateOnlineLock()" placeholder="Table Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 transition-all font-semibold">
+        </div>
+
+        <div class="w-full max-w-md flex justify-between items-center mb-4 px-1">
             <div><p id="cart-summary" class="text-xs font-semibold text-slate-300">0 Items Selected</p></div>
             <div class="text-right"><p id="cart-total" class="text-3xl font-black text-orange-500 brand-font-premium">₹0</p></div>
         </div>
 
-        <div class="w-full max-w-md mb-5">
+        <div class="w-full max-w-md mb-4">
             <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Select Payment Mode:</p>
             <div class="grid grid-cols-2 gap-3">
                 <label class="flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer" id="label-cod">
@@ -200,7 +212,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Core stock tracking listener engine - attached to window to solve DOM race condition
         window.initStockListenerNode = function() {
             onValue(ref(db, 'menu_stock'), (snapshot) => {
                 const stockData = snapshot.val() || {};
@@ -209,15 +220,12 @@
                         const cardNode = document.getElementById(`dish-node-card-${item.id}`);
                         const plusBtn = document.getElementById(`plus-btn-node-${item.id}`);
                         const priceTag = document.getElementById(`price-tag-node-${item.id}`);
-                        
                         if(cardNode && plusBtn && priceTag) {
                             if(stockData[item.id] === false) {
-                                cardNode.classList.add('opacity-30', 'pointer-events-none');
-                                plusBtn.disabled = true;
+                                cardNode.classList.add('opacity-30', 'pointer-events-none'); plusBtn.disabled = true;
                                 priceTag.innerHTML = `<span class="text-red-500 text-[10px] font-black uppercase tracking-wider bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20"><i class="fa-solid fa-ban text-[9px]"></i> Out of Stock</span>`;
                             } else {
-                                cardNode.classList.remove('opacity-30', 'pointer-events-none');
-                                plusBtn.disabled = false;
+                                cardNode.classList.remove('opacity-30', 'pointer-events-none'); plusBtn.disabled = false;
                                 priceTag.innerHTML = `₹${item.price}`;
                             }
                         }
@@ -231,6 +239,11 @@
             Object.keys(window.cart).forEach(key => totalBill += (window.cart[key].price * window.cart[key].qty));
             if(totalBill < 100) { alert(`Minimum order threshold is ₹100.`); return; }
 
+            // Pull validated string nodes explicitly out of display modules
+            const nameVal = document.getElementById('cust-input-name').value.trim();
+            const phoneVal = document.getElementById('cust-input-phone').value.trim();
+            const locVal = document.getElementById('cust-input-location').value.trim();
+
             let itemsString = "";
             Object.keys(window.cart).forEach(key => { itemsString += `${window.cart[key].name} (x${window.cart[key].qty}), `; });
             const utrVal = window.selectedMethod === 'Online' ? document.getElementById('utr-input').value.trim() : "COD_MODE";
@@ -243,6 +256,7 @@
                     const nextOrderNum = result.snapshot.val();
                     const orderId = "SW-" + String(nextOrderNum).padStart(6, '0');
 
+                    // Synchronize and write full customer identity directly to data structures
                     set(ref(db, 'orders/' + orderId), {
                         id: orderId,
                         items: itemsString,
@@ -251,6 +265,10 @@
                         utr: utrVal,
                         status: "placed",
                         prepTime: 0,
+                        custName: nameVal,
+                        custPhone: phoneVal,
+                        custType: window.serviceModeTypeNode,
+                        custLoc: locVal,
                         timestamp: Date.now()
                     }).then(() => {
                         localStorage.setItem('active_secondwife_order_id', orderId);
@@ -395,14 +413,13 @@
                     if(order.status === 'cooking') statusColor = "text-orange-400 bg-orange-500/10 border-orange-500/20";
                     if(order.status === 'dispatched') statusColor = "text-blue-400 bg-blue-500/10 border-blue-500/20";
                     if(order.status === 'delivered') statusColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-                    container.innerHTML += `<div class="bg-slate-900/90 border border-white/5 rounded-xl p-4 space-y-3"><div class="flex justify-between items-center text-[11px] border-b border-white/5 pb-2"><div><span class="font-black text-white block">${order.id}</span><span class="text-slate-500 font-medium block mt-0.5">${formattedDate}</span></div><span class="uppercase font-black text-[9px] px-2.5 py-1 rounded-md border ${statusColor}">${order.status}</span></div><div class="text-xs font-medium text-slate-300 bg-slate-950/60 p-2.5 rounded-lg border border-white/[0.02]">${order.items}</div><div class="flex justify-between items-center text-xs font-bold pt-1"><div class="text-slate-400">Mode: <span class="text-slate-200">${order.payment}</span></div><div class="text-right text-orange-500 font-black text-sm">₹${order.total}</div></div></div>`;
+                    container.innerHTML += `<div class="bg-slate-900/90 border border-white/5 rounded-xl p-4 space-y-3"><div class="flex justify-between items-center text-[11px] border-b border-white/5 pb-2"><div><span class="font-black text-white block">${order.id}</span><span class="text-slate-500 font-medium block mt-0.5">${formattedDate}</span></div><span class="uppercase font-black text-[9px] px-2.5 py-1 rounded-md border ${statusColor}">${order.status}</span></div><div class="text-xs font-medium text-slate-300 bg-slate-950/60 p-2.5 rounded-lg border border-white/[0.02]">${order.items}</div><div class="flex justify-between items-center text-xs font-bold pt-1"><div class="text-slate-400">Mode: <span class="text-slate-200">${order.payment}</span> <span class="text-slate-600 font-mono text-[10px]">Name: ${order.custName || 'N/A'}</span></div><div class="text-right text-orange-500 font-black text-sm">₹${order.total}</div></div></div>`;
                 });
             });
         }
     </script>
 
     <script>
-        // Bound menu to high-level window object matrix to destroy isolation gap bounds
         window.fullMenu = [
             { id: 1, cat: "biryani", name: "Veg Biryani", price: 199 },
             { id: 2, cat: "biryani", name: "Soya Chaap Biryani", price: 229 },
@@ -429,7 +446,7 @@
             { id: 23, cat: "breads", name: "Tandoori Roti", price: 12 },
             { id: 24, cat: "breads", name: "Butter Tandoori Roti", price: 14 },
             { id: 25, cat: "breads", name: "Missi Roti", price: 35 },
-            { id: 26, cat: "breads", name: "Plain Naan", price: 35 },
+            { id: 26, text: "naan", cat: "breads", name: "Plain Naan", price: 35 },
             { id: 27, cat: "breads", name: "Butter Naan", price: 45 },
             { id: 28, cat: "breads", name: "Garlic Naan", price: 49 },
             { id: 29, cat: "breads", name: "Plain Kulcha", price: 49 },
@@ -461,6 +478,25 @@
         ];
 
         window.cart = {}; window.selectedMethod = "COD";
+        window.serviceModeTypeNode = "DineIn"; // Pre-configured matrix default state
+
+        window.setServiceModeTypeNode = function(mode) {
+            window.serviceModeTypeNode = mode;
+            const btnDine = document.getElementById('tab-srv-dine');
+            const btnDelv = document.getElementById('tab-srv-delv');
+            const locInput = document.getElementById('cust-input-location');
+
+            if(mode === 'DineIn') {
+                btnDine.className = "bg-orange-500 text-black font-extrabold text-xs py-2.5 rounded-xl transition";
+                btnDelv.className = "bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl transition";
+                locInput.placeholder = "Table Number daalein...";
+            } else {
+                btnDelv.className = "bg-orange-500 text-black font-extrabold text-xs py-2.5 rounded-xl transition";
+                btnDine.className = "bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl transition";
+                locInput.placeholder = "Full Home Delivery Address daalein...";
+            }
+            validateOnlineLock();
+        }
 
         function scrollToSection(id, element) {
             const target = document.getElementById(id); if(target) { window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); }
@@ -510,18 +546,33 @@
 
         function openCartDrawer() { if (Object.keys(window.cart).length > 0) document.getElementById('checkout-bar').classList.remove('translate-y-full'); }
         function closeCartDrawer() { document.getElementById('checkout-bar').classList.add('translate-y-full'); }
-        function togglePaymentView(method) { window.selectedMethod = method; const payBlock = document.getElementById('online-pay-block'); if (method === 'Online') { payBlock.classList.remove('hidden'); document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer"; document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer"; } else { payBlock.classList.add('hidden'); document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer"; document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer"; } validateOnlineLock(); }
-        function validateOnlineLock() { const btn = document.getElementById('checkout-btn'); const utrInput = document.getElementById('utr-input').value.trim(); if (window.selectedMethod === 'Online' && utrInput.length < 4) { btn.disabled = true; btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-3 cursor-not-allowed opacity-60"; } else { btn.disabled = false; btn.className = "secure-pulse w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-3 tracking-wide"; } }
-        function searchDish() { const input = document.getElementById('search-bar').value.toLowerCase(); const cards = document.getElementsByClassName('dish-card'); for (let i = 0; i < cards.length; i++) { cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "flex" : "none"; } }
         
-        // Execute clean linear lifecycle sequence chain
-        window.onload = function() {
-            renderMenu();
-            // Fire real-time snapshot listeners ONLY after DOM injection concludes
-            if(typeof window.initStockListenerNode === 'function') {
-                window.initStockListenerNode();
+        window.closeHistoryDrawerNode = function() { document.getElementById('history-drawer').classList.add('translate-y-full'); }
+
+        function togglePaymentView(method) { window.selectedMethod = method; const payBlock = document.getElementById('online-pay-block'); if (method === 'Online') { payBlock.classList.remove('hidden'); document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer"; document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer"; } else { payBlock.classList.add('hidden'); document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer"; document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer"; } validateOnlineLock(); }
+        
+        // Strict operational layout form criteria validator node locks
+        window.validateOnlineLock = function() {
+            const btn = document.getElementById('checkout-btn');
+            const name = document.getElementById('cust-input-name').value.trim();
+            const phone = document.getElementById('cust-input-phone').value.trim();
+            const location = document.getElementById('cust-input-location').value.trim();
+            const utrInput = document.getElementById('utr-input').value.trim();
+
+            let formIsValid = name.length >= 2 && phone.length === 10 && location.length >= 1;
+            let paymentIsValid = (window.selectedMethod === 'COD') || (window.selectedMethod === 'Online' && utrInput.length >= 4);
+
+            if (formIsValid && paymentIsValid) {
+                btn.disabled = false;
+                btn.className = "secure-pulse w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-3 tracking-wide cursor-pointer";
+            } else {
+                btn.disabled = true;
+                btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-3 cursor-not-allowed opacity-60";
             }
-        };
+        }
+
+        function searchDish() { const input = document.getElementById('search-bar').value.toLowerCase(); const cards = document.getElementsByClassName('dish-card'); for (let i = 0; i < cards.length; i++) { cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "flex" : "none"; } }
+        window.onload = function() { renderMenu(); if(typeof window.initStockListenerNode === 'function') { window.initStockListenerNode(); } };
     </script>
 </body>
 </html>
