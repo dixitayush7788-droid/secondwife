@@ -200,6 +200,32 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Core stock tracking listener engine - attached to window to solve DOM race condition
+        window.initStockListenerNode = function() {
+            onValue(ref(db, 'menu_stock'), (snapshot) => {
+                const stockData = snapshot.val() || {};
+                if(window.fullMenu) {
+                    window.fullMenu.forEach(item => {
+                        const cardNode = document.getElementById(`dish-node-card-${item.id}`);
+                        const plusBtn = document.getElementById(`plus-btn-node-${item.id}`);
+                        const priceTag = document.getElementById(`price-tag-node-${item.id}`);
+                        
+                        if(cardNode && plusBtn && priceTag) {
+                            if(stockData[item.id] === false) {
+                                cardNode.classList.add('opacity-30', 'pointer-events-none');
+                                plusBtn.disabled = true;
+                                priceTag.innerHTML = `<span class="text-red-500 text-[10px] font-black uppercase tracking-wider bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20"><i class="fa-solid fa-ban text-[9px]"></i> Out of Stock</span>`;
+                            } else {
+                                cardNode.classList.remove('opacity-30', 'pointer-events-none');
+                                plusBtn.disabled = false;
+                                priceTag.innerHTML = `₹${item.price}`;
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
         window.sendOrder = function() {
             let totalBill = 0;
             Object.keys(window.cart).forEach(key => totalBill += (window.cart[key].price * window.cart[key].qty));
@@ -227,16 +253,14 @@
                         prepTime: 0,
                         timestamp: Date.now()
                     }).then(() => {
-                        // Advanced State Locking: Persist active tracking and record mapping indices
                         localStorage.setItem('active_secondwife_order_id', orderId);
-                        localStorage.setItem('secondwife_tracker_state', 'full'); // Default lock state state definition
+                        localStorage.setItem('secondwife_tracker_state', 'full'); 
                         
                         let orderHistory = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
                         if(!orderHistory.includes(orderId)){
                             orderHistory.push(orderId);
                             localStorage.setItem('secondwife_order_history', JSON.stringify(orderHistory));
                         }
-
                         launchOrderTrackingInterfaceNode(orderId);
                     });
                 }
@@ -268,7 +292,6 @@
                     activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-amber-500', 'text-amber-400');
                     pCard.className = "absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-2xl";
                     miniStatusText.innerText = "Order Placed (Pending)";
-                    
                     exitBtn.innerHTML = "<i class='fa-solid fa-house-chimney'></i> Back to Menu (Keep Tracking)";
                     exitBtn.setAttribute('onclick', 'minimizeTrackingViewNode()');
                     exitBtn.className = "mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50 transition";
@@ -279,9 +302,7 @@
                     if(data.prepTime > 0) {
                         document.getElementById('cooking-timer-text').innerHTML = `🔥 Chef are cooking. *Estimated completion time: ${data.prepTime} Mins*`;
                         miniStatusText.innerText = `Chef Cooking (${data.prepTime}m)`;
-                    } else {
-                        miniStatusText.innerText = "Cooking in Kitchen";
-                    }
+                    } else { miniStatusText.innerText = "Cooking in Kitchen"; }
                 } else if(status === 'dispatched') {
                     activateTrackingStep('step-placed', 'icon-placed', 'title-placed', 'bg-emerald-500', 'text-emerald-400');
                     activateTrackingStep('step-cooking', 'icon-cooking', 'title-cooking', 'bg-emerald-500', 'text-emerald-400');
@@ -295,7 +316,6 @@
                     activateTrackingStep('step-delivered', 'icon-delivered', 'title-delivered', 'bg-emerald-500 secure-pulse scale-105', 'text-emerald-400 font-black');
                     pCard.className = "absolute top-0 right-0 w-32 h-32 bg-emerald-500/30 rounded-full blur-2xl";
                     miniStatusText.innerText = "Order Delivered ✓";
-                    
                     exitBtn.innerHTML = "<i class='fa-solid fa-square-check'></i> Finish & Clear Order";
                     exitBtn.setAttribute('onclick', 'clearActiveOrderBackupTerminalNode()');
                     exitBtn.className = "mt-8 text-xs font-black text-black border border-emerald-500 px-6 py-3 rounded-xl bg-emerald-500 secure-pulse transition cursor-pointer";
@@ -305,25 +325,20 @@
 
         function resetTrackingUIVisuals() {
             ['step-placed', 'step-cooking', 'step-dispatched', 'step-delivered'].forEach(id => { 
-                document.getElementById(id).classList.add('opacity-40'); 
-                document.getElementById(id).classList.remove('scale-105', 'bg-white/[0.02]', 'border', 'border-white/5');
+                document.getElementById(id).classList.add('opacity-40'); document.getElementById(id).classList.remove('scale-105', 'bg-white/[0.02]', 'border', 'border-white/5');
             });
             ['icon-placed', 'icon-cooking', 'icon-dispatched', 'icon-delivered'].forEach((id) => { 
                 document.getElementById(id).className = "w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0"; 
-                const existingPing = document.getElementById(id+'-ping');
-                if(existingPing) existingPing.remove();
+                const existingPing = document.getElementById(id+'-ping'); if(existingPing) existingPing.remove();
             });
         }
 
         function activateTrackingStep(stepId, iconId, titleId, bgClass, textClass) {
-            const stepNode = document.getElementById(stepId);
-            stepNode.classList.remove('opacity-40');
+            const stepNode = document.getElementById(stepId); stepNode.classList.remove('opacity-40');
             if(bgClass.includes('animate-b') || bgClass.includes('pulse') || bgClass.includes('secure')) {
                 stepNode.classList.add('scale-105', 'bg-white/[0.02]', 'border', 'border-white/5');
                 if(!document.getElementById(iconId+'-ping')) {
-                    const pingNode = document.createElement('span');
-                    pingNode.id = iconId+'-ping';
-                    pingNode.className = "absolute inline-flex h-full w-full rounded-full bg-inherit opacity-75 animate-ping";
+                    const pingNode = document.createElement('span'); pingNode.id = iconId+'-ping'; pingNode.className = "absolute inline-flex h-full w-full rounded-full bg-inherit opacity-75 animate-ping";
                     document.getElementById(iconId).appendChild(pingNode);
                 }
             }
@@ -331,97 +346,24 @@
             document.getElementById(titleId).className = `font-bold text-sm ${textClass}`;
         }
 
-        // DEVICE REAL-TIME BACKEND HISTORY SYNC ENGINE
-        window.openHistoryDrawerNode = function() {
-            document.getElementById('history-drawer').classList.remove('translate-y-full');
-            const container = document.getElementById('history-items-container');
-            const historyList = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
-
-            if(historyList.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-slate-500 py-12">No previous orders logged from this phone terminal node.</p>`;
-                return;
-            }
-
-            container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs"><i class="fa-solid fa-circle-notch animate-spin text-orange-500 mr-2"></i> Syncing past device nodes...</div>`;
-            
-            const dbRef = ref(db);
-            let fetchPromises = historyList.map(orderId => {
-                return get(child(dbRef, `orders/${orderId}`)).then(snap => snap.exists() ? snap.val() : null);
-            });
-
-            Promise.all(fetchPromises).then(results => {
-                container.innerHTML = "";
-                // Reverse loop logic to display most recent order sequence on top
-                const cleanResults = results.filter(r => r !== null).sort((a,b) => b.timestamp - a.timestamp);
-
-                if(cleanResults.length === 0) {
-                    container.innerHTML = `<p class="text-center text-xs text-slate-500 py-12">No server matched history data records found.</p>`;
-                    return;
-                }
-
-                cleanResults.forEach(order => {
-                    const formattedDate = new Date(order.timestamp).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', hour12:true });
-                    
-                    let statusColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
-                    if(order.status === 'cooking') statusColor = "text-orange-400 bg-orange-500/10 border-orange-500/20";
-                    if(order.status === 'dispatched') statusColor = "text-blue-400 bg-blue-500/10 border-blue-500/20";
-                    if(order.status === 'delivered') statusColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-
-                    container.innerHTML += `
-                        <div class="bg-slate-900/90 border border-white/5 rounded-xl p-4 space-y-3">
-                            <div class="flex justify-between items-center text-[11px] border-b border-white/5 pb-2">
-                                <div>
-                                    <span class="font-black text-white block">${order.id}</span>
-                                    <span class="text-slate-500 font-medium block mt-0.5">${formattedDate}</span>
-                                </div>
-                                <span class="uppercase font-black text-[9px] px-2.5 py-1 rounded-md border ${statusColor}">${order.status}</span>
-                            </div>
-                            <div class="text-xs font-medium text-slate-300 bg-slate-950/60 p-2.5 rounded-lg border border-white/[0.02]">
-                                ${order.items}
-                            </div>
-                            <div class="flex justify-between items-center text-xs font-bold pt-1">
-                                <div class="text-slate-400">Mode: <span class="text-slate-200">${order.payment}</span></div>
-                                <div class="text-right text-orange-500 font-black text-sm">₹${order.total}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        // CORES ENGINE CHECK: Cold-boot auto persistence state sync layer loop
         const structuralCheckId = localStorage.getItem('active_secondwife_order_id');
         const internalSavedViewState = localStorage.getItem('secondwife_tracker_state');
 
         if(structuralCheckId) {
-            // Safe pipeline lock execution validation check loop
             onValue(ref(db, 'orders/' + structuralCheckId), (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
-                    if(data.status !== 'delivered') {
-                        if(internalSavedViewState === 'mini') {
-                            document.getElementById('store-front-view').classList.remove('hidden');
-                            document.getElementById('mini-tracker-bar').classList.remove('hidden');
-                            listenToOrderLive(structuralCheckId);
-                        } else {
-                            launchOrderTrackingInterfaceNode(structuralCheckId);
-                        }
-                    } else {
-                        // Keep tracking open on delivered so they can manually hit finish cleanly
-                        if(internalSavedViewState === 'mini') {
-                            document.getElementById('store-front-view').classList.remove('hidden');
-                            document.getElementById('mini-tracker-bar').classList.remove('hidden');
-                            listenToOrderLive(structuralCheckId);
-                        } else {
-                            launchOrderTrackingInterfaceNode(structuralCheckId);
-                        }
-                    }
+                    if(internalSavedViewState === 'mini') {
+                        document.getElementById('store-front-view').classList.remove('hidden');
+                        document.getElementById('mini-tracker-bar').classList.remove('hidden');
+                        listenToOrderLive(structuralCheckId);
+                    } else { launchOrderTrackingInterfaceNode(structuralCheckId); }
                 }
             });
         }
 
         window.minimizeTrackingViewNode = function() {
-            localStorage.setItem('secondwife_tracker_state', 'mini'); // Force browser to remember minimization status loop
+            localStorage.setItem('secondwife_tracker_state', 'mini');
             document.getElementById('tracking-screen-view').classList.add('hidden');
             document.getElementById('store-front-view').classList.remove('hidden');
             document.getElementById('mini-tracker-bar').classList.remove('hidden'); 
@@ -429,21 +371,39 @@
 
         window.maximizeTrackingViewNode = function() {
             const activeId = localStorage.getItem('active_secondwife_order_id');
-            if(activeId) {
-                localStorage.setItem('secondwife_tracker_state', 'full'); // Expand viewport layout locking
-                window.launchOrderTrackingInterfaceNode(activeId);
-            }
+            if(activeId) { localStorage.setItem('secondwife_tracker_state', 'full'); launchOrderTrackingInterfaceNode(activeId); }
         }
 
         window.clearActiveOrderBackupTerminalNode = function() {
-            localStorage.removeItem('active_secondwife_order_id');
-            localStorage.removeItem('secondwife_tracker_state');
-            window.location.reload();
+            localStorage.removeItem('active_secondwife_order_id'); localStorage.removeItem('secondwife_tracker_state'); window.location.reload();
+        }
+
+        window.openHistoryDrawerNode = function() {
+            document.getElementById('history-drawer').classList.remove('translate-y-full');
+            const container = document.getElementById('history-items-container');
+            const historyList = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
+            if(historyList.length === 0) { container.innerHTML = `<p class="text-center text-xs text-slate-500 py-12">No previous orders logged.</p>`; return; }
+            container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs"><i class="fa-solid fa-circle-notch animate-spin text-orange-500 mr-2"></i> Syncing...</div>`;
+            const dbRef = ref(db);
+            let fetchPromises = historyList.map(orderId => get(child(dbRef, `orders/${orderId}`)).then(snap => snap.exists() ? snap.val() : null));
+            Promise.all(fetchPromises).then(results => {
+                container.innerHTML = ""; const cleanResults = results.filter(r => r !== null).sort((a,b) => b.timestamp - a.timestamp);
+                if(cleanResults.length === 0) { container.innerHTML = `<p class="text-center text-xs text-slate-500 py-12">No data found.</p>`; return; }
+                cleanResults.forEach(order => {
+                    const formattedDate = new Date(order.timestamp).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', hour12:true });
+                    let statusColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
+                    if(order.status === 'cooking') statusColor = "text-orange-400 bg-orange-500/10 border-orange-500/20";
+                    if(order.status === 'dispatched') statusColor = "text-blue-400 bg-blue-500/10 border-blue-500/20";
+                    if(order.status === 'delivered') statusColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+                    container.innerHTML += `<div class="bg-slate-900/90 border border-white/5 rounded-xl p-4 space-y-3"><div class="flex justify-between items-center text-[11px] border-b border-white/5 pb-2"><div><span class="font-black text-white block">${order.id}</span><span class="text-slate-500 font-medium block mt-0.5">${formattedDate}</span></div><span class="uppercase font-black text-[9px] px-2.5 py-1 rounded-md border ${statusColor}">${order.status}</span></div><div class="text-xs font-medium text-slate-300 bg-slate-950/60 p-2.5 rounded-lg border border-white/[0.02]">${order.items}</div><div class="flex justify-between items-center text-xs font-bold pt-1"><div class="text-slate-400">Mode: <span class="text-slate-200">${order.payment}</span></div><div class="text-right text-orange-500 font-black text-sm">₹${order.total}</div></div></div>`;
+                });
+            });
         }
     </script>
 
     <script>
-        const fullMenu = [
+        // Bound menu to high-level window object matrix to destroy isolation gap bounds
+        window.fullMenu = [
             { id: 1, cat: "biryani", name: "Veg Biryani", price: 199 },
             { id: 2, cat: "biryani", name: "Soya Chaap Biryani", price: 229 },
             { id: 3, cat: "biryani", name: "Hyderabadi Dum Biryani", price: 230 },
@@ -500,30 +460,27 @@
             { id: 54, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
         ];
 
-        window.cart = {};
-        window.selectedMethod = "COD";
+        window.cart = {}; window.selectedMethod = "COD";
 
         function scrollToSection(id, element) {
-            const target = document.getElementById(id);
-            if(target) { window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); }
+            const target = document.getElementById(id); if(target) { window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); }
             document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40");
             element.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5";
         }
 
         function renderMenu() {
-            fullMenu.forEach(item => {
-                const container = document.getElementById(`${item.cat}-container`);
-                if(!container) return;
+            window.fullMenu.forEach(item => {
+                const container = document.getElementById(`${item.cat}-container`); if(!container) return;
                 container.innerHTML += `
-                    <div class="dish-card glow-card bg-[#0b1329]/40 border border-white/[0.02] p-4 rounded-2xl flex justify-between items-center transition-all duration-300 transform hover:-translate-y-1" data-name="${item.name.toLowerCase()}">
+                    <div id="dish-node-card-${item.id}" class="dish-card glow-card bg-[#0b1329]/40 border border-white/[0.02] p-4 rounded-2xl flex justify-between items-center transition-all duration-300 transform hover:-translate-y-1" data-name="${item.name.toLowerCase()}">
                         <div>
                             <h3 class="font-bold text-slate-100 text-xs md:text-sm tracking-tight">${item.name}</h3>
-                            <p class="text-orange-500 font-extrabold text-sm mt-1">₹${item.price}</p>
+                            <p id="price-tag-node-${item.id}" class="text-orange-500 font-extrabold text-sm mt-1">₹${item.price}</p>
                         </div>
                         <div class="flex items-center gap-2.5">
                             <button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-8 h-8 bg-slate-800 text-slate-200 font-extrabold rounded-xl hidden">-</button>
                             <span id="qty-${item.id}" class="font-black text-xs text-white hidden">0</span>
-                            <button onclick="changeQty(${item.id}, 1)" class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-sm rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 shadow-md shadow-orange-500/10">
+                            <button id="plus-btn-node-${item.id}" onclick="changeQty(${item.id}, 1)" class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-sm rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-md shadow-orange-500/10">
                                 <i class="fa-solid fa-plus text-xs"></i>
                             </button>
                         </div>
@@ -533,106 +490,38 @@
         }
 
         function changeQty(id, delta) {
-            const item = fullMenu.find(i => i.id === id);
-            if (!window.cart[id]) window.cart[id] = { name: item.name, price: item.price, qty: 0 };
-            window.cart[id].qty += delta;
-            if (window.cart[id].qty <= 0) delete window.cart[id];
-            updateCartUI(id, delta);
+            const item = window.fullMenu.find(i => i.id === id); if (!window.cart[id]) window.cart[id] = { name: item.name, price: item.price, qty: 0 };
+            window.cart[id].qty += delta; if (window.cart[id].qty <= 0) delete window.cart[id];
+            window.updateCartUI(id, delta);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             window.updateCartUI = function(id, delta) {
-                const qtyText = document.getElementById(`qty-${id}`);
-                const minusBtn = document.getElementById(`minus-${id}`);
-                const currentQty = window.cart[id] ? window.cart[id].qty : 0;
-
-                if (qtyText && minusBtn) {
-                    if (currentQty > 0) {
-                        qtyText.innerText = currentQty;
-                        qtyText.classList.remove('hidden');
-                        minusBtn.classList.remove('hidden');
-                    } else {
-                        qtyText.classList.add('hidden');
-                        minusBtn.classList.add('hidden');
-                    }
-                }
-
-                let totalItems = 0;
-                let totalPrice = 0;
-                Object.keys(window.cart).forEach(key => {
-                    totalItems += window.cart[key].qty;
-                    totalPrice += (window.cart[key].price * window.cart[key].qty);
-                });
-
-                const badge = document.getElementById('cart-count');
-                const bar = document.getElementById('checkout-bar');
-                
-                if (totalItems > 0) {
-                    badge.innerText = totalItems;
-                    badge.classList.remove('hidden');
-                    if (delta > 0) { bar.classList.remove('translate-y-full'); }
-                    document.getElementById('cart-summary').innerText = `${totalItems} ${totalItems === 1 ? 'Dish' : 'Dishes'} Selected`;
-                    document.getElementById('cart-total').innerText = `₹${totalPrice}`;
-                } else {
-                    badge.classList.add('hidden');
-                    bar.classList.add('translate-y-full');
-                }
-
-                const pBar = document.getElementById('delivery-progress');
-                const msg = document.getElementById('delivery-msg');
-                if(totalPrice < 100) {
-                    pBar.style.width = `${totalPrice}%`;
-                    msg.innerHTML = `Shop ₹${100 - totalPrice} more to unlock delivery`;
-                } else if (totalPrice < 299) {
-                    pBar.style.width = `${(totalPrice/299)*100}%`;
-                    msg.innerHTML = `Add ₹${299 - totalPrice} for FREE delivery!`;
-                } else {
-                    pBar.style.width = '100%';
-                    msg.innerHTML = "🎉 FREE delivery unlocked!";
-                }
+                const qtyText = document.getElementById(`qty-${id}`); const minusBtn = document.getElementById(`minus-${id}`); const currentQty = window.cart[id] ? window.cart[id].qty : 0;
+                if (qtyText && minusBtn) { if (currentQty > 0) { qtyText.innerText = currentQty; qtyText.classList.remove('hidden'); minusBtn.classList.remove('hidden'); } else { qtyText.classList.add('hidden'); minusBtn.classList.add('hidden'); } }
+                let totalItems = 0; let totalPrice = 0; Object.keys(window.cart).forEach(key => { totalItems += window.cart[key].qty; totalPrice += (window.cart[key].price * window.cart[key].qty); });
+                const badge = document.getElementById('cart-count'); const bar = document.getElementById('checkout-bar');
+                if (totalItems > 0) { badge.innerText = totalItems; badge.classList.remove('hidden'); if (delta > 0) { bar.classList.remove('translate-y-full'); } document.getElementById('cart-summary').innerText = `${totalItems} Dishes Selected`; document.getElementById('cart-total').innerText = `₹${totalPrice}`; } else { badge.classList.add('hidden'); bar.classList.add('translate-y-full'); }
+                const pBar = document.getElementById('delivery-progress'); const msg = document.getElementById('delivery-msg');
+                if(totalPrice < 100) { pBar.style.width = `${totalPrice}%`; msg.innerHTML = `Shop ₹${100 - totalPrice} more to unlock delivery`; } else if (totalPrice < 299) { pBar.style.width = `${(totalPrice/299)*100}%`; msg.innerHTML = `Add ₹${299 - totalPrice} for FREE delivery!`; } else { pBar.style.width = '100%'; msg.innerHTML = "🎉 FREE delivery unlocked!"; }
                 validateOnlineLock();
             }
         });
 
         function openCartDrawer() { if (Object.keys(window.cart).length > 0) document.getElementById('checkout-bar').classList.remove('translate-y-full'); }
         function closeCartDrawer() { document.getElementById('checkout-bar').classList.add('translate-y-full'); }
+        function togglePaymentView(method) { window.selectedMethod = method; const payBlock = document.getElementById('online-pay-block'); if (method === 'Online') { payBlock.classList.remove('hidden'); document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer"; document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer"; } else { payBlock.classList.add('hidden'); document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer"; document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer"; } validateOnlineLock(); }
+        function validateOnlineLock() { const btn = document.getElementById('checkout-btn'); const utrInput = document.getElementById('utr-input').value.trim(); if (window.selectedMethod === 'Online' && utrInput.length < 4) { btn.disabled = true; btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-3 cursor-not-allowed opacity-60"; } else { btn.disabled = false; btn.className = "secure-pulse w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-3 tracking-wide"; } }
+        function searchDish() { const input = document.getElementById('search-bar').value.toLowerCase(); const cards = document.getElementsByClassName('dish-card'); for (let i = 0; i < cards.length; i++) { cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "flex" : "none"; } }
         
-        window.closeHistoryDrawerNode = function() { document.getElementById('history-drawer').classList.add('translate-y-full'); }
-
-        function togglePaymentView(method) {
-            window.selectedMethod = method;
-            const payBlock = document.getElementById('online-pay-block');
-            if (method === 'Online') {
-                payBlock.classList.remove('hidden');
-                document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer";
-                document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer";
-            } else {
-                payBlock.classList.add('hidden');
-                document.getElementById('label-cod').className = "flex items-center justify-center gap-2 bg-slate-900/80 border-2 border-orange-500 p-3.5 rounded-2xl cursor-pointer";
-                document.getElementById('label-online').className = "flex items-center justify-center gap-2 bg-slate-900/50 border-2 border-white/5 p-3.5 rounded-2xl cursor-pointer";
+        // Execute clean linear lifecycle sequence chain
+        window.onload = function() {
+            renderMenu();
+            // Fire real-time snapshot listeners ONLY after DOM injection concludes
+            if(typeof window.initStockListenerNode === 'function') {
+                window.initStockListenerNode();
             }
-            validateOnlineLock();
-        }
-
-        function validateOnlineLock() {
-            const btn = document.getElementById('checkout-btn');
-            const utrInput = document.getElementById('utr-input').value.trim();
-            if (window.selectedMethod === 'Online' && utrInput.length < 4) {
-                btn.disabled = true;
-                btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-3 cursor-not-allowed opacity-60";
-            } else {
-                btn.disabled = false;
-                btn.className = "secure-pulse w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-3 tracking-wide";
-            }
-        }
-
-        function searchDish() {
-            const input = document.getElementById('search-bar').value.toLowerCase();
-            const cards = document.getElementsByClassName('dish-card');
-            for (let i = 0; i < cards.length; i++) { cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "flex" : "none"; }
-        }
-
-        window.onload = renderMenu;
+        };
     </script>
 </body>
 </html>
