@@ -2,58 +2,39 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>Second Wife Cafe</title>
+    <title>Second Wife Menu</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body class="bg-gray-900 text-white p-4">
-    <div id="store-front-view">
-        <h1 class="text-2xl font-bold mb-4">Second Wife Menu</h1>
-        <div id="biryani-container" class="grid gap-2">
-            <div class="bg-gray-800 p-4 rounded flex justify-between">
-                <span>Veg Biryani</span>
-                <button onclick="addToCart()" class="bg-orange-500 px-4 py-1 rounded">+</button>
-            </div>
-        </div>
-        <button onclick="document.getElementById('checkout-bar').classList.remove('translate-y-full')" class="w-full bg-green-600 p-4 mt-4 rounded font-bold">CHECKOUT</button>
+    <div id="app">
+        <h1 class="text-xl font-bold mb-4">Veg Biryani - ₹199</h1>
+        <button onclick="document.getElementById('checkout').classList.remove('hidden')" class="bg-green-600 p-3 w-full rounded">Checkout</button>
     </div>
 
-    <div id="checkout-bar" class="fixed bottom-0 left-0 right-0 p-5 bg-gray-800 translate-y-full transition-transform">
-        <input type="text" id="cust-input-name" placeholder="Naam" class="w-full p-2 mb-2 bg-black rounded">
-        <input type="tel" id="cust-input-phone" placeholder="Mobile" class="w-full p-2 mb-2 bg-black rounded">
-        <input type="text" id="cust-input-location" placeholder="Address" class="w-full p-2 mb-2 bg-black rounded">
-        <button onclick="sendOrder()" class="w-full bg-blue-600 p-3 rounded font-bold">PLACE ORDER</button>
+    <div id="checkout" class="hidden fixed inset-0 bg-gray-900 p-4">
+        <input id="name" placeholder="Naam" class="w-full p-2 mb-2 bg-black rounded">
+        <input id="phone" placeholder="Mobile" class="w-full p-2 mb-2 bg-black rounded">
+        <input id="addr" placeholder="Address" class="w-full p-2 mb-2 bg-black rounded">
+        <button onclick="placeOrder()" class="w-full bg-orange-500 p-3 rounded">PLACE ORDER</button>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script>
-        const firebaseConfig = { databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        window.cart = { 1: { name: "Veg Biryani", price: 199, qty: 1 } };
+        const db = firebase.initializeApp({ databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" }).database();
         
-        window.addToCart = function() { alert("Added!"); }
+        window.placeOrder = function() {
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const addr = document.getElementById('addr').value;
+            if(!name || phone.length < 10) return alert("Details bharo!");
 
-        window.sendOrder = function() {
-            const nameVal = document.getElementById('cust-input-name').value;
-            const phoneVal = document.getElementById('cust-input-phone').value;
-            const locVal = document.getElementById('cust-input-location').value;
-
-            if(!nameVal || phoneVal.length < 10) { alert("Details bharo!"); return; }
-
-            const counterRef = db.ref('order_counter');
-            counterRef.transaction((curr) => (curr || 0) + 1).then((res) => {
-                if (res.committed) {
-                    const orderId = "SW-" + String(res.snapshot.val()).padStart(6, '0');
-                    db.ref('orders/' + orderId).set({
-                        id: orderId, custName: nameVal, custPhone: phoneVal,
-                        custLoc: locVal, items: "Veg Biryani", total: 199, status: "placed", timestamp: Date.now()
-                    }).then(() => {
-                        alert("Order Successful!");
-                        location.reload();
-                    });
-                }
+            db.ref('order_counter').transaction((c) => (c || 0) + 1).then((res) => {
+                const id = "SW-" + String(res.snapshot.val()).padStart(6, '0');
+                db.ref('orders/' + id).set({
+                    id, custName: name, custPhone: phone, custLoc: addr,
+                    items: "Veg Biryani", total: 199, status: "placed", timestamp: Date.now()
+                }).then(() => alert("Order Success!"));
             });
         }
     </script>
