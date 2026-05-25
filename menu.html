@@ -263,7 +263,7 @@
             <div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center border border-slate-200"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" alt="UPI QR" class="w-40 h-40 object-contain"><input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs mt-3 text-white focus:outline-none"></div>
         </div>
 
-        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center tracking-wide cursor-pointer shadow-lg transform transition active:scale-95" disabled>PLACE CLOUD ORDER</button>
+        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 shadow-2xl secure-pulse" disabled>PLACE CLOUD ORDER</button>
     </div>
 
     <script>
@@ -336,6 +336,19 @@
                 if(localStorage.getItem('sw_cached_delivery_address')) { document.getElementById('btn-prev-location-pill').classList.remove('hidden'); }
             }
             locInput.value = ""; validateFormStateNode();
+        }
+
+        window.fetchNativeGPSCoordinatesNode = function(btn) {
+            if (!navigator.geolocation) return alert("GPS is not supported."); btn.innerHTML = "<i class='fa-solid fa-spinner animate-spin'></i> Syncing Coords...";
+            navigator.geolocation.getCurrentPosition(async (p) => {
+                try {
+                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}&addressdetails=1`);
+                    const d = await r.json(); 
+                    if(d && d.display_name) { document.getElementById('cust-loc').value = d.display_name; } 
+                    else { document.getElementById('cust-loc').value = `Kanpur Coords: ${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`; }
+                } catch(e) { document.getElementById('cust-loc').value = `Kanpur Lat:${p.coords.latitude.toFixed(4)} Lon:${p.coords.longitude.toFixed(4)}`; }
+                btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode();
+            }, (err) => { alert("GPS Permission Locked! Please check your settings or write address."); btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode(); }, { enableHighAccuracy: true, timeout: 7000 });
         }
 
         window.injectCachedPastAddressNode = function() { document.getElementById('cust-loc').value = localStorage.getItem('sw_cached_delivery_address'); validateFormStateNode(); }
@@ -602,68 +615,8 @@
                 }
             });
         }
-    </script>
 
-    <script>
-        window.fetchNativeGPSCoordinatesNode = function(btn) {
-            if (!navigator.geolocation) return alert("Aapka device GPS support nahi karta.");
-            btn.innerHTML = "<i class='fa-solid fa-spinner animate-spin mr-1.5'></i> Capturing Live Address...";
-            
-            // HYBRID FALLBACK ALGORITHM Matrix
-            const fallbackCellularTowerIPEngine = async () => {
-                try {
-                    const ipResponse = await fetch('https://ipapi.co/json/');
-                    const ipData = await ipResponse.json();
-                    if(ipData && ipData.city) {
-                        let formattedFallbackAddressNode = `${ipData.city}, ${ipData.region || 'UP'}, India (Network WiFi/Cell-Tower IP Location Lock)`;
-                        document.getElementById('cust-loc').value = formattedFallbackAddressNode;
-                        btn.innerHTML = "📍 Use Current GPS Location";
-                        validateFormStateNode();
-                    } else {
-                        throw new Error("IP Geolocation service deck timed out.");
-                    }
-                } catch(err) {
-                    document.getElementById('cust-loc').value = "Shyam Nagar, Kanpur, Uttar Pradesh (Auto-Detected Primary Block)";
-                    btn.innerHTML = "📍 Use Current GPS Location";
-                    validateFormStateNode();
-                }
-            };
-
-            // PRIMARY HIGH PERFECTION SATELLITE RADAR ARBITRAGE HOOK
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                try {
-                    const latNode = position.coords.latitude;
-                    const lonNode = position.coords.longitude;
-                    
-                    // High Speed Reverse Geocoding with Nominatim Framework Core
-                    const reverseGeocodeResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latNode}&lon=${lonNode}&addressdetails=1`, {
-                        headers: { 'Accept-Language': 'hi,en' }
-                    });
-                    const geoData = await reverseGeocodeResponse.json();
-                    
-                    if(geoData && geoData.display_name) {
-                        // Slicing massive string to build super slick beautiful local address string
-                        let cleanShortAddressNode = geoData.display_name.split(',').slice(0, 4).join(',').trim();
-                        document.getElementById('cust-loc').value = cleanShortAddressNode;
-                    } else {
-                        document.getElementById('cust-loc').value = `Kanpur Locality Coordinates: ${latNode.toFixed(4)}, ${lonNode.toFixed(4)}`;
-                    }
-                    btn.innerHTML = "📍 Use Current GPS Location";
-                    validateFormStateNode();
-                } catch(e) {
-                    // Fail-safe dynamic shift to backup cellular tower metrics index tracking
-                    await fallbackCellularTowerIPEngine();
-                }
-            }, async (error) => {
-                // If permission is denied or high accuracy breaks indoor tracing, immediately fire IP triangulation
-                console.log("Primary high-accuracy tracking locked. Activating alternative tower metrics.");
-                await fallbackCellularTowerIPEngine();
-            }, { 
-                enableHighAccuracy: false, // Turned to false to ensure immediate multi-device OS Safari/Chrome bypass response
-                timeout: 3500, // Reduced freeze threshold window to 3.5 seconds maximum runtime loops
-                maximumAge: 300000 // Utilization of cached system coordinates to save computing resources
-            });
-        };
+        window.onload = renderInterfaceMenuRoom;
     </script>
 </body>
 </html>
