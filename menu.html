@@ -13,7 +13,7 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; background-color: #030712; }
         .brand-font-premium { font-family: 'Playfair Display SC', serif; }
-        .glass-premium { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.04); }
+        .glass-premium { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur=28px; -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.04); }
         .glass-header { background: rgba(3, 7, 18, 0.85); backdrop-blur: 24px; -webkit-backdrop-filter: blur(24px); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scroll-bar-width: none; }
@@ -43,6 +43,16 @@
     </style>
 </head>
 <body class="text-slate-100 antialiased overflow-x-hidden selection:bg-orange-500 selection:text-black">
+
+    <div id="music-control" class="fixed top-24 right-4 z-[60] bg-slate-950/80 border border-white/10 p-3 rounded-full cursor-pointer hover:scale-110 transition shadow-lg secure-pulse" onclick="toggleMusic()">
+        <button class="text-orange-500 text-sm w-5 h-5 flex items-center justify-center focus:outline-none">
+            <i id="music-icon" class="fa-solid fa-volume-xmark"></i>
+        </button>
+    </div>
+
+    <audio id="bg-music" loop preload="auto">
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
 
     <div class="fixed top-[-15%] left-[-15%] w-[75vw] h-[75vw] bg-gradient-to-tr from-orange-600/12 to-transparent rounded-full blur-[150px] pointer-events-none z-0 drift"></div>
     <div class="fixed bottom-[8%] right-[-15%] w-[65vw] h-[65vw] bg-gradient-to-br from-blue-600/10 to-orange-500/10 rounded-full blur-[130px] pointer-events-none z-0 drift" style="animation-delay: -7s;"></div>
@@ -252,7 +262,7 @@
                 fullMenu.forEach(item => {
                     const card = document.getElementById(`dish-node-card-${item.id}`); const btn = document.getElementById(`plus-btn-node-${item.id}`); const tag = document.getElementById(`price-tag-node-${item.id}`);
                     if(card && btn && tag) {
-                        if(stock[item.id] === false) { card.classList.add('opacity-30', 'pointer-events-none'); btn.disabled = true; tag.innerHTML = `<span class="text-red-500 text-[10px] font-black uppercase tracking-wider bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">Out of Stock</span>`; }
+                        if(snapshot.exists() && stock[item.id] === false) { card.classList.add('opacity-30', 'pointer-events-none'); btn.disabled = true; tag.innerHTML = `<span class="text-red-500 text-[10px] font-black uppercase tracking-wider bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">Out of Stock</span>`; }
                         else { card.classList.remove('opacity-30', 'pointer-events-none'); btn.disabled = false; tag.innerHTML = `₹${item.price}`; }
                     }
                 });
@@ -457,6 +467,24 @@
             });
         }
         
+        // BACKGROUND OPERATIONAL MUSIC SYSTEM INTERACTION LOOP
+        window.toggleMusic = function() {
+            const musicNode = document.getElementById('bg-music');
+            const iconNode = document.getElementById('music-icon');
+            
+            if (musicNode.paused) {
+                musicNode.volume = 0.4;
+                musicNode.play().then(() => {
+                    iconNode.className = "fa-solid fa-volume-high text-emerald-400";
+                }).catch(err => {
+                    console.log("Interaction required by native browser engine.");
+                });
+            } else {
+                musicNode.pause();
+                iconNode.className = "fa-solid fa-volume-xmark text-orange-500";
+            }
+        }
+
         window.onload = renderInterfaceMenuRoom;
     </script>
 </body>
