@@ -40,6 +40,13 @@
             100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
         }
         .active-tracker-step-ring { animation: stepGlowPulse 1.8s infinite; }
+
+        /* UNIQUE ATTENTION NEON RIDER EFFECTS */
+        @keyframes riderEmeraldBreath {
+            0%, 100% { border-color: rgba(16, 185, 129, 0.2); box-shadow: 0 0 15px rgba(16, 185, 129, 0.05); }
+            50% { border-color: rgba(16, 185, 129, 0.7); box-shadow: 0 0 35px rgba(16, 185, 129, 0.35); }
+        }
+        .rider-neon-glow-card { animation: riderEmeraldBreath 1.4s infinite ease-in-out; background: rgba(6, 78, 59, 0.25) !important; }
     </style>
 </head>
 <body class="text-slate-100 antialiased overflow-x-hidden selection:bg-orange-500 selection:text-black">
@@ -168,6 +175,22 @@
             <div id="step-delivered" class="flex gap-4 items-start opacity-40 transition-all duration-500 rounded-2xl p-2">
                 <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative transition-all duration-300" id="icon-delivered">4</div>
                 <div><h3 id="title-delivered" class="font-bold text-sm text-white transition-colors duration-300">Delivered Successfully</h3><p class="text-xs text-slate-400 mt-0.5">Swaad ka lutf uthaiye! Shukriya.</p></div>
+            </div>
+
+            <div id="live-rider-card-node" class="hidden p-5 rounded-[1.8rem] flex justify-between items-center transition-all duration-700 transform scale-75 opacity-0 translate-y-6 rider-neon-glow-card">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 rounded-2xl flex items-center justify-center text-xl shadow-lg relative">
+                        <i class="fa-solid fa-motorcycle animate-bounce" style="animation-duration: 1.2s;"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-emerald-400 border border-[#030712] rounded-full animate-ping"></span>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-black text-emerald-400 uppercase tracking-[0.15em] animate-pulse">Rider Dispatched Node</p>
+                        <h4 id="live-rider-name-node" class="text-sm font-black text-white mt-1 uppercase tracking-wide">Rider Connecting...</h4>
+                    </div>
+                </div>
+                <a id="live-rider-phone-anchor-node" href="tel:" class="w-11 h-11 bg-gradient-to-tr from-emerald-400 to-teal-500 text-black font-black rounded-2xl flex items-center justify-center transition-all duration-300 active:scale-75 shadow-lg">
+                    <i class="fa-solid fa-phone text-base"></i>
+                </a>
             </div>
         </div>
         
@@ -379,6 +402,24 @@
                 const d = s.val(); if(!d) return; const mini = document.getElementById('mini-status-text'); const exit = document.getElementById('tracking-exit-btn');
                 
                 resetStepGlowVisuals();
+
+                // DYNAMIC DISPATCH MOTION CONTROLLER ENGINE FOR LIVE ALLOCATION REVEAL
+                const riderCardNode = document.getElementById('live-rider-card-node');
+                if(d.status === 'dispatched' && d.riderName) {
+                    document.getElementById('live-rider-name-node').innerText = `👦 ${d.riderName}`;
+                    document.getElementById('live-rider-phone-anchor-node').href = `tel:${d.riderPhone}`;
+                    if(riderCardNode) {
+                        riderCardNode.classList.remove('hidden');
+                        setTimeout(() => {
+                            riderCardNode.classList.remove('scale-75', 'opacity-0', 'translate-y-6');
+                            riderCardNode.classList.add('scale-100', 'opacity-100', 'translate-y-0');
+                        }, 40);
+                    }
+                } else {
+                    if(riderCardNode) {
+                        riderCardNode.classList.add('hidden', 'scale-75', 'opacity-0', 'translate-y-6');
+                    }
+                }
 
                 if(d.status === 'placed') {
                     document.getElementById('step-placed').className = "flex gap-4 items-start font-black text-amber-500 scale-105 transition duration-300";
