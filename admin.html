@@ -20,6 +20,13 @@
         }
         .kitchen-red-beacon { animation: emergencyRedGlow 1.2s infinite ease-in-out; border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.15) !important; }
         .red-dot-beacon { width: 10px; height: 10px; background-color: #ef4444; box-shadow: 0 0 10px #ef4444; border-radius: 9999px; display: inline-block; animation: emergencyRedGlow 1.2s infinite ease-in-out; }
+        
+        /* PULSING BLUE GLOW FOR OUTBOUND CUSTOMER MESSAGES */
+        @keyframes messagePulseGlowNode {
+            0%, 100% { border-color: rgba(59, 130, 246, 0.3); box-shadow: 0 0 8px rgba(59, 130, 246, 0.1); }
+            50% { border-color: rgba(59, 130, 246, 0.8); box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+        }
+        .incoming-msg-radar-glow { animation: messagePulseGlowNode 1.4s infinite ease-in-out; background: rgba(30, 58, 138, 0.25) !important; }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen antialiased pb-24">
@@ -156,6 +163,29 @@
 
                     let riderInfoLineNode = (order.status === 'dispatched' && order.riderName) ? `<p class="text-blue-400 font-bold text-[11px] mt-1"><i class="fa-solid fa-motorcycle"></i> Rider: ${order.riderName} (${order.riderPhone})</p>` : '';
 
+                    // LIVE DYNAMIC QUICK-REPLY CHAT COMPONENT INSIDE THE GRID INJECTOR
+                    let adminChatBoxMarkupNode = "";
+                    if(order.status === 'dispatched') {
+                        let chatBubbleGlowClass = order.lastCustomerMsg ? "incoming-msg-radar-glow" : "bg-slate-900/60";
+                        let chatContentLineNode = order.lastCustomerMsg ? 
+                            `<span class="text-blue-400 animate-pulse font-black">✉️ Customer: "${order.lastCustomerMsg}"</span>` : 
+                            (order.lastRiderReply ? `<span class="text-slate-500">Replied: "${order.lastRiderReply}"</span>` : `<span class="text-slate-600">No active messages...</span>`);
+
+                        adminChatBoxMarkupNode = `
+                            <div class="mt-4 border-t border-white/5 pt-3 ${chatBubbleGlowClass} p-3 rounded-2xl text-left transition-all duration-300">
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-comments"></i> Rider & Customer Chat Stream:</p>
+                                <div class="text-[11px] font-bold mb-2.5 leading-tight">${chatContentLineNode}</div>
+                                ${order.lastCustomerMsg ? `
+                                <div class="flex gap-1.5 overflow-x-auto hide-scrollbar pb-0.5">
+                                    <button onclick="sendRiderReplyNode('${order.id}', 'On the way, boss!')" class="bg-slate-950 border border-white/10 hover:border-blue-500 text-slate-300 text-[9px] font-bold px-2 py-1.5 rounded-lg whitespace-nowrap">On my way!</button>
+                                    <button onclick="sendRiderReplyNode('${order.id}', 'Reached your location')" class="bg-slate-950 border border-white/10 hover:border-blue-500 text-slate-300 text-[9px] font-bold px-2 py-1.5 rounded-lg whitespace-nowrap">Reached</button>
+                                    <button onclick="sendRiderReplyNode('${order.id}', 'Stuck in traffic')" class="bg-slate-950 border border-white/10 hover:border-blue-500 text-slate-300 text-[9px] font-bold px-2 py-1.5 rounded-lg whitespace-nowrap">Traffic Jam</button>
+                                    <button onclick="sendRiderReplyNode('${order.id}', 'Order delivered')" class="bg-slate-950 border border-white/10 hover:border-blue-500 text-slate-300 text-[9px] font-bold px-2 py-1.5 rounded-lg whitespace-nowrap">Delivered</button>
+                                </div>` : ''}
+                            </div>
+                        `;
+                    }
+
                     grid.innerHTML += `
                         <div class="glass-card ${emergencyClass} p-6 rounded-[2rem] flex flex-col justify-between border border-white/[0.04] transition duration-300 transform hover:-translate-y-1 shadow-2xl relative">
                             <div>
@@ -172,6 +202,7 @@
                                     ${riderInfoLineNode}
                                 </div>
                                 <div class="bg-slate-950/60 p-3 rounded-xl text-xs font-bold text-slate-200 mb-4 whitespace-pre-line leading-relaxed">${order.items}</div>
+                                ${adminChatBoxMarkupNode}
                             </div>
                             <div class="border-t border-white/[0.04] pt-4 space-y-3">
                                 <div class="flex justify-between items-center"><span class="text-[10px] font-black text-slate-500 uppercase">Total Invoice:</span><span class="text-2xl font-black text-orange-500 brand-font">₹${order.total}</span></div>
@@ -259,6 +290,14 @@
                 kitchenGestureTriggersNode.forEach(e => document.removeEventListener(e, bypassKitchenAudioLockNode));
             }, { passive: true });
         });
+
+        // LIVE QUICK CHAT RIDER TRANSMISSION REPLIES ENGINE
+        window.sendRiderReplyNode = function(orderId, replyTextString) {
+            db.ref('orders/' + orderId).update({
+                lastCustomerMsg: null, // Clear customer's message query on active reply strike
+                lastRiderReply: replyTextString
+            });
+        }
     </script>
 </body>
 </html>
