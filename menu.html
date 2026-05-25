@@ -13,32 +13,32 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; background-color: #030712; }
         .brand-font-premium { font-family: 'Playfair Display SC', serif; }
         .glass-premium { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.04); }
-        .glass-header { background: rgba(3, 7, 18, 0.85); backdrop-blur: 24px; -webkit-backdrop-filter: blur(24px); }
+        .glass-header { background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none;有用 scroll-bar-width: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scroll-bar-width: none; }
         .active-pill { background: linear-gradient(135deg, #f97316, #ea580c); color: #000000; font-weight: 800; box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3); border-color: transparent; }
-        @keyframes drift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(40px, 30px) scale(1.1); } }
-        .drift { animation: drift 18s ease-in-out infinite; }
-        @keyframes stable-pulse { 0%, 100% { box-shadow: 0 0 12px rgba(249, 115, 22, 0.1); } 50% { box-shadow: 0 0 28px rgba(249, 115, 22, 0.4); } }
-        .secure-pulse { animation: stable-pulse 2s infinite; }
+        @keyframes drift { 0%, 100’% { transform: translate(0, 0) scale(1); } 50% { transform: translate(45px, 35px) scale(1.08); } }
+        .drift { animation: drift 20s ease-in-out infinite; }
+        @keyframes structural-pulse { 0%, 100% { box-shadow: 0 0 10px rgba(249, 115, 22, 0.1); } 50% { box-shadow: 0 0 25px rgba(249, 115, 22, 0.35); } }
+        .secure-pulse { animation: structural-pulse 2s infinite; }
     </style>
 </head>
 <body class="text-slate-100 antialiased overflow-x-hidden selection:bg-orange-500 selection:text-black">
 
-    <div class="fixed top-[-15%] left-[-15%] w-[70vw] h-[70vw] bg-gradient-to-tr from-orange-600/15 to-transparent rounded-full blur-[150px] pointer-events-none z-0 drift"></div>
-    <div class="fixed bottom-[5%] right-[-15%] w-[60vw] h-[60vw] bg-gradient-to-br from-blue-600/10 to-orange-500/10 rounded-full blur-[130px] pointer-events-none z-0 drift" style="animation-delay: -6s;"></div>
+    <div class="fixed top-[-15%] left-[-15%] w-[75vw] h-[75vw] bg-gradient-to-tr from-orange-600/12 to-transparent rounded-full blur-[150px] pointer-events-none z-0 drift"></div>
+    <div class="fixed bottom-[8%] right-[-15%] w-[65vw] h-[65vw] bg-gradient-to-br from-blue-600/10 to-orange-500/10 rounded-full blur-[130px] pointer-events-none z-0 drift" style="animation-delay: -7s;"></div>
 
-    <div id="mini-tracker-bar" class="fixed bottom-6 right-4 left-4 sm:left-auto sm:w-80 bg-slate-950/95 border border-orange-500/40 p-4 rounded-2xl shadow-2xl flex items-center justify-between z-50 hidden transition-all duration-300 hover:border-orange-500 cursor-pointer secure-pulse" onclick="maximizeTrackingViewNode()">
+    <div id="mini-tracker-bar" class="fixed bottom-6 right-4 left-4 sm:left-auto sm:w-80 bg-slate-950/95 border border-orange-500/40 p-4 rounded-2xl shadow-2xl flex items-center justify-between z-50 hidden cursor-pointer secure-pulse" onclick="maximizeTrackingViewNode()">
         <div class="flex items-center gap-3 truncate">
             <div class="h-9 w-9 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-500 flex-shrink-0">
-                <i class="fa-solid fa-pizza-slice animate-spin" style="animation-duration: 4s;"></i>
+                <i class="fa-solid fa-pizza-slice animate-spin" style="animation-duration: 5s;"></i>
             </div>
             <div class="truncate">
-                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Live Order Feed</p>
-                <h4 id="mini-status-text" class="text-xs font-black text-white mt-0.5 uppercase tracking-wide truncate">Processing...</h4>
+                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Active System Connection</p>
+                <h4 id="mini-status-text" class="text-xs font-black text-white mt-0.5 uppercase tracking-wide truncate">Syncing State...</h4>
             </div>
         </div>
-        <span class="text-[9px] font-black bg-gradient-to-r from-orange-500 to-amber-500 text-black px-3 py-1.5 rounded-xl uppercase tracking-wide shadow-md">Monitor</span>
+        <span class="text-[9px] font-black bg-gradient-to-r from-orange-500 to-amber-500 text-black px-3 py-1.5 rounded-xl uppercase tracking-wide shadow-md">Track Live</span>
     </div>
 
     <div id="store-front-view" class="relative z-10">
@@ -130,16 +130,16 @@
     <div id="history-drawer" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[85vh] overflow-y-auto shadow-2xl max-w-xl mx-auto">
         <div class="w-full max-w-md flex justify-between items-center mb-4 border-b border-white/5 pb-2.5">
             <span class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em] flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left"></i> Your Order Ledger History</span>
-            <button onclick="document.getElementById('history-drawer').classList.add('translate-y-full')" class="h-8 w-8 bg-slate-900 border border-white/5 text-slate-400 hover:text-orange-500 font-bold rounded-full flex items-center justify-center transition active:scale-90">✕</button>
+            <button onclick="document.getElementById('history-drawer').classList.add('translate-y-full')" class="text-slate-400">✕</button>
         </div>
         <div class="w-full max-w-md space-y-3 overflow-y-auto pr-1" id="history-items-container"></div>
     </div>
 
     <div id="checkout-bar" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[95vh] overflow-y-auto shadow-2xl max-w-xl mx-auto">
-        <div class="w-full max-w-md flex justify-between items-center mb-3 border-b border-white/5 pb-2.5"><span class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Review Basket</span><button onclick="closeCartDrawer()" class="text-slate-400">✕</button></div>
+        <div class="w-full max-w-md flex justify-between items-center mb-3 border-b border-white/5 pb-2.5"><span class="text-[10px] font-black text-orange-400 uppercase">Review Basket</span><button onclick="closeCartDrawer()" class="text-slate-400">✕</button></div>
 
         <div class="w-full max-w-md bg-slate-900 border border-white/5 p-4 rounded-xl mb-4">
-            <div class="flex justify-between items-center mb-1.5"><span class="text-[10px] font-extrabold uppercase tracking-wide text-slate-300">Delivery Threshold Status</span><span id="delivery-msg" class="text-[10px] font-black text-amber-400">Order minimum ₹100</span></div>
+            <div class="flex justify-between items-center mb-1.5"><span class="text-[10px] font-extrabold uppercase tracking-wide text-slate-300">Delivery Threshold Progress</span><span id="delivery-msg" class="text-[10px] font-black text-amber-400">Order minimum ₹100</span></div>
             <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden relative"><div id="delivery-progress" class="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-emerald-500 w-0 transition-all duration-300"></div></div>
         </div>
 
@@ -149,15 +149,15 @@
             <input type="tel" id="cust-phone" maxlength="10" onkeyup="validateFormStateNode()" placeholder="10-Digit Mobile Number..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-mono font-bold">
             
             <div class="grid grid-cols-2 gap-2.5 pt-1">
-                <button type="button" id="tab-srv-dine" onclick="setServiceModeTypeNode('DineIn')" class="bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl transition w-full">Dine-In / Table</button>
-                <button type="button" id="tab-srv-delv" onclick="setServiceModeTypeNode('Delivery')" class="bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl transition w-full">Home Delivery</button>
+                <button type="button" id="tab-srv-dine" onclick="setServiceModeTypeNode('DineIn')" class="bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl w-full transition duration-300 active:scale-95 shadow-md">Dine-In / Table</button>
+                <button type="button" id="tab-srv-delv" onclick="setServiceModeTypeNode('Delivery')" class="bg-slate-950 border border-white/10 text-slate-400 font-bold text-xs py-2.5 rounded-xl w-full transition duration-300 active:scale-95 border border-white/5">Home Delivery</button>
             </div>
 
             <div id="geo-location-container" class="hidden flex justify-between items-center pt-1 gap-2">
                 <button type="button" id="gps-btn-node" onclick="fetchNativeGPSCoordinatesNode(this)" class="bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold text-[10px] px-3 py-2 rounded-xl transition w-full">📍 Use Current GPS Location</button>
                 <button type="button" id="btn-prev-location-pill" onclick="injectCachedPastAddressNode()" class="hidden bg-orange-500/10 border border-orange-500/20 text-orange-400 font-black text-[10px] px-3 py-2 rounded-xl truncate w-full">🕒 Purana Address</button>
             </div>
-            <input type="text" id="cust-loc" onkeyup="validateFormStateNode()" placeholder="Table Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none">
+            <input type="text" id="cust-loc" onkeyup="validateFormStateNode()" placeholder="Table Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold">
         </div>
 
         <div class="w-full max-w-md flex justify-between items-center mb-4 px-1">
@@ -166,18 +166,18 @@
         </div>
 
         <div class="w-full max-w-md mb-4 text-left">
-            <p class="text-[9px] font-black text-slate-400 uppercase mb-2">Select Payment Mode:</p>
+            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Select Payment Mode:</p>
             <div class="grid grid-cols-2 gap-3">
-                <label class="flex items-center justify-center gap-2 bg-slate-900 border-2 border-orange-500 p-3.5 rounded-xl cursor-pointer" id="label-cod"><input type="radio" name="pay-mode" value="COD" checked onclick="togglePaymentView('COD')"><span class="font-bold text-xs text-white">COD</span></label>
+                <label class="flex items-center justify-center gap-2 bg-slate-900 border-2 border-orange-500 p-3.5 rounded-xl cursor-pointer" id="label-cod"><input type="radio" name="pay-mode" value="COD" checked onclick="togglePaymentView('COD')"><span class="font-bold text-xs text-white">Cash On Delivery</span></label>
                 <label class="flex items-center justify-center gap-2 bg-slate-900 border-2 border-transparent p-3.5 rounded-xl cursor-pointer" id="label-online"><input type="radio" name="payment-method" value="Online" onclick="togglePaymentView('Online')"><span class="font-bold text-xs text-white">UPI QR</span></label>
             </div>
         </div>
 
         <div id="online-pay-block" class="w-full max-w-md hidden mb-4">
-            <div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center border border-slate-200"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" alt="UPI QR" class="w-40 h-40 object-contain"><input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs mt-3 text-white focus:outline-none"></div>
+            <div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center border border-slate-200"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" alt="UPI QR" class="w-40 h-40 object-contain"><input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs mt-3 text-white focus:outline-none focus:border-orange-500 font-semibold"></div>
         </div>
 
-        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 transition duration-300" disabled>PLACE CLOUD ORDER</button>
+        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 shadow-2xl secure-pulse" disabled>PLACE CLOUD ORDER</button>
     </div>
 
     <script>
@@ -199,21 +199,21 @@
 
         function renderInterfaceMenuRoom() {
             ['biryani', 'thali', 'main', 'starters', 'breads', 'snacks', 'rice', 'side'].forEach(c => {
-                const container = document.getElementById(`${c}-container`); if(container) container.innerHTML = "";
+                const b = document.getElementById(`${c}-container`); if(b) b.innerHTML = "";
             });
             fullMenu.forEach(item => {
                 const container = document.getElementById(`${item.cat}-container`); if(!container) return;
                 container.innerHTML += `
-                    <div id="dish-node-card-${item.id}" class="dish-card bg-[#0d1527]/60 border border-white/5 p-4 rounded-2xl flex justify-between items-center transition-all duration-300 transform hover:-translate-y-0.5 shadow-md" data-name="${item.name.toLowerCase()}">
-                        <div><h3 class="font-bold text-slate-100 text-xs tracking-tight">${item.name}</h3><p id="price-tag-node-${item.id}" class="text-orange-500 font-extrabold text-xs mt-1">₹${item.price}</p></div>
-                        <div class="flex items-center gap-2"><button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-7 h-7 bg-slate-800 rounded-lg hidden text-xs font-bold transition active:scale-90">-</button><span id="qty-${item.id}" class="font-black text-xs text-white hidden">0</span><button id="plus-btn-node-${item.id}" onclick="changeQty(${item.id}, 1)" class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-xs rounded-lg flex items-center justify-center transition active:scale-90 shadow-md">+</button></div>
+                    <div id="dish-node-card-${item.id}" class="dish-card bg-[#0d1527]/65 border border-white/5 p-4 rounded-2xl flex justify-between items-center transition-all duration-300 transform hover:-translate-y-0.5 shadow-md" data-name="${item.name.toLowerCase()}">
+                        <div><h3 class="font-bold text-slate-100 text-xs md:text-sm tracking-tight">${item.name}</h3><p id="price-tag-node-${item.id}" class="text-orange-500 font-extrabold text-xs mt-1">₹${item.price}</p></div>
+                        <div class="flex items-center gap-2.5"><button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-7 h-7 bg-slate-800 rounded-lg hidden text-xs font-bold border border-white/5 transition active:scale-95">-</button><span id="qty-${item.id}" class="font-black text-xs text-white hidden">0</span><button id="plus-btn-node-${item.id}" onclick="changeQty(${item.id}, 1)" class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-xs rounded-lg flex items-center justify-center transition active:scale-95 shadow-md">+</button></div>
                     </div>
                 `;
             });
             db.ref('menu_stock').on('value', (snapshot) => {
                 const stock = snapshot.val() || {};
                 fullMenu.forEach(item => {
-                    const card = document.getElementById(`dish-node-card-${item.id}`); const btn = document.getElementById(`plus-btn-node-${item.id}`); const tag = document.getElementById::(`price-tag-node-${item.id}`);
+                    const card = document.getElementById(`dish-node-card-${item.id}`); const btn = document.getElementById(`plus-btn-node-${item.id}`); const tag = document.getElementById(`price-tag-node-${item.id}`);
                     if(card && btn && tag) {
                         if(stock[item.id] === false) { card.classList.add('opacity-30', 'pointer-events-none'); btn.disabled = true; tag.innerHTML = `<span class="text-red-500 text-[10px] font-black uppercase tracking-wider bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">Out of Stock</span>`; }
                         else { card.classList.remove('opacity-30', 'pointer-events-none'); btn.disabled = false; tag.innerHTML = `₹${item.price}`; }
@@ -242,10 +242,10 @@
             const btnDine = document.getElementById('tab-srv-dine'); const btnDelv = document.getElementById('tab-srv-delv');
             const locInput = document.getElementById('cust-loc'); const geoBox = document.getElementById('geo-location-container');
             if(mode === 'DineIn') {
-                btnDine.className = "bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl w-full transition shadow-md"; btnDelv.className = "bg-slate-950 text-slate-400 text-xs py-2.5 rounded-xl w-full transition border border-white/5";
+                btnDine.className = "bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl transition w-full shadow-md"; btnDelv.className = "bg-slate-950 text-slate-400 text-xs py-2.5 rounded-xl w-full transition border border-white/5";
                 locInput.placeholder = "Table Number daalein..."; geoBox.classList.add('hidden');
             } else {
-                btnDelv.className = "bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl w-full transition shadow-md"; btnDine.className = "bg-slate-950 text-slate-400 text-xs py-2.5 rounded-xl w-full transition border border-white/5";
+                btnDelv.className = "bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl transition w-full shadow-md"; btnDine.className = "bg-slate-950 text-slate-400 text-xs py-2.5 rounded-xl w-full transition border border-white/5";
                 locInput.placeholder = "Full Home Delivery Address daalein..."; geoBox.classList.remove('hidden');
                 if(localStorage.getItem('sw_cached_delivery_address')) { document.getElementById('btn-prev-location-pill').classList.remove('hidden'); }
             }
@@ -256,11 +256,13 @@
             if (!navigator.geolocation) return alert("GPS is not supported."); btn.innerHTML = "<i class='fa-solid fa-spinner animate-spin'></i> Syncing Coords...";
             navigator.geolocation.getCurrentPosition(async (p) => {
                 try {
-                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
-                    const d = await r.json(); document.getElementById('cust-loc').value = d.display_name || `Kanpur Location Node Pin`;
-                } catch(e) { document.getElementById('cust-loc').value = `Kanpur Lat: ${p.coords.latitude.toFixed(4)} Lon: ${p.coords.longitude.toFixed(4)}`; }
+                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}&addressdetails=1`);
+                    const d = await r.json(); 
+                    if(d && d.display_name) { document.getElementById('cust-loc').value = d.display_name; } 
+                    else { document.getElementById('cust-loc').value = `Kanpur Coords: ${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`; }
+                } catch(e) { document.getElementById('cust-loc').value = `Kanpur Lat:${p.coords.latitude.toFixed(4)} Lon:${p.coords.longitude.toFixed(4)}`; }
                 btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode();
-            }, () => { alert("GPS Permission Locked! Settings kholkar address type karein manually."); btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode(); }, { enableHighAccuracy: true, timeout: 8000 });
+            }, (err) => { alert("GPS Permission Locked! Please check your settings or write address."); btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode(); }, { enableHighAccuracy: true, timeout: 7000 });
         }
 
         window.injectCachedPastAddressNode = function() { document.getElementById('cust-loc').value = localStorage.getItem('sw_cached_delivery_address'); validateFormStateNode(); }
@@ -271,15 +273,17 @@
         window.validateFormStateNode = function() {
             const btn = document.getElementById('checkout-btn'); const name = document.getElementById('cust-name').value.trim();
             const phone = document.getElementById('cust-phone').value.trim(); const loc = document.getElementById('cust-loc').value.trim();
-            if(name.length >= 2 && phone.length === 10 && loc.length >= 1 && Object.keys(window.cart).length > 0) { btn.disabled = false; btn.className = "w-full bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs cursor-pointer shadow-lg transition transform duration-200 active:scale-95"; }
-            else { btn.disabled = true; btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60"; }
+            const utr = document.getElementById('utr-input').value.trim();
+            let fOk = name.length >= 2 && phone.length === 10 && loc.length >= 1 && Object.keys(window.cart).length > 0;
+            let pOk = (window.selectedMethod === 'COD') || (window.selectedMethod === 'Online' && utr.length >= 4);
+            if(fOk && pOk) { btn.disabled = false; btn.className = "w-full bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center tracking-wide cursor-pointer shadow-lg transform transition active:scale-95"; }
+            else { btn.disabled = true; btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 shadow-xl"; }
         }
 
         window.sendOrder = function() {
             let total = 0; Object.keys(window.cart).forEach(k => total += (window.cart[k].price * window.cart[k].qty));
             const name = document.getElementById('cust-name').value.trim(); const phone = document.getElementById('cust-phone').value.trim(); const loc = document.getElementById('cust-loc').value.trim(); const utr = window.selectedMethod === 'Online' ? document.getElementById('utr-input').value.trim() : "COD_MODE";
             let itemsStr = ""; Object.keys(window.cart).forEach(k => { itemsStr += `${window.cart[k].name} (x${window.cart[k].qty}), `; });
-
             db.ref('order_counter').transaction(c => (c || 0) + 1).then(res => {
                 if(res.committed) {
                     const id = "SW-" + String(res.snapshot.val()).padStart(6, '0');
@@ -287,9 +291,7 @@
                         localStorage.setItem('active_secondwife_order_id', id); localStorage.setItem('secondwife_tracker_state', 'full');
                         if(window.serviceModeTypeNode === 'Delivery') localStorage.setItem('sw_cached_delivery_address', loc);
                         
-                        let hist = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
-                        if(!hist.includes(id)){ hist.push(id); localStorage.setItem('secondwife_order_history', JSON.stringify(hist)); }
-                        
+                        let h = JSON.parse(localStorage.getItem('secondwife_order_history')) || []; if(!h.includes(id)){ h.push(id); localStorage.setItem('secondwife_order_history', JSON.stringify(h)); }
                         launchOrderTrackingInterfaceNode(id);
                     });
                 }
@@ -300,32 +302,47 @@
         
         function listenToOrderLive(id) {
             db.ref('orders/' + id).on('value', (s) => {
-                const d = s.val(); if(!d) return; const mini = document.getElementById('mini-status-text');
-                document.getElementById('step-placed').className = d.status==='placed'?"flex gap-4 font-black text-amber-400 scale-105 transition duration-300":"opacity-40 flex gap-4";
-                document.getElementById('step-cooking').className = d.status==='cooking'?"flex gap-4 font-black text-orange-400 scale-105 transition duration-300":"opacity-40 flex gap-4";
+                const d = s.val(); if(!d) return; const mini = document.getElementById('mini-status-text'); const exit = document.getElementById('tracking-exit-btn');
+                document.getElementById('step-placed').className = d.status==='placed'?"flex gap-4 items-start font-black text-amber-400 scale-105 transition duration-300":"opacity-40 flex gap-4 items-start";
+                document.getElementById('step-cooking').className = d.status==='cooking'?"flex gap-4 items-start font-black text-orange-400 scale-105 transition duration-300":"opacity-40 flex gap-4 items-start";
                 if(d.status==='cooking' && d.prepTime!=='0') document.getElementById('cooking-timer-text').innerHTML = `🔥 Chef Cooking. *Est: ${d.prepTime || 15} Mins*`;
-                document.getElementById('step-dispatched').className = d.status==='dispatched'?"flex gap-4 font-black text-blue-400 scale-105 transition duration-300":"opacity-40 flex gap-4";
-                document.getElementById('step-delivered').className = d.status==='delivered'?"flex gap-4 font-black text-emerald-400 scale-105 transition duration-300":"opacity-40 flex gap-4";
-                mini.innerText = d.status.toUpperCase();
+                document.getElementById('step-dispatched').className = d.status==='dispatched'?"flex gap-4 items-start font-black text-blue-400 scale-105 transition duration-300":"opacity-40 flex gap-4 items-start";
+                document.getElementById('step-delivered').className = d.status==='delivered'?"flex gap-4 items-start font-black text-emerald-400 scale-105 transition duration-300":"opacity-40 flex gap-4 items-start";
+                mini.innerText = d.status.toUpperCase(); if(d.status==='delivered') exit.innerHTML = "Order Complete & Clear";
             });
         }
         window.minimizeTrackingViewNode = function() { localStorage.setItem('secondwife_tracker_state', 'mini'); document.getElementById('tracking-screen-view').classList.add('hidden'); document.getElementById('store-front-view').classList.remove('hidden'); document.getElementById('mini-tracker-bar').classList.remove('hidden'); }
         window.maximizeTrackingViewNode = function() { document.getElementById('store-front-view').classList.add('hidden'); document.getElementById('mini-tracker-bar').classList.add('hidden'); document.getElementById('tracking-screen-view').classList.remove('hidden'); }
-        window.scrollToSection = function(id, el) { const t=document.getElementById(id); if(t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap"); el.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap"; }
-        window.searchDish = function() { const input = document.getElementById('search-bar').value.toLowerCase().trim(); const cards = document.getElementsByClassName('dish-card'); for (let i = 0; i < cards.length; i++) cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "flex" : "none"; }
+        
+        window.scrollToSection = function(id, el) { 
+            const t = document.getElementById(id); 
+            if(t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); 
+            document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap"); 
+            el.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap"; 
+        }
+        
+        window.searchDish = function() { 
+            const input = document.getElementById('search-bar').value.toLowerCase().trim(); 
+            const cards = document.getElementsByClassName('dish-card'); 
+            for (let i = 0; i < cards.length; i++) cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "flex" : "none"; 
+        }
         
         window.openHistoryDrawerNode = function() {
             document.getElementById('history-drawer').classList.remove('translate-y-full'); const container = document.getElementById('history-items-container'); const list = JSON.parse(localStorage.getItem('secondwife_order_history')) || [];
-            if(list.length === 0) { container.innerHTML = `<p class="text-center text-xs text-slate-500 py-12">No past orders logged from this device node.</p>`; return; }
-            container.innerHTML = `<div class='text-center text-xs py-4 text-orange-500'><i class='fa-solid fa-spinner animate-spin mr-2'></i>Syncing Live Status Ledger...</div>`;
+            if(list.length === 0) { container.innerHTML = `<p class="text-center text-xs text-slate-500 py-12">No past orders found.</p>`; return; }
+            container.innerHTML = `<div class='text-center text-xs py-4 text-orange-500'><i class='fa-solid fa-spinner animate-spin mr-2'></i>Syncing Status Matrix...</div>`;
             Promise.all(list.map(id => db.ref('orders/' + id).once('value').then(snap => snap.val()))).then(results => {
                 container.innerHTML = ""; results.filter(r => r !== null).sort((a,b) => b.timestamp - a.timestamp).forEach(order => {
                     let badgeColor = order.status === 'delivered' ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-orange-500/10 border-orange-500/30 text-orange-400 animate-pulse";
-                    let badgeText = order.status === 'delivered' ? "✓ COMPLETED" : "⚡ ACTIVE PHASE";
-                    container.innerHTML += `<div class="bg-slate-900/90 border border-white/5 rounded-2xl p-4 space-y-2"><div class="flex justify-between items-center border-b border-white/5 pb-2"><div><span class="font-black text-white block text-xs">${order.id}</span></div><span class="text-[9px] font-black px-2.5 py-1 rounded-lg border uppercase tracking-wider ${badgeColor}">${badgeText}</span></div><p class="text-slate-300 font-medium text-[11px] bg-slate-950/40 p-2 rounded-xl">${order.items}</p><div class="flex justify-between items-center text-xs font-bold pt-1"><span class="text-slate-500 text-[10px] uppercase font-bold">${order.payment} Mode</span><span class="text-orange-500 font-black text-sm">₹${order.total}</span></div></div>`;
+                    let badgeText = order.status === 'delivered' ? "✓ DELIVERED COMPLETED" : "⚡ ACTIVE PROCESSING";
+                    container.innerHTML += `<div class="bg-slate-900/90 border border-white/5 rounded-2xl p-4 space-y-2"><div class="flex justify-between items-center border-b border-white/5 pb-2"><div><span class="font-black text-white block text-xs">${order.id}</span></div><span class="text-[9px] font-black px-2.5 py-1 rounded-lg border uppercase tracking-wider ${badgeColor}">${badgeText}</span></div><p class="text-slate-300 font-medium text-[11px] bg-slate-950/40 p-2 rounded-xl">${order.items}</p><div class="flex justify-between items-center text-xs font-bold pt-1"><span class="text-slate-500 text-[10px] font-bold">${order.payment} Mode</span><span class="text-orange-500 font-black text-sm">₹${order.total}</span></div></div>`;
                 });
             });
         }
+        
+        localStorage.removeItem('active_secondwife_order_id');
+        localStorage.removeItem('secondwife_tracker_state');
+        
         window.onload = renderInterfaceMenuRoom;
     </script>
 </body>
