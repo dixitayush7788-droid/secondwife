@@ -6,7 +6,7 @@
     <title>SECOND WIFE Cafe & Restaurant | Elite Order Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display+SC:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -18,13 +18,27 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scroll-bar-width: none; }
         .active-pill { background: linear-gradient(135deg, #f97316, #ea580c); color: #000000; font-weight: 800; box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3); border-color: transparent; }
+        
+        /* CINEMATIC EFFECTS & MOTION ENGINES */
         @keyframes drift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(45px, 35px) scale(1.08); } }
         .drift { animation: drift 20s ease-in-out infinite; }
         @keyframes structural-pulse { 0%, 100% { box-shadow: 0 0 10px rgba(249, 115, 22, 0.1); } 50% { box-shadow: 0 0 25px rgba(249, 115, 22, 0.35); } }
         .secure-pulse { animation: structural-pulse 2s infinite; }
-        @keyframes rgbBreath { 0%, 100% { color: #ffffff; text-shadow: 0 0 12px rgba(255,255,255,0.2); } 33% { color: #f97316; text-shadow: 0 0 20px rgba(249,115,22,0.6); } 66% { color: #ef4444; text-shadow: 0 0 20px rgba(239,68,68,0.6); } }
+
+        /* RGB Neon Breath Text Animation for Brand Display */
+        @keyframes rgbBreath {
+            0%, 100% { color: #ffffff; text-shadow: 0 0 12px rgba(255,255,255,0.2); }
+            33% { color: #f97316; text-shadow: 0 0 20px rgba(249,115,22,0.6); }
+            66% { color: #ef4444; text-shadow: 0 0 20px rgba(239,68,68,0.6); }
+        }
         .rgb-neon-brand { animation: rgbBreath 8s ease-in-out infinite; }
-        @keyframes stepGlowPulse { 0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.5); } 70% { box-shadow: 0 0 0 12px rgba(249, 115, 22, 0); } 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); } }
+
+        /* Realtime Tracker Steps Active Pulse Rings */
+        @keyframes stepGlowPulse {
+            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.5); }
+            70% { box-shadow: 0 0 0 12px rgba(249, 115, 22, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        }
         .active-tracker-step-ring { animation: stepGlowPulse 1.8s infinite; }
     </style>
 </head>
@@ -37,7 +51,7 @@
     </div>
 
     <audio id="bg-music" loop preload="auto">
-        <source src="music.mp3" type="audio/mpeg">
+        <source src="Music.mp3" type="audio/mpeg">
     </audio>
 
     <div class="fixed top-[-15%] left-[-15%] w-[75vw] h-[75vw] bg-gradient-to-tr from-orange-600/12 to-transparent rounded-full blur-[150px] pointer-events-none z-0 drift"></div>
@@ -155,21 +169,6 @@
                 <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative transition-all duration-300" id="icon-delivered">4</div>
                 <div><h3 id="title-delivered" class="font-bold text-sm text-white transition-colors duration-300">Delivered Successfully</h3><p class="text-xs text-slate-400 mt-0.5">Swaad ka lutf uthaiye! Shukriya.</p></div>
             </div>
-
-            <div id="live-rider-card-node" class="hidden bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl flex justify-between items-center transition-all duration-300">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-motorcycle"></i>
-                    </div>
-                    <div>
-                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Delivery Hero Allocated</p>
-                        <h4 id="live-rider-name-node" class="text-xs font-black text-white mt-0.5 uppercase tracking-wide">Rider Name</h4>
-                    </div>
-                </div>
-                <a id="live-rider-phone-anchor-node" href="tel:" class="w-9 h-9 bg-gradient-to-br from-emerald-500 to-green-600 text-black font-black rounded-xl flex items-center justify-center transition active:scale-75 shadow-md">
-                    <i class="fa-solid fa-phone"></i>
-                </a>
-            </div>
         </div>
         
         <button id="tracking-exit-btn" onclick="minimizeTrackingViewNode()" class="mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50 transition w-full"><i class="fa-solid fa-house-chimney"></i> Back to Menu (Keep Tracking)</button>
@@ -254,11 +253,7 @@
                 container.innerHTML += `
                     <div id="dish-node-card-${item.id}" class="dish-card bg-[#0d1527]/65 border border-white/5 p-4 rounded-2xl flex justify-between items-center transition-all duration-300 transform hover:-translate-y-0.5 shadow-md" data-name="${item.name.toLowerCase()}">
                         <div><h3 class="font-bold text-slate-100 text-xs md:text-sm tracking-tight">${item.name}</h3><p id="price-tag-node-${item.id}" class="text-orange-500 font-extrabold text-sm mt-1">₹${item.price}</p></div>
-                        <div id="counter-zone-${item.id}" class="flex items-center justify-end bg-slate-900/40 border border-white/5 rounded-xl p-1 min-w-[80px] transition-all duration-300">
-                            <button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-7 h-7 bg-slate-800 rounded-lg hidden text-xs font-bold border border-white/5 transition-all duration-200 active:scale-75 flex items-center justify-center text-slate-300 hover:text-white">-</button>
-                            <span id="qty-${item.id}" class="font-black text-xs text-white hidden mx-3 transition-all duration-200 transform scale-0">0</span>
-                            <button id="plus-btn-node-${item.id}" onclick="changeQty(${item.id}, 1)" class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-xs rounded-lg flex items-center justify-center transition-all duration-200 active:scale-75 shadow-md">+</button>
-                        </div>
+                        <div class="flex items-center gap-2.5"><button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-7 h-7 bg-slate-800 rounded-lg hidden text-xs font-bold border border-white/5 transition active:scale-95">-</button><span id="qty-${item.id}" class="font-black text-xs text-white hidden">0</span><button id="plus-btn-node-${item.id}" onclick="changeQty(${item.id}, 1)" class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-xs rounded-lg flex items-center justify-center transition active:scale-95 shadow-md">+</button></div>
                     </div>
                 `;
             });
@@ -278,33 +273,9 @@
             const item = fullMenu.find(i => i.id === id); if (!window.cart[id]) window.cart[id] = { name: item.name, price: item.price, qty: 0 };
             window.cart[id].qty += delta; if (window.cart[id].qty <= 0) delete window.cart[id];
             
-            const qTxt = document.getElementById(`qty-${id}`); 
-            const mBtn = document.getElementById('minus-' + id);
-            const zone = document.getElementById(`counter-zone-${id}`);
+            const qTxt = document.getElementById(`qty-${id}`); const mBtn = document.getElementById('minus-' + id);
             const curr = window.cart[id] ? window.cart[id].qty : 0;
-            
-            if(qTxt && mBtn && zone) { 
-                if(curr > 0) { 
-                    qTxt.innerText = curr; 
-                    qTxt.classList.remove('hidden'); 
-                    mBtn.classList.remove('hidden');
-                    setTimeout(() => {
-                        qTxt.classList.remove('scale-0');
-                        qTxt.classList.add('scale-100');
-                    }, 10);
-                    zone.classList.remove('bg-slate-900/40');
-                    zone.classList.add('bg-slate-950/80', 'border-orange-500/30', 'px-2');
-                } else { 
-                    qTxt.classList.remove('scale-100');
-                    qTxt.classList.add('scale-0');
-                    setTimeout(() => {
-                        qTxt.classList.add('hidden'); 
-                        mBtn.classList.add('hidden'); 
-                    }, 150);
-                    zone.classList.remove('bg-slate-950/80', 'border-orange-500/30', 'px-2');
-                    zone.classList.add('bg-slate-900/40');
-                } 
-            }
+            if(qTxt && mBtn) { if(curr > 0) { qTxt.innerText = curr; qTxt.classList.remove('hidden'); mBtn.classList.remove('hidden'); } else { qTxt.classList.add('hidden'); mBtn.classList.add('hidden'); } }
 
             let tItems = 0; let tPrice = 0; Object.keys(window.cart).forEach(k => { tItems += window.cart[k].qty; tPrice += (window.cart[k].price * window.cart[k].qty); });
             const badge = document.getElementById('cart-count'); const bar = document.getElementById('checkout-bar');
@@ -409,16 +380,6 @@
                 
                 resetStepGlowVisuals();
 
-                // HIDE OR SHOW LIVE RIDER DECK CARD DEPENDING UPON REALTIME DISPATCH CONTEXT
-                const riderCardNode = document.getElementById('live-rider-card-node');
-                if(d.status === 'dispatched' && d.riderName) {
-                    document.getElementById('live-rider-name-node').innerText = `👦 ${d.riderName}`;
-                    document.getElementById('live-rider-phone-anchor-node').href = `tel:${d.riderPhone}`;
-                    if(riderCardNode) riderCardNode.classList.remove('hidden');
-                } else {
-                    if(riderCardNode) riderCardNode.classList.add('hidden');
-                }
-
                 if(d.status === 'placed') {
                     document.getElementById('step-placed').className = "flex gap-4 items-start font-black text-amber-500 scale-105 transition duration-300";
                     document.getElementById('icon-placed').className = "w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative active-tracker-step-ring";
@@ -484,6 +445,7 @@
             });
         }
         
+        // PERSISTENCE ENGINE RESTORATION WITH AUTOMATIC SAFETY LOCKS
         const structuralCheckId = localStorage.getItem('active_secondwife_order_id');
         const internalSavedViewState = localStorage.getItem('secondwife_tracker_state');
         if(structuralCheckId) {
@@ -505,15 +467,17 @@
             });
         }
         
+        // BACKGROUND OPERATIONAL MUSIC SYSTEM INTERACTION LOOP WITH AUTO BYPASS
         window.toggleMusic = function() {
             const musicNode = document.getElementById('bg-music');
             const iconNode = document.getElementById('music-icon');
+            
             if (musicNode.paused) {
                 musicNode.volume = 0.4;
                 musicNode.play().then(() => {
                     iconNode.className = "fa-solid fa-volume-high text-emerald-400";
                 }).catch(err => {
-                    console.log("Interaction required.");
+                    console.log("Interaction required by native browser engine.");
                 });
             } else {
                 musicNode.pause();
@@ -521,6 +485,7 @@
             }
         }
 
+        // BROWSER ANTIPLAY BYPASS RADAR HOOKS
         const autoPlayBypassTriggersNode = ['click', 'touchstart', 'scrolling'];
         autoPlayBypassTriggersNode.forEach(triggerEvent => {
             document.addEventListener(triggerEvent, function autoPlayMusicOnFirstUserGestureNode() {
@@ -536,6 +501,7 @@
             }, { passive: true });
         });
 
+        // HIGH PERFORMANCE SCROLL SPY ENGINE FOR PILLS NAVIGATION
         const scrollSpyObserverOptionsNode = { root: null, rootMargin: '-140px 0px -60% 0px', threshold: 0.1 };
         const scrollSpyObserverNode = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -545,6 +511,7 @@
                     if (correspondingPillNode) {
                         document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap");
                         correspondingPillNode.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap";
+                        // Auto horizontal scroll sync for navigation deck
                         const containerRefNode = document.getElementById('category-nav-pills');
                         if (containerRefNode) {
                             const offsetLeftNode = correspondingPillNode.offsetLeft - containerRefNode.offsetLeft - 16;
