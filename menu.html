@@ -263,7 +263,7 @@
             <div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center border border-slate-200"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" alt="UPI QR" class="w-40 h-40 object-contain"><input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs mt-3 text-white focus:outline-none"></div>
         </div>
 
-        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 shadow-2xl secure-pulse" disabled>PLACE CLOUD ORDER</button>
+        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center tracking-wide cursor-pointer shadow-lg transform transition active:scale-95" disabled>PLACE CLOUD ORDER</button>
     </div>
 
     <script>
@@ -280,7 +280,7 @@
             { id: 23, cat: "breads", name: "Tandoori Roti", price: 12 }, { id: 24, cat: "breads", name: "Butter Tandoori Roti", price: 14 }, { id: 25, cat: "breads", name: "Missi Roti", price: 35 }, { id: 26, cat: "breads", name: "Plain Naan", price: 35 }, { id: 27, cat: "breads", name: "Butter Naan", price: 45 }, { id: 28, cat: "breads", name: "Garlic Naan", price: 49 }, { id: 29, cat: "breads", name: "Plain Kulcha", price: 49 }, { id: 30, cat: "breads", name: "Special Stuff Paratha", price: 69 }, { id: 31, cat: "breads", name: "Stuffed Paneer Paratha", price: 69 }, { id: 32, cat: "breads", name: "Onion Missi Roti", price: 35 }, { id: 33, cat: "breads", name: "Lachha Paratha", price: 45 }, { id: 34, cat: "breads", name: "Pudina Paratha", price: 49 }, { id: 35, cat: "breads", name: "Mirchi Paratha", price: 49 }, { id: 36, cat: "breads", name: "Paneer Naan", price: 55 },
             { id: 37, cat: "starters", name: "Dahi Kebab", price: 229 }, { id: 38, cat: "starters", name: "Makhmali Malai Chaap", price: 279 }, { id: 39, cat: "starters", name: "Hariyali Paneer Tikka", price: 269 }, { id: 40, cat: "starters", name: "Paneer Tikka", price: 269 }, { id: 41, cat: "starters", name: "Mushroom Tikka", price: 269 }, { id: 42, cat: "starters", name: "Veg Manchurian Dry", price: 239 }, { id: 43, cat: "starters", name: "Paneer Manchurian Dry", price: 269 }, { id: 44, cat: "starters", name: "Paneer Chilli Dry", price: 269 },
             { id: 45, cat: "rice", name: "Plain Rice", price: 89 }, { id: 46, cat: "rice", name: "Jeera Rice", price: 99 }, { id: 47, cat: "rice", name: "Veg Pulao", price: 149 }, { id: 48, cat: "rice", name: "Matar Pulao", price: 139 }, { id: 49, cat: "rice", name: "Kashmiri Pulao", price: 169 },
-            { id: 50, cat: "snacks", name: "French Fries", price: 139 }, { id: 51, cat: "snacks", name: "Paneer Pakoda (8 pcs)", price: 199 }, { id: 52, cat: "snacks", name: "Spring Roll", price: 129 }, { id: 53, cat: "snacks", name: "Stuffed Paneer Kulcha", price: 79 }, { id: 54, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
+            { id: 50, cat: "snacks", name: "French Fries", price: 139 }, { id: 51, cat: "snacks", name: "Paneer Pakoda (8 pcs)", price: 199 }, { id: 52, div: "snacks", name: "Spring Roll", price: 129 }, { id: 53, cat: "snacks", name: "Stuffed Paneer Kulcha", price: 79 }, { id: 54, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
         ];
 
         function renderInterfaceMenuRoom() {
@@ -336,19 +336,6 @@
                 if(localStorage.getItem('sw_cached_delivery_address')) { document.getElementById('btn-prev-location-pill').classList.remove('hidden'); }
             }
             locInput.value = ""; validateFormStateNode();
-        }
-
-        window.fetchNativeGPSCoordinatesNode = function(btn) {
-            if (!navigator.geolocation) return alert("GPS is not supported."); btn.innerHTML = "<i class='fa-solid fa-spinner animate-spin'></i> Syncing Coords...";
-            navigator.geolocation.getCurrentPosition(async (p) => {
-                try {
-                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}&addressdetails=1`);
-                    const d = await r.json(); 
-                    if(d && d.display_name) { document.getElementById('cust-loc').value = d.display_name; } 
-                    else { document.getElementById('cust-loc').value = `Kanpur Coords: ${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`; }
-                } catch(e) { document.getElementById('cust-loc').value = `Kanpur Lat:${p.coords.latitude.toFixed(4)} Lon:${p.coords.longitude.toFixed(4)}`; }
-                btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode();
-            }, (err) => { alert("GPS Permission Locked! Please check your settings or write address."); btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode(); }, { enableHighAccuracy: true, timeout: 7000 });
         }
 
         window.injectCachedPastAddressNode = function() { document.getElementById('cust-loc').value = localStorage.getItem('sw_cached_delivery_address'); validateFormStateNode(); }
@@ -664,14 +651,23 @@
                     });
                     const preciseMapMetadataNode = await reverseGeocodeStreamRef.json();
                     
-                    if(preciseMapMetadataNode && preciseMapMetadataNode.display_name) {
-                        // Clean up lengthy responses to a beautiful local short string address layout
-                        let optimizedPreciseAddress = preciseMapMetadataNode.display_name.split(',').slice(0, 4).join(',').trim();
-                        document.getElementById('cust-loc').value = optimizedPreciseAddress;
+                    if(preciseMapMetadataNode && preciseMapMetadataNode.address) {
+                        let addr = preciseMapMetadataNode.address;
+                        // Extrapolating neighborhood, lane, sector or blocks metrics data
+                        let cleanSubAreaZoneNode = addr.suburb || addr.neighbourhood || addr.road || addr.residential || "Kanpur Local Area";
+                        let mainDistrictBlock = addr.city_district || addr.county || "Kanpur Nagar";
+                        
+                        // Hybrid Auto-Filler Template structure
+                        let eliteAutoPopulatedAddress = `${cleanSubAreaZoneNode}, ${mainDistrictBlock} - (Gali No / House No / Near Landmark Yahan Likhein)`;
+                        
+                        document.getElementById('cust-loc').value = eliteAutoPopulatedAddress;
+                        btn.innerHTML = "📍 Use Current GPS Location";
+                        validateFormStateNode();
                     } else {
-                        document.getElementById('cust-loc').value = `Kanpur Locality: Lat ${latNode.toFixed(4)}, Lon ${lonCoordinatesNode.toFixed(4)}`;
+                        document.getElementById('cust-loc').value = `Kanpur Locality: Lat ${latNode.toFixed(4)}, Lon ${lonNode.toFixed(4)}`;
+                        btn.innerHTML = "📍 Use Current GPS Location";
+                        validateFormStateNode();
                     }
-                    validateFormStateNode();
                 } catch(geocodeNetworkError) {
                     console.log("OSM Reverse map proxy lookup skipped.");
                 }
@@ -686,3 +682,39 @@
     </script>
 </body>
 </html>
+
+<script>
+    (function initEliteAddressInterceptorNode() {
+        const addressInputFieldNode = document.getElementById('cust-loc');
+        if (!addressInputFieldNode) return;
+
+        // Creating a dynamic listener tracker interface hook
+        const executeSmartAddressPolishingRoutine = () => {
+            let currentTextValue = addressInputFieldNode.value;
+            
+            // Checking if the incoming telemetry data belongs to low-accuracy Layer 1 network cell
+            if (currentTextValue.includes("(Network Wi-Fi / Tower IP Locked)")) {
+                // Instantly polish to alert the customer to fill nearby house block markers manually
+                let structureBaseCity = currentTextValue.split(',')[0] || "Kanpur";
+                addressInputFieldNode.value = `${structureBaseCity} - (Gali No / House No / Landmark Yahan Likhein)`;
+                validateFormStateNode();
+            }
+        };
+
+        // Injecting multi-channel interceptor listeners to catch background async thread executions instantly
+        addressInputFieldNode.addEventListener('change', executeSmartAddressPolishingRoutine);
+        
+        // Custom DOM Mutation observer interface to look inside virtual data streams layout instantly
+        const systemValuePropertyDescriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+        Object.defineProperty(addressInputFieldNode, 'value', {
+            get: function() { return systemValuePropertyDescriptor.get.call(this); },
+            set: function(val) {
+                systemValuePropertyDescriptor.set.call(this, val);
+                // Triggering automatic context check logic routine on every single runtime overwrite update strike
+                if (val.includes("Locked)") || val.includes("Locality:")) {
+                    setTimeout(executeSmartAddressPolishingRoutine, 50);
+                }
+            }
+        });
+    })();
+</script>
