@@ -23,10 +23,14 @@
             50% { box-shadow: 0 0 30px #dc2626, inset 0 0 15px #dc2626; border-color: #f87171; opacity: 1; }
         }
         .kitchen-red-beacon { animation: emergencyRedGlow 1.2s infinite ease-in-out; border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.15) !important; }
-        .red-dot-beacon { width: 10px; height: 10px; background-color: #ef4444; rounded-radius: 50%; box-shadow: 0 0 10px #ef4444; border-radius: 9999px; display: inline-block; animation: emergencyRedGlow 1.2s infinite ease-in-out; }
+        .red-dot-beacon { width: 10px; height: 10px; background-color: #ef4444; box-shadow: 0 0 10px #ef4444; border-radius: 9999px; display: inline-block; animation: emergencyRedGlow 1.2s infinite ease-in-out; }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen antialiased pb-24">
+
+    <audio id="kitchen-alert-bell" loop preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-84.wav" type="audio/wav">
+    </audio>
 
     <header class="sticky top-0 z-50 bg-[#030712]/90 backdrop-blur-md border-b border-white/[0.05] px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-xl">
         <div class="flex flex-col text-center sm:text-left">
@@ -94,6 +98,7 @@
         db.ref('orders').on('value', (snapshot) => {
             window.ordersCache = snapshot.val() || {};
             filterOrdersEngine();
+            evaluateIncomingOrdersAlarmStateNode();
         });
 
         window.filterOrdersEngine = function() {
@@ -115,7 +120,6 @@
                     let emergencyClass = "";
                     let neonDotHeader = "";
                     
-                    // IF NEW ORDER IS UNACCEPTED ('PLACED'), INJECT RED EMERGENCY BEACON IN CARD LAYER
                     if(order.status === 'placed') {
                         sColor = "border-red-500/50 text-red-400 bg-red-500/10";
                         emergencyClass = "kitchen-red-beacon";
@@ -197,6 +201,28 @@
         }
         window.toggleItemStockNode = function(id, currentStatus) { db.ref('menu_stock/' + id).set(!currentStatus).then(() => openStockModalNode()); }
         window.closeStockModalNode = function() { document.getElementById('stock-modal-layer').classList.add('hidden'); }
+
+        // LIVE REALTIME ALARM EVALUATOR & BYPASS MODULE
+        function evaluateIncomingOrdersAlarmStateNode() {
+            const bellNode = document.getElementById('kitchen-alert-bell');
+            if(!bellNode) return;
+            let hasNewUnacceptedOrderNode = Object.keys(window.ordersCache).some(id => window.ordersCache[id].status === 'placed');
+            if(hasNewUnacceptedOrderNode) {
+                bellNode.play().catch(() => { console.log("Dashboard user click required for native sound engine active trigger."); });
+            } else {
+                bellNode.pause();
+                bellNode.currentTime = 0;
+            }
+        }
+
+        // ADMIN NATIVE SOUND RADAR BYPASS HOOKS
+        const kitchenGestureTriggersNode = ['click', 'touchstart'];
+        kitchenGestureTriggersNode.forEach(evt => {
+            document.addEventListener(evt, function bypassKitchenAudioLockNode() {
+                evaluateIncomingOrdersAlarmStateNode();
+                kitchenGestureTriggersNode.forEach(e => document.removeEventListener(e, bypassKitchenAudioLockNode));
+            }, { passive: true });
+        });
     </script>
 </body>
 </html>
