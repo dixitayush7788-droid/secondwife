@@ -14,10 +14,6 @@
         .brand-font { font-family: 'Playfair Display SC', serif; }
         .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        @keyframes stable-pulse { 0%, 100% { box-shadow: 0 0 8px rgba(249, 115, 22, 0.1); } 50% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); } }
-        .secure-pulse { animation: stable-pulse 2s infinite; }
-
-        /* ELITE INDUSTRIAL RED EMERGENCY NEON LIGHT MODULE */
         @keyframes emergencyRedGlow {
             0%, 100% { box-shadow: 0 0 12px #ef4444, inset 0 0 6px #ef4444; border-color: #f87171; opacity: 0.7; }
             50% { box-shadow: 0 0 30px #dc2626, inset 0 0 15px #dc2626; border-color: #f87171; opacity: 1; }
@@ -70,6 +66,32 @@
         <h2 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2"><i class="fa-solid fa-list-check text-orange-500"></i> Active Production Queue</h2>
         <div id="admin-orders-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </main>
+
+    <div id="delivery-modal-layer" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-4">
+        <div class="bg-slate-950 border border-white/10 w-full max-w-sm rounded-[2rem] p-6 shadow-2xl text-center">
+            <div class="w-14 h-14 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-xl mx-auto mb-4">
+                <i class="fa-solid fa-motorcycle"></i>
+            </div>
+            <h3 class="text-sm font-black text-white uppercase tracking-wider mb-1">Assign Delivery Rider</h3>
+            <p class="text-slate-500 text-[11px] mb-5">Select who is carrying this active order package.</p>
+            <input type="hidden" id="pending-dispatch-order-id">
+            <div class="space-y-2.5 text-left">
+                <button onclick="commitDispatchWithRiderNode('Akash', '8467895365')" class="w-full bg-slate-900 hover:bg-slate-850 border border-white/5 p-3 rounded-xl flex justify-between items-center text-xs font-bold transition">
+                    <span class="text-white">👦 Akash</span><span class="font-mono text-slate-400">8467895365</span>
+                </button>
+                <button onclick="commitDispatchWithRiderNode('Manish', '7860160456')" class="w-full bg-slate-900 hover:bg-slate-850 border border-white/5 p-3 rounded-xl flex justify-between items-center text-xs font-bold transition">
+                    <span class="text-white">👦 Manish</span><span class="font-mono text-slate-400">7860160456</span>
+                </button>
+                <button onclick="commitDispatchWithRiderNode('Himanshu', '5566342335')" class="w-full bg-slate-900 hover:bg-slate-850 border border-white/5 p-3 rounded-xl flex justify-between items-center text-xs font-bold transition">
+                    <span class="text-white">👦 Himanshu</span><span class="font-mono text-slate-400">5566342335</span>
+                </button>
+                <button onclick="commitDispatchWithRiderNode('Rakesh', '5522447799')" class="w-full bg-slate-900 hover:bg-slate-850 border border-white/5 p-3 rounded-xl flex justify-between items-center text-xs font-bold transition">
+                    <span class="text-white">👦 Rakesh</span><span class="font-mono text-slate-400">5522447799</span>
+                </button>
+            </div>
+            <button onclick="closeDeliveryModalNode()" class="mt-4 text-[10px] font-bold text-slate-500 hover:text-white uppercase tracking-wider">Cancel</button>
+        </div>
+    </div>
 
     <div id="stock-modal-layer" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-950 border border-white/10 w-full max-w-md rounded-[2.5rem] p-6 max-h-[85vh] overflow-y-auto shadow-2xl">
@@ -132,6 +154,8 @@
                         sColor = "border-emerald-500/30 text-emerald-400 bg-emerald-500/5";
                     }
 
+                    let riderInfoLineNode = (order.status === 'dispatched' && order.riderName) ? `<p class="text-blue-400 font-bold text-[11px] mt-1"><i class="fa-solid fa-motorcycle"></i> Rider: ${order.riderName} (${order.riderPhone})</p>` : '';
+
                     grid.innerHTML += `
                         <div class="glass-card ${emergencyClass} p-6 rounded-[2rem] flex flex-col justify-between border border-white/[0.04] transition duration-300 transform hover:-translate-y-1 shadow-2xl relative">
                             <div>
@@ -145,6 +169,7 @@
                                     <p class="text-slate-400"><b>📦 Type:</b> <span class="text-orange-400 font-black uppercase text-[10px]">${order.custType || 'DineIn'}</span></p>
                                     <p class="text-slate-400"><b>📍 Table/Addr:</b> <span class="text-amber-400 font-semibold text-[11px] block mt-0.5 leading-relaxed">${order.custLoc || 'N/A'}</span></p>
                                     ${order.prepTime && order.prepTime !== 0 ? `<p class="text-orange-400 font-bold">⏱️ Est Time Assigned: ${order.prepTime} mins</p>` : ''}
+                                    ${riderInfoLineNode}
                                 </div>
                                 <div class="bg-slate-950/60 p-3 rounded-xl text-xs font-bold text-slate-200 mb-4 whitespace-pre-line leading-relaxed">${order.items}</div>
                             </div>
@@ -154,7 +179,7 @@
                                 <div class="grid grid-cols-2 gap-2 text-[10px] font-black uppercase">
                                     <button onclick="updateStatusNode('${order.id}', 'cooking', 15)" class="py-2 rounded-xl border border-orange-500/20 bg-orange-500/10 text-orange-400 transition hover:bg-orange-500 hover:text-black">Accept (15m)</button>
                                     <button onclick="updateStatusNode('${order.id}', 'cooking', 25)" class="py-2 rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-400 transition hover:bg-amber-500 hover:text-black">Accept (25m)</button>
-                                    <button onclick="updateStatusNode('${order.id}', 'dispatched', 0)" class="py-2 rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-400 transition hover:bg-blue-500 hover:text-black col-span-1">Out For Delivery</button>
+                                    <button onclick="triggerRiderAllocationModalNode('${order.id}')" class="py-2 rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-400 transition hover:bg-blue-500 hover:text-black col-span-1">Out For Delivery</button>
                                     <button onclick="updateStatusNode('${order.id}', 'delivered', 0)" class="py-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 transition hover:bg-emerald-500 hover:text-black col-span-1">Delivered ✓</button>
                                 </div>
                                 <button onclick="if(confirm('Delete order?')) db.ref('orders/${order.id}').remove()" class="w-full bg-red-500/10 text-red-400 border border-red-500/20 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition hover:bg-red-500 hover:text-black"><i class="fa-solid fa-trash-can"></i> Archive Order Node</button>
@@ -172,6 +197,19 @@
 
         window.updateStatusNode = function(id, statusState, prepTimeVal) {
             db.ref('orders/' + id).update({ status: statusState, prepTime: prepTimeVal });
+        }
+
+        window.triggerRiderAllocationModalNode = function(id) {
+            document.getElementById('pending-dispatch-order-id').value = id;
+            document.getElementById('delivery-modal-layer').classList.remove('hidden');
+        }
+        window.closeDeliveryModalNode = function() { document.getElementById('delivery-modal-layer').classList.add('hidden'); }
+
+        window.commitDispatchWithRiderNode = function(riderName, riderPhone) {
+            const id = document.getElementById('pending-dispatch-order-id').value;
+            db.ref('orders/' + id).update({ status: 'dispatched', riderName: riderName, riderPhone: riderPhone }).then(() => {
+                closeDeliveryModalNode();
+            });
         }
 
         window.setFilterStatus = function(status) {
@@ -202,20 +240,18 @@
         window.toggleItemStockNode = function(id, currentStatus) { db.ref('menu_stock/' + id).set(!currentStatus).then(() => openStockModalNode()); }
         window.closeStockModalNode = function() { document.getElementById('stock-modal-layer').classList.add('hidden'); }
 
-        // LIVE REALTIME ALARM EVALUATOR & BYPASS MODULE
         function evaluateIncomingOrdersAlarmStateNode() {
             const bellNode = document.getElementById('kitchen-alert-bell');
             if(!bellNode) return;
             let hasNewUnacceptedOrderNode = Object.keys(window.ordersCache).some(id => window.ordersCache[id].status === 'placed');
             if(hasNewUnacceptedOrderNode) {
-                bellNode.play().catch(() => { console.log("Dashboard user click required for native sound engine active trigger."); });
+                bellNode.play().catch(() => { console.log("Dashboard engine alert triggered."); });
             } else {
                 bellNode.pause();
                 bellNode.currentTime = 0;
             }
         }
 
-        // ADMIN NATIVE SOUND RADAR BYPASS HOOKS
         const kitchenGestureTriggersNode = ['click', 'touchstart'];
         kitchenGestureTriggersNode.forEach(evt => {
             document.addEventListener(evt, function bypassKitchenAudioLockNode() {
