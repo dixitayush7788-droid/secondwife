@@ -13,7 +13,7 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; background-color: #030712; }
         .brand-font-premium { font-family: 'Playfair Display SC', serif; }
-        .glass-premium { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur=28px; -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.04); }
+        .glass-premium { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.04); }
         .glass-header { background: rgba(3, 7, 18, 0.85); backdrop-blur: 24px; -webkit-backdrop-filter: blur(24px); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scroll-bar-width: none; }
@@ -467,7 +467,7 @@
             });
         }
         
-        // BACKGROUND OPERATIONAL MUSIC SYSTEM INTERACTION LOOP
+        // BACKGROUND OPERATIONAL MUSIC SYSTEM INTERACTION LOOP WITH AUTO BYPASS
         window.toggleMusic = function() {
             const musicNode = document.getElementById('bg-music');
             const iconNode = document.getElementById('music-icon');
@@ -484,6 +484,22 @@
                 iconNode.className = "fa-solid fa-volume-xmark text-orange-500";
             }
         }
+
+        // BROWSER ANTIPLAY BYPASS RADAR HOOKS
+        const autoPlayBypassTriggersNode = ['click', 'touchstart', 'scrolling'];
+        autoPlayBypassTriggersNode.forEach(triggerEvent => {
+            document.addEventListener(triggerEvent, function autoPlayMusicOnFirstUserGestureNode() {
+                const nativeMusicRef = document.getElementById('bg-music');
+                const nativeIconRef = document.getElementById('music-icon');
+                if(nativeMusicRef && nativeMusicRef.paused && !nativeMusicRef.ended) {
+                    nativeMusicRef.volume = 0.4;
+                    nativeMusicRef.play().then(() => {
+                        nativeIconRef.className = "fa-solid fa-volume-high text-emerald-400";
+                        autoPlayBypassTriggersNode.forEach(e => document.removeEventListener(e, autoPlayMusicOnFirstUserGestureNode));
+                    }).catch(() => {});
+                }
+            }, { passive: true });
+        });
 
         window.onload = renderInterfaceMenuRoom;
     </script>
