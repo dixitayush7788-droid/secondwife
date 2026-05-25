@@ -51,7 +51,7 @@
     </div>
 
     <audio id="bg-music" loop preload="auto">
-        <source src="Music.mp3" type="audio/mpeg">
+        <source src="music.mp3" type="audio/mpeg">
     </audio>
 
     <div class="fixed top-[-15%] left-[-15%] w-[75vw] h-[75vw] bg-gradient-to-tr from-orange-600/12 to-transparent rounded-full blur-[150px] pointer-events-none z-0 drift"></div>
@@ -253,7 +253,11 @@
                 container.innerHTML += `
                     <div id="dish-node-card-${item.id}" class="dish-card bg-[#0d1527]/65 border border-white/5 p-4 rounded-2xl flex justify-between items-center transition-all duration-300 transform hover:-translate-y-0.5 shadow-md" data-name="${item.name.toLowerCase()}">
                         <div><h3 class="font-bold text-slate-100 text-xs md:text-sm tracking-tight">${item.name}</h3><p id="price-tag-node-${item.id}" class="text-orange-500 font-extrabold text-sm mt-1">₹${item.price}</p></div>
-                        <div class="flex items-center gap-2.5"><button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-7 h-7 bg-slate-800 rounded-lg hidden text-xs font-bold border border-white/5 transition active:scale-95">-</button><span id="qty-${item.id}" class="font-black text-xs text-white hidden">0</span><button id="plus-btn-node-${item.id}" onclick="changeQty(${item.id}, 1)" class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-xs rounded-lg flex items-center justify-center transition active:scale-95 shadow-md">+</button></div>
+                        <div id="counter-zone-${item.id}" class="flex items-center justify-end bg-slate-900/40 border border-white/5 rounded-xl p-1 min-w-[80px] transition-all duration-300">
+                            <button onclick="changeQty(${item.id}, -1)" id="minus-${item.id}" class="w-7 h-7 bg-slate-800 rounded-lg hidden text-xs font-bold border border-white/5 transition-all duration-200 active:scale-75 flex items-center justify-center text-slate-300 hover:text-white">-</button>
+                            <span id="qty-${item.id}" class="font-black text-xs text-white hidden mx-3 transition-all duration-200 transform scale-0">0</span>
+                            <button id="plus-btn-node-${item.id}" onclick="changeQty(${item.id}, 1)" class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-xs rounded-lg flex items-center justify-center transition-all duration-200 active:scale-75 shadow-md">+</button>
+                        </div>
                     </div>
                 `;
             });
@@ -273,9 +277,33 @@
             const item = fullMenu.find(i => i.id === id); if (!window.cart[id]) window.cart[id] = { name: item.name, price: item.price, qty: 0 };
             window.cart[id].qty += delta; if (window.cart[id].qty <= 0) delete window.cart[id];
             
-            const qTxt = document.getElementById(`qty-${id}`); const mBtn = document.getElementById('minus-' + id);
+            const qTxt = document.getElementById(`qty-${id}`); 
+            const mBtn = document.getElementById('minus-' + id);
+            const zone = document.getElementById(`counter-zone-${id}`);
             const curr = window.cart[id] ? window.cart[id].qty : 0;
-            if(qTxt && mBtn) { if(curr > 0) { qTxt.innerText = curr; qTxt.classList.remove('hidden'); mBtn.classList.remove('hidden'); } else { qTxt.classList.add('hidden'); mBtn.classList.add('hidden'); } }
+            
+            if(qTxt && mBtn && zone) { 
+                if(curr > 0) { 
+                    qTxt.innerText = curr; 
+                    qTxt.classList.remove('hidden'); 
+                    mBtn.classList.remove('hidden');
+                    setTimeout(() => {
+                        qTxt.classList.remove('scale-0');
+                        qTxt.classList.add('scale-100');
+                    }, 10);
+                    zone.classList.remove('bg-slate-900/40');
+                    zone.classList.add('bg-slate-950/80', 'border-orange-500/30', 'px-2');
+                } else { 
+                    qTxt.classList.remove('scale-100');
+                    qTxt.classList.add('scale-0');
+                    setTimeout(() => {
+                        qTxt.classList.add('hidden'); 
+                        mBtn.classList.add('hidden'); 
+                    }, 150);
+                    zone.classList.remove('bg-slate-950/80', 'border-orange-500/30', 'px-2');
+                    zone.classList.add('bg-slate-900/40');
+                } 
+            }
 
             let tItems = 0; let tPrice = 0; Object.keys(window.cart).forEach(k => { tItems += window.cart[k].qty; tPrice += (window.cart[k].price * window.cart[k].qty); });
             const badge = document.getElementById('cart-count'); const bar = document.getElementById('checkout-bar');
@@ -511,7 +539,6 @@
                     if (correspondingPillNode) {
                         document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap");
                         correspondingPillNode.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap";
-                        // Auto horizontal scroll sync for navigation deck
                         const containerRefNode = document.getElementById('category-nav-pills');
                         if (containerRefNode) {
                             const offsetLeftNode = correspondingPillNode.offsetLeft - containerRefNode.offsetLeft - 16;
