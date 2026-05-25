@@ -18,10 +18,28 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scroll-bar-width: none; }
         .active-pill { background: linear-gradient(135deg, #f97316, #ea580c); color: #000000; font-weight: 800; box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3); border-color: transparent; }
+        
+        /* CINEMATIC EFFECTS & MOTION ENGINES */
         @keyframes drift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(45px, 35px) scale(1.08); } }
         .drift { animation: drift 20s ease-in-out infinite; }
         @keyframes structural-pulse { 0%, 100% { box-shadow: 0 0 10px rgba(249, 115, 22, 0.1); } 50% { box-shadow: 0 0 25px rgba(249, 115, 22, 0.35); } }
         .secure-pulse { animation: structural-pulse 2s infinite; }
+
+        /* RGB Neon Breath Text Animation for Brand Display */
+        @keyframes rgbBreath {
+            0%, 100% { color: #ffffff; text-shadow: 0 0 12px rgba(255,255,255,0.2); }
+            33% { color: #f97316; text-shadow: 0 0 20px rgba(249,115,22,0.6); }
+            66% { color: #ef4444; text-shadow: 0 0 20px rgba(239,68,68,0.6); }
+        }
+        .rgb-neon-brand { animation: rgbBreath 8s ease-in-out infinite; }
+
+        /* Realtime Tracker Steps Active Pulse Rings */
+        @keyframes stepGlowPulse {
+            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.5); }
+            70% { box-shadow: 0 0 0 12px rgba(249, 115, 22, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        }
+        .active-tracker-step-ring { animation: stepGlowPulse 1.8s infinite; }
     </style>
 </head>
 <body class="text-slate-100 antialiased overflow-x-hidden selection:bg-orange-500 selection:text-black">
@@ -44,7 +62,7 @@
 
     <div id="thankyou-modal-layer" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center hidden opacity-0 transition-all duration-500 backdrop-blur-3xl">
         <div class="text-center p-6 max-w-sm w-full mx-4 scale-95 transition-transform duration-500 transform" id="thankyou-card-box">
-            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-orange-500 to-red-600 flex items-center justify-center text-black font-black text-4xl mx-auto shadow-2xl shadow-orange-500/20 mb-6 animate-bounce">
+            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-orange-500 to-red-600 flex items-center justify-center text-white font-black text-4xl mx-auto shadow-2xl shadow-orange-500/20 mb-6 animate-bounce">
                 <i class="fa-solid fa-fire-burner text-white"></i>
             </div>
             <span class="text-[10px] font-black tracking-[0.3em] text-orange-400 bg-orange-500/10 border border-orange-500/20 px-4 py-1.5 rounded-full uppercase">Order Locked ✓</span>
@@ -67,7 +85,7 @@
 
         <nav class="sticky top-0 z-50 glass-header border-b border-white/[0.04] px-6 py-4 flex justify-between items-center shadow-2xl">
             <div class="flex flex-col">
-                <span class="brand-font-premium text-white text-2xl font-black leading-none tracking-tight">Second Wife</span>
+                <span class="brand-font-premium text-white text-2xl font-black leading-none tracking-tight block rgb-neon-brand">Second Wife</span>
                 <span style="letter-spacing: 0.28em; color: #3b82f6;" class="text-[9px] font-black uppercase mt-1.5 leading-none block">Café & Restaurant</span>
             </div>
             <div class="flex items-center gap-2.5">
@@ -123,22 +141,22 @@
             <div id="status-card-glow" class="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl transition-all duration-700"></div>
             
             <div id="step-placed" class="flex gap-4 items-start opacity-40 transition-all duration-500 rounded-2xl p-2">
-                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative" id="icon-placed">1</div>
+                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative transition-all duration-300" id="icon-placed">1</div>
                 <div><h3 id="title-placed" class="font-bold text-sm text-white transition-colors duration-300">Order Received</h3><p class="text-xs text-slate-400 mt-0.5">Bhai ke paas order pahunch gaya hai, acceptance ka wait hai.</p></div>
             </div>
 
             <div id="step-cooking" class="flex gap-4 items-start opacity-40 transition-all duration-500 rounded-2xl p-2">
-                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative" id="icon-cooking">2</div>
+                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative transition-all duration-300" id="icon-cooking">2</div>
                 <div><h3 id="title-cooking" class="font-bold text-sm text-white transition-colors duration-300">Cooking In Kitchen</h3><p id="cooking-timer-text" class="text-xs text-slate-400 mt-0.5">Chef khana taiyar kar rahe hain.</p></div>
             </div>
 
             <div id="step-dispatched" class="flex gap-4 items-start opacity-40 transition-all duration-500 rounded-2xl p-2">
-                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative" id="icon-dispatched">3</div>
+                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative transition-all duration-300" id="icon-dispatched">3</div>
                 <div><h3 id="title-dispatched" class="font-bold text-sm text-white transition-colors duration-300">Out For Delivery</h3><p class="text-xs text-slate-400 mt-0.5">R.R. Galaxy se delivery partner nikal chuka hai.</p></div>
             </div>
 
             <div id="step-delivered" class="flex gap-4 items-start opacity-40 transition-all duration-500 rounded-2xl p-2">
-                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative" id="icon-delivered">4</div>
+                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative transition-all duration-300" id="icon-delivered">4</div>
                 <div><h3 id="title-delivered" class="font-bold text-sm text-white transition-colors duration-300">Delivered Successfully</h3><p class="text-xs text-slate-400 mt-0.5">Swaad ka lutf uthaiye! Shukriya.</p></div>
             </div>
         </div>
@@ -149,7 +167,7 @@
     <div id="history-drawer" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[85vh] overflow-y-auto shadow-2xl max-w-xl mx-auto">
         <div class="w-full max-w-md flex justify-between items-center mb-4 border-b border-white/5 pb-2.5">
             <span class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em] flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left"></i> Your Order Ledger History</span>
-            <button onclick="document.getElementById('history-drawer').classList.add('translate-y-full')" class="h-8 w-8 bg-slate-900 border border-white/5 text-slate-400 hover:text-orange-500 font-bold rounded-full flex items-center justify-center transition active:scale-90">✕</button>
+            <button onclick="document.getElementById('history-drawer').classList.add('translate-y-full')" class="h-8 w-8 bg-slate-900 border border-white/5 text-slate-400 hover:text-orange-500 font-bold rounded-full flex items-center justify-center transition active:scale-95">✕</button>
         </div>
         <div class="w-full max-w-md space-y-3 overflow-y-auto pr-1" id="history-items-container"></div>
     </div>
@@ -188,7 +206,7 @@
             <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Select Payment Mode:</p>
             <div class="grid grid-cols-2 gap-3">
                 <label class="flex items-center justify-center gap-2 bg-slate-900 border-2 border-orange-500 p-3.5 rounded-xl cursor-pointer" id="label-cod"><input type="radio" name="pay-mode" value="COD" checked onclick="togglePaymentView('COD')"><span class="font-bold text-xs text-white">Cash On Delivery</span></label>
-                <label class="flex items-center justify-center gap-2 bg-slate-900 border-2 border-transparent p-3.5 rounded-xl cursor-pointer" id="label-online"><input type="radio" name="payment-method" value="Online" onclick="togglePaymentView('Online')"><span class="font-bold text-xs text-white">UPI QR</span></label>
+                <label class="flex items-center justify-center gap-2 bg-slate-900 border-2 border-transparent p-3.5 rounded-xl cursor-pointer" id="label-online"><input type="radio" name="payment-method" value="Online" onclick="togglePaymentView('Online')"><span class="font-bold text-xs text-white">Online UPI QR</span></label>
             </div>
         </div>
 
@@ -196,7 +214,7 @@
             <div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center border border-slate-200"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" alt="UPI QR" class="w-40 h-40 object-contain"><input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs mt-3 text-white focus:outline-none"></div>
         </div>
 
-        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 transition duration-300" disabled>PLACE CLOUD ORDER</button>
+        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 shadow-2xl secure-pulse" disabled>PLACE CLOUD ORDER</button>
     </div>
 
     <script>
@@ -251,7 +269,7 @@
 
             let tItems = 0; let tPrice = 0; Object.keys(window.cart).forEach(k => { tItems += window.cart[k].qty; tPrice += (window.cart[k].price * window.cart[k].qty); });
             const badge = document.getElementById('cart-count'); const bar = document.getElementById('checkout-bar');
-            if(tItems > 0) { badge.innerText = tItems; badge.classList.remove('hidden'); if(delta > 0) bar.classList.remove('translate-y-full'); document.getElementById('cart-summary').innerText = `${tItems} Selected`; document.getElementById('cart-total').innerText = `₹${tPrice}`; }
+            if(tItems > 0) { badge.innerText = tItems; badge.classList.remove('hidden'); if(delta > 0) bar.classList.remove('translate-y-full'); document.getElementById('cart-summary').innerText = `${tItems} Dishes Selected`; document.getElementById('cart-total').innerText = `₹${tPrice}`; }
             else { badge.classList.add('hidden'); bar.classList.add('translate-y-full'); }
             validateFormStateNode();
         }
@@ -299,7 +317,6 @@
             else { btn.disabled = true; btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 shadow-xl"; }
         }
 
-        // TRIGGER ELITE CELEBRATION BLAST EFFECT PIPELINE
         function triggerCinematicBlastsNode() {
             var duration = 2.5 * 1000; var end = Date.now() + duration;
             (function frame() {
@@ -322,7 +339,6 @@
                         
                         let h = JSON.parse(localStorage.getItem('secondwife_order_history')) || []; if(!h.includes(id)){ h.push(id); localStorage.setItem('secondwife_order_history', JSON.stringify(h)); }
                         
-                        // INJECT ADVANCED THANKYOU VIEW AND TIMELINE ENGINE SWITCHES
                         document.getElementById('store-front-view').classList.add('hidden');
                         document.getElementById('checkout-bar').classList.add('translate-y-full');
                         document.getElementById('ty-order-id-node').innerText = id;
@@ -332,10 +348,8 @@
                         tyModal.classList.remove('hidden');
                         setTimeout(() => { tyModal.classList.add('opacity-100'); tyCard.classList.remove('scale-95'); }, 50);
                         
-                        // Fire the premium fireworks celebration
                         triggerCinematicBlastsNode();
                         
-                        // Hold screen for 3 seconds then seamlessly morph into live track layout
                         setTimeout(() => {
                             tyModal.classList.add('opacity-0');
                             setTimeout(() => {
@@ -349,17 +363,58 @@
         }
 
         window.launchOrderTrackingInterfaceNode = function(id) { document.getElementById('store-front-view').classList.add('hidden'); document.getElementById('checkout-bar').classList.add('translate-y-full'); document.getElementById('mini-tracker-bar').classList.add('hidden'); document.getElementById('tracking-screen-view').classList.remove('hidden'); document.getElementById('track-order-id').innerText = `Order ID: ${id}`; listenToOrderLive(id); }
+        
         function listenToOrderLive(id) {
             db.ref('orders/' + id).on('value', (s) => {
                 const d = s.val(); if(!d) return; const mini = document.getElementById('mini-status-text'); const exit = document.getElementById('tracking-exit-btn');
-                document.getElementById('step-placed').className = d.status==='placed'?"flex gap-4 items-start font-black text-amber-400 scale-105 transition duration-300":"opacity-40 flex gap-4 items-start";
-                document.getElementById('step-cooking').className = d.status==='cooking'?"flex gap-4 items-start font-black text-orange-400 scale-105 transition duration-300":"opacity-40 flex gap-4 items-start";
-                if(d.status==='cooking' && d.prepTime!=='0') document.getElementById('cooking-timer-text').innerHTML = `🔥 Chef Cooking. *Est: ${d.prepTime || 15} Mins*`;
-                document.getElementById('step-dispatched').className = d.status==='dispatched'?"flex gap-4 items-start font-black text-blue-400 scale-105 transition duration-300":"opacity-40 flex gap-4 items-start";
-                document.getElementById('step-delivered').className = d.status==='delivered'?"flex gap-4 items-start font-black text-emerald-400 scale-105 transition duration-300":"opacity-40 flex gap-4 items-start";
-                mini.innerText = d.status.toUpperCase(); if(d.status==='delivered') exit.innerHTML = "Order Complete & Clear";
+                
+                // RESET TRANSITIONS RULES Fluid Layout Layers
+                resetStepGlowVisuals();
+
+                // DYNAMIC MULTI-STAGE HIGHLIGHT AND PULSE NEON OVERLAYS
+                if(d.status === 'placed') {
+                    document.getElementById('step-placed').className = "flex gap-4 items-start font-black text-amber-500 scale-105 transition duration-300";
+                    document.getElementById('icon-placed').className = "w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative active-tracker-step-ring";
+                } else if(d.status === 'cooking') {
+                    document.getElementById('step-placed').className = "flex gap-4 items-start text-emerald-400";
+                    document.getElementById('icon-placed').className = "w-8 h-8 rounded-full bg-emerald-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative";
+                    
+                    document.getElementById('step-cooking').className = "flex gap-4 items-start font-black text-orange-500 scale-105 transition duration-300";
+                    document.getElementById('icon-cooking').className = "w-8 h-8 rounded-full bg-orange-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative active-tracker-step-ring";
+                    if(d.prepTime && d.prepTime !== 0) document.getElementById('cooking-timer-text').innerHTML = `🔥 Chef Cooking. *Est: ${d.prepTime} Mins*`;
+                } else if(d.status === 'dispatched') {
+                    document.getElementById('step-placed').className = "flex gap-4 items-start text-emerald-400";
+                    document.getElementById('icon-placed').className = "w-8 h-8 rounded-full bg-emerald-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative";
+                    document.getElementById('step-cooking').className = "flex gap-4 items-start text-emerald-400";
+                    document.getElementById('icon-cooking').className = "w-8 h-8 rounded-full bg-emerald-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative";
+                    
+                    document.getElementById('step-dispatched').className = "flex gap-4 items-start font-black text-blue-400 scale-105 transition duration-300";
+                    document.getElementById('icon-dispatched').className = "w-8 h-8 rounded-full bg-blue-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative active-tracker-step-ring";
+                } else if(d.status === 'delivered') {
+                    document.getElementById('step-placed').className = "flex gap-4 items-start text-emerald-400";
+                    document.getElementById('icon-placed').className = "w-8 h-8 rounded-full bg-emerald-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative";
+                    document.getElementById('step-cooking').className = "flex gap-4 items-start text-emerald-400";
+                    document.getElementById('icon-cooking').className = "w-8 h-8 rounded-full bg-emerald-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative";
+                    document.getElementById('step-dispatched').className = "flex gap-4 items-start text-emerald-400";
+                    document.getElementById('icon-dispatched').className = "w-8 h-8 rounded-full bg-emerald-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative";
+                    
+                    document.getElementById('step-delivered').className = "flex gap-4 items-start font-black text-emerald-400 scale-105 transition duration-300";
+                    document.getElementById('icon-delivered').className = "w-8 h-8 rounded-full bg-emerald-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative active-tracker-step-ring";
+                    exit.innerHTML = "Order Complete & Clear";
+                }
+
+                mini.innerText = d.status.toUpperCase();
             });
         }
+
+        // HEALER FUNCTION FOR DYNAMIC RADAR STATUS SWITCHES
+        function resetStepGlowVisuals() {
+            ['placed', 'cooking', 'dispatched', 'delivered'].forEach(step => {
+                document.getElementById('step-' + step).className = "flex gap-4 items-start opacity-40 transition-all duration-500 rounded-2xl p-2";
+                document.getElementById('icon-' + step).className = "w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-white flex-shrink-0 relative";
+            });
+        }
+
         window.minimizeTrackingViewNode = function() { localStorage.setItem('secondwife_tracker_state', 'mini'); document.getElementById('tracking-screen-view').classList.add('hidden'); document.getElementById('store-front-view').classList.remove('hidden'); document.getElementById('mini-tracker-bar').classList.remove('hidden'); }
         window.maximizeTrackingViewNode = function() { document.getElementById('store-front-view').classList.add('hidden'); document.getElementById('mini-tracker-bar').classList.add('hidden'); document.getElementById('tracking-screen-view').classList.remove('hidden'); }
         window.scrollToSection = function(id, el) { const t = document.getElementById(id); if(t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap"); el.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap"; }
