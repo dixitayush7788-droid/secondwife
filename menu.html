@@ -41,12 +41,12 @@
         }
         .active-tracker-step-ring { animation: stepGlowPulse 1.8s infinite; }
 
-        /* UNIQUE ATTENTION NEON RIDER EFFECTS */
-        @keyframes riderEmeraldBreath {
+        /* ELITE DYNAMIC RADAR PULSING EMERALD WAVE GENERATOR */
+        @keyframes riderGlowWavePulseNode {
             0%, 100% { border-color: rgba(16, 185, 129, 0.2); box-shadow: 0 0 15px rgba(16, 185, 129, 0.05); }
-            50% { border-color: rgba(16, 185, 129, 0.7); box-shadow: 0 0 35px rgba(16, 185, 129, 0.35); }
+            50% { border-color: rgba(16, 185, 129, 0.75); box-shadow: 0 0 35px rgba(16, 185, 129, 0.35); background: rgba(6, 78, 59, 0.35); }
         }
-        .rider-neon-glow-card { animation: riderEmeraldBreath 1.4s infinite ease-in-out; background: rgba(6, 78, 59, 0.25) !important; }
+        .rider-motion-neon-card-box { animation: riderGlowWavePulseNode 1.5s infinite ease-in-out; }
     </style>
 </head>
 <body class="text-slate-100 antialiased overflow-x-hidden selection:bg-orange-500 selection:text-black">
@@ -58,7 +58,7 @@
     </div>
 
     <audio id="bg-music" loop preload="auto">
-        <source src="Music.mp3" type="audio/mpeg">
+        <source src="music.mp3" type="audio/mpeg">
     </audio>
 
     <div class="fixed top-[-15%] left-[-15%] w-[75vw] h-[75vw] bg-gradient-to-tr from-orange-600/12 to-transparent rounded-full blur-[150px] pointer-events-none z-0 drift"></div>
@@ -177,7 +177,7 @@
                 <div><h3 id="title-delivered" class="font-bold text-sm text-white transition-colors duration-300">Delivered Successfully</h3><p class="text-xs text-slate-400 mt-0.5">Swaad ka lutf uthaiye! Shukriya.</p></div>
             </div>
 
-            <div id="live-rider-card-node" class="hidden p-5 rounded-[1.8rem] flex justify-between items-center transition-all duration-700 transform scale-75 opacity-0 translate-y-6 rider-neon-glow-card">
+            <div id="live-rider-card-node" class="hidden border p-5 rounded-[1.8rem] flex justify-between items-center transition-all duration-700 transform scale-75 opacity-0 translate-y-6 rider-motion-neon-card-box">
                 <div class="flex items-center gap-3.5">
                     <div class="w-12 h-12 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 rounded-2xl flex items-center justify-center text-xl shadow-lg relative">
                         <i class="fa-solid fa-motorcycle animate-bounce" style="animation-duration: 1.2s;"></i>
@@ -189,7 +189,7 @@
                     </div>
                 </div>
                 <a id="live-rider-phone-anchor-node" href="tel:" class="w-11 h-11 bg-gradient-to-tr from-emerald-400 to-teal-500 text-black font-black rounded-2xl flex items-center justify-center transition-all duration-300 active:scale-75 shadow-lg">
-                    <i class="fa-solid fa-phone text-base"></i>
+                    <i class="fa-solid fa-phone text-base animate-pulse"></i>
                 </a>
             </div>
         </div>
@@ -403,7 +403,7 @@
                 
                 resetStepGlowVisuals();
 
-                // DYNAMIC DISPATCH MOTION CONTROLLER ENGINE FOR LIVE ALLOCATION REVEAL
+                // REALTIME DISPATCH INTRO VELOCITY MOTIONS
                 const riderCardNode = document.getElementById('live-rider-card-node');
                 if(d.status === 'dispatched' && d.riderName) {
                     document.getElementById('live-rider-name-node').innerText = `👦 ${d.riderName}`;
@@ -412,12 +412,14 @@
                         riderCardNode.classList.remove('hidden');
                         setTimeout(() => {
                             riderCardNode.classList.remove('scale-75', 'opacity-0', 'translate-y-6');
-                            riderCardNode.classList.add('scale-100', 'opacity-100', 'translate-y-0');
+                            riderCardNode.classList.add('scale-100', 'opacity-100', 'translate-y-0', 'rider-motion-neon-card-box');
                         }, 40);
                     }
                 } else {
                     if(riderCardNode) {
-                        riderCardNode.classList.add('hidden', 'scale-75', 'opacity-0', 'translate-y-6');
+                        riderCardNode.classList.add('hidden');
+                        riderCardNode.classList.remove('rider-motion-neon-card-box');
+                        riderCardNode.classList.add('scale-75', 'opacity-0', 'translate-y-6');
                     }
                 }
 
