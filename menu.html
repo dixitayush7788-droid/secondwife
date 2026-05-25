@@ -42,6 +42,7 @@
         .active-tracker-step-ring { animation: stepGlowPulse 1.8s infinite; }
 
         /* ELITE DYNAMIC RADAR PULSING EMERALD WAVE GENERATOR */
+        @keyframes drift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(45px, 35px) scale(1.08); } }
         @keyframes riderGlowWavePulseNode {
             0%, 100% { border-color: rgba(16, 185, 129, 0.2); box-shadow: 0 0 15px rgba(16, 185, 129, 0.05); }
             50% { border-color: rgba(16, 185, 129, 0.75); box-shadow: 0 0 35px rgba(16, 185, 129, 0.35); background: rgba(6, 78, 59, 0.35); }
@@ -263,7 +264,7 @@
             <div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center border border-slate-200"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" alt="UPI QR" class="w-40 h-40 object-contain"><input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs mt-3 text-white focus:outline-none"></div>
         </div>
 
-        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 shadow-2xl secure-pulse" disabled>PLACE CLOUD ORDER</button>
+        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center tracking-wide cursor-pointer shadow-lg transform transition active:scale-95" disabled>PLACE CLOUD ORDER</button>
     </div>
 
     <script>
@@ -336,19 +337,6 @@
                 if(localStorage.getItem('sw_cached_delivery_address')) { document.getElementById('btn-prev-location-pill').classList.remove('hidden'); }
             }
             locInput.value = ""; validateFormStateNode();
-        }
-
-        window.fetchNativeGPSCoordinatesNode = function(btn) {
-            if (!navigator.geolocation) return alert("GPS is not supported."); btn.innerHTML = "<i class='fa-solid fa-spinner animate-spin'></i> Syncing Coords...";
-            navigator.geolocation.getCurrentPosition(async (p) => {
-                try {
-                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}&addressdetails=1`);
-                    const d = await r.json(); 
-                    if(d && d.display_name) { document.getElementById('cust-loc').value = d.display_name; } 
-                    else { document.getElementById('cust-loc').value = `Kanpur Coords: ${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`; }
-                } catch(e) { document.getElementById('cust-loc').value = `Kanpur Lat:${p.coords.latitude.toFixed(4)} Lon:${p.coords.longitude.toFixed(4)}`; }
-                btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode();
-            }, (err) => { alert("GPS Permission Locked! Please check your settings or write address."); btn.innerHTML = "📍 Use Current GPS Location"; validateFormStateNode(); }, { enableHighAccuracy: true, timeout: 7000 });
         }
 
         window.injectCachedPastAddressNode = function() { document.getElementById('cust-loc').value = localStorage.getItem('sw_cached_delivery_address'); validateFormStateNode(); }
@@ -615,8 +603,6 @@
                 }
             });
         }
-
-        window.onload = renderInterfaceMenuRoom;
     </script>
 </body>
 </html>
