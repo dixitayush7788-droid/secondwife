@@ -100,10 +100,10 @@
         <div class="sticky top-[73px] z-40 glass-header border-b border-white/[0.02] py-3.5 px-4 overflow-x-auto hide-scrollbar flex gap-2.5">
             <button onclick="scrollToSection('section-biryani', this)" class="category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap">🍲 Biryani Special</button>
             <button onclick="scrollToSection('section-thali', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍽️ Thali Menu</button>
-            <button onclick="scrollToSection('section-main', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍛 Main Course</button>
-            <button onclick="scrollToSection('section-starters', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍢 Starters</button>
+            <button onclick="scrollToSection('section-main', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">Dum Aloo</button>
             <button onclick="scrollToSection('section-breads', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🫓 Breads</button>
             <button onclick="scrollToSection('section-snacks', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍟 Snacks</button>
+            <button onclick="scrollToSection('section-starters', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍢 Starters</button>
             <button onclick="scrollToSection('section-rice', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍚 Rice</button>
             <button onclick="scrollToSection('section-side', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">Salad & Side</button>
         </div>
@@ -368,10 +368,8 @@
             db.ref('orders/' + id).on('value', (s) => {
                 const d = s.val(); if(!d) return; const mini = document.getElementById('mini-status-text'); const exit = document.getElementById('tracking-exit-btn');
                 
-                // RESET TRANSITIONS RULES Fluid Layout Layers
                 resetStepGlowVisuals();
 
-                // DYNAMIC MULTI-STAGE HIGHLIGHT AND PULSE NEON OVERLAYS
                 if(d.status === 'placed') {
                     document.getElementById('step-placed').className = "flex gap-4 items-start font-black text-amber-500 scale-105 transition duration-300";
                     document.getElementById('icon-placed').className = "w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative active-tracker-step-ring";
@@ -401,13 +399,17 @@
                     document.getElementById('step-delivered').className = "flex gap-4 items-start font-black text-emerald-400 scale-105 transition duration-300";
                     document.getElementById('icon-delivered').className = "w-8 h-8 rounded-full bg-emerald-500 text-black flex items-center justify-center font-black text-sm flex-shrink-0 relative active-tracker-step-ring";
                     exit.innerHTML = "Order Complete & Clear";
+                    exit.onclick = function() {
+                        localStorage.removeItem('active_secondwife_order_id');
+                        localStorage.removeItem('secondwife_tracker_state');
+                        window.location.reload();
+                    };
                 }
 
                 mini.innerText = d.status.toUpperCase();
             });
         }
 
-        // HEALER FUNCTION FOR DYNAMIC RADAR STATUS SWITCHES
         function resetStepGlowVisuals() {
             ['placed', 'cooking', 'dispatched', 'delivered'].forEach(step => {
                 document.getElementById('step-' + step).className = "flex gap-4 items-start opacity-40 transition-all duration-500 rounded-2xl p-2";
@@ -433,8 +435,27 @@
             });
         }
         
-        localStorage.removeItem('active_secondwife_order_id');
-        localStorage.removeItem('secondwife_tracker_state');
+        // PERSISTENCE ENGINE RESTORATION WITH AUTOMATIC SAFETY LOCKS
+        const structuralCheckId = localStorage.getItem('active_secondwife_order_id');
+        const internalSavedViewState = localStorage.getItem('secondwife_tracker_state');
+        if(structuralCheckId) {
+            db.ref('orders/' + structuralCheckId).once('value').then(snapshot => {
+                const orderData = snapshot.val();
+                if(orderData && orderData.status !== 'delivered') {
+                    if(internalSavedViewState === 'mini') {
+                        document.getElementById('store-front-view').classList.remove('hidden');
+                        document.getElementById('mini-tracker-bar').classList.remove('hidden');
+                        document.getElementById('tracking-screen-view').classList.add('hidden');
+                        listenToOrderLive(structuralCheckId);
+                    } else {
+                        launchOrderTrackingInterfaceNode(structuralCheckId);
+                    }
+                } else {
+                    localStorage.removeItem('active_secondwife_order_id');
+                    localStorage.removeItem('secondwife_tracker_state');
+                }
+            });
+        }
         
         window.onload = renderInterfaceMenuRoom;
     </script>
