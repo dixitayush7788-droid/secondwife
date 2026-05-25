@@ -51,7 +51,7 @@
     </div>
 
     <audio id="bg-music" loop preload="auto">
-        <source src="music.mp3" type="audio/mpeg">
+        <source src="Music.mp3" type="audio/mpeg">
     </audio>
 
     <div class="fixed top-[-15%] left-[-15%] w-[75vw] h-[75vw] bg-gradient-to-tr from-orange-600/12 to-transparent rounded-full blur-[150px] pointer-events-none z-0 drift"></div>
@@ -107,15 +107,15 @@
             </div>
         </nav>
 
-        <div class="sticky top-[73px] z-40 glass-header border-b border-white/[0.02] py-3.5 px-4 overflow-x-auto hide-scrollbar flex gap-2.5">
-            <button onclick="scrollToSection('section-biryani', this)" class="category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap">🍲 Biryani Special</button>
-            <button onclick="scrollToSection('section-thali', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍽️ Thali Menu</button>
-            <button onclick="scrollToSection('section-main', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">Dum Aloo</button>
-            <button onclick="scrollToSection('section-breads', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🫓 Breads</button>
-            <button onclick="scrollToSection('section-snacks', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍟 Snacks</button>
-            <button onclick="scrollToSection('section-starters', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍢 Starters</button>
-            <button onclick="scrollToSection('section-rice', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍚 Rice</button>
-            <button onclick="scrollToSection('section-side', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">Salad & Side</button>
+        <div id="category-nav-pills" class="sticky top-[73px] z-40 glass-header border-b border-white/[0.02] py-3.5 px-4 overflow-x-auto hide-scrollbar flex gap-2.5">
+            <button id="pill-section-biryani" onclick="scrollToSection('section-biryani', this)" class="category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap">🍲 Biryani Special</button>
+            <button id="pill-section-thali" onclick="scrollToSection('section-thali', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍽️ Thali Menu</button>
+            <button id="pill-section-main" onclick="scrollToSection('section-main', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">Dum Aloo</button>
+            <button id="pill-section-breads" onclick="scrollToSection('section-breads', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🫓 Breads</button>
+            <button id="pill-section-snacks" onclick="scrollToSection('section-snacks', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍟 Snacks</button>
+            <button id="pill-section-starters" onclick="scrollToSection('section-starters', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍢 Starters</button>
+            <button id="pill-section-rice" onclick="scrollToSection('section-rice', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍚 Rice</button>
+            <button id="pill-section-side" onclick="scrollToSection('section-side', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">Salad & Side</button>
         </div>
 
         <header class="py-12 px-6 text-center relative max-w-xl mx-auto">
@@ -135,9 +135,9 @@
             <section id="section-biryani" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍲 BIRYANI SPECIALS</h2><div id="biryani-container" class="grid gap-3.5"></div></section>
             <section id="section-thali" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍽️ PREMIUM THALI Menu</h2><div id="thali-container" class="grid gap-3.5"></div></section>
             <section id="section-main" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍛 MAIN COURSE</h2><div id="main-container" class="grid gap-3.5"></div></section>
-            <section id="section-starters" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍢 STARTERS & TIKKA</h2><div id="starters-container" class="grid gap-3.5"></div></section>
             <section id="section-breads" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🫓 TANDOORI BREADS</h2><div id="breads-container" class="grid gap-3.5"></div></section>
             <section id="section-snacks" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍟 SNACKS & KULCHA</h2><div id="snacks-container" class="grid gap-3.5"></div></section>
+            <section id="section-starters" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍢 STARTERS & TIKKA</h2><div id="starters-container" class="grid gap-3.5"></div></section>
             <section id="section-rice" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍚 RICE VARIETIES</h2><div id="rice-container" class="grid gap-3.5"></div></section>
             <section id="section-side" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🥗 SALAD & RAITA</h2><div id="side-container" class="grid gap-3.5"></div></section>
         </div>
@@ -499,6 +499,31 @@
                     }).catch(() => {});
                 }
             }, { passive: true });
+        });
+
+        // HIGH PERFORMANCE SCROLL SPY ENGINE FOR PILLS NAVIGATION
+        const scrollSpyObserverOptionsNode = { root: null, rootMargin: '-140px 0px -60% 0px', threshold: 0.1 };
+        const scrollSpyObserverNode = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sectionIdNode = entry.target.id;
+                    const correspondingPillNode = document.getElementById(`pill-${sectionIdNode}`);
+                    if (correspondingPillNode) {
+                        document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap");
+                        correspondingPillNode.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap";
+                        // Auto horizontal scroll sync for navigation deck
+                        const containerRefNode = document.getElementById('category-nav-pills');
+                        if (containerRefNode) {
+                            const offsetLeftNode = correspondingPillNode.offsetLeft - containerRefNode.offsetLeft - 16;
+                            containerRefNode.scrollTo({ left: offsetLeftNode, behavior: 'smooth' });
+                        }
+                    }
+                }
+            });
+        }, scrollSpyObserverOptionsNode);
+
+        document.querySelectorAll('.menu-section').forEach(sectionNode => {
+            scrollSpyObserverNode.observe(sectionNode);
         });
 
         window.onload = renderInterfaceMenuRoom;
