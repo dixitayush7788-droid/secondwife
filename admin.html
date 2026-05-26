@@ -13,6 +13,7 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030712; }
         .brand-font { font-family: 'Playfair Display SC', serif; }
         .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-card-popup { background: rgba(9, 15, 30, 0.95); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         @keyframes emergencyRedGlow {
             0%, 100% { box-shadow: 0 0 12px #ef4444, inset 0 0 6px #ef4444; border-color: #f87171; opacity: 0.7; }
@@ -77,7 +78,6 @@
             </div>
         </div>
 
-        <h2 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2"><i class="fa-solid fa-list-check text-orange-500"></i> Active Production Queue</h2>
         <div id="admin-orders-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </main>
 
@@ -198,7 +198,7 @@
                     if(order.custType === 'Delivery' && order.lat && order.lng) {
                         adminMapsRouteMarkupNode = `
                             <div class="mt-3">
-                                <a href="https://www.google.com/maps/search/?api=1&query=${order.lat},${order.lng}" target="_blank" class="w-full bg-blue-500/10 hover:bg-blue-500 hover:text-black border border-blue-500/30 dynamic-map-btn-neon py-2 rounded-xl text-[10px] font-black tracking-wide uppercase flex items-center justify-center gap-1.5 transition-all duration-200">
+                                <a href="https://www.google.com/maps/dir/?api=1&destination=${order.lat},${order.lng}" target="_blank" class="w-full bg-blue-500/10 hover:bg-blue-500 hover:text-black border border-blue-500/30 dynamic-map-btn-neon py-2 rounded-xl text-[10px] font-black tracking-wide uppercase flex items-center justify-center gap-1.5 transition-all duration-200">
                                     <i class="fa-solid fa-map-location-dot text-xs"></i> 📍 Open Live Route Map
                                 </a>
                             </div>
@@ -231,7 +231,7 @@
                                     <button onclick="updateStatusNode('${order.id}', 'cooking', 15)" class="py-2 rounded-xl border border-orange-500/20 bg-orange-500/10 text-orange-400 transition hover:bg-orange-500 hover:text-black">Accept (15m)</button>
                                     <button onclick="updateStatusNode('${order.id}', 'cooking', 25)" class="py-2 rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-400 transition hover:bg-amber-500 hover:text-black">Accept (25m)</button>
                                     <button onclick="triggerRiderAllocationModalNode('${order.id}')" class="py-2 rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-400 transition hover:bg-blue-500 hover:text-black col-span-1">Out For Delivery</button>
-                                    <button onclick="updateStatusNode('${order.id}', 'delivered', 0)" class="py-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 transition hover:bg-emerald-500 hover:text-black col-span-1">Delivered ✓</button>
+                                    <button onclick="initiateSecureOTPVerificationNode('${order.id}', '${order.secureOrderOTPDisplayNode || ''}', '${order.custType || ''}')" class="py-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 transition hover:bg-emerald-500 hover:text-black col-span-1">Delivered ✓</button>
                                 </div>
                                 <button onclick="if(confirm('Delete order?')) db.ref('orders/${order.id}').remove()" class="w-full bg-red-500/10 text-red-400 border border-red-500/20 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition hover:bg-red-500 hover:text-black"><i class="fa-solid fa-trash-can"></i> Archive Order Node</button>
                             </div>
@@ -317,6 +317,75 @@
                 lastCustomerMsg: null, // Clear customer's message query on active reply strike
                 lastRiderReply: replyTextString
             });
+        }
+    </script>
+
+    <div id="secure-otp-popup-modal-layer" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[110] flex items-center justify-center hidden p-4">
+        <div class="glass-card-popup w-full max-w-sm rounded-[2.2rem] p-6 text-center shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div class="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-xl mx-auto mb-4">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="text-base font-black text-white uppercase tracking-wider mb-1">Verify Delivery OTP</h3>
+            <p class="text-slate-400 text-xs mb-5">Customer se 4-digit code pooch kar input karein.</p>
+            
+            <input type="hidden" id="secure-verification-target-order-id">
+            <input type="hidden" id="secure-verification-target-raw-otp">
+
+            <input type="text" id="secure-admin-otp-input-field" maxlength="4" placeholder="••••" class="w-full bg-slate-950/80 border border-white/10 rounded-xl py-3.5 text-center text-2xl font-mono font-black tracking-[0.4em] text-orange-500 focus:outline-none focus:border-orange-500 mb-4 placeholder-slate-800">
+            
+            <div class="grid grid-cols-2 gap-2.5">
+                <button onclick="closeSecureOTPModalNode()" class="bg-slate-900 border border-white/5 py-3 rounded-xl text-xs font-black text-slate-400 hover:text-white uppercase transition tracking-wider">Cancel</button>
+                <button onclick="validateAndCommitSecureDeliveryNode()" class="bg-gradient-to-r from-emerald-500 to-green-600 py-3 rounded-xl text-xs font-black text-black uppercase transition tracking-wider shadow-md active:scale-95">Verify Code</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Trigger verification pop-up module workflow logic
+        window.initiateSecureOTPVerificationNode = function(orderId, exactDbOtpString, orderTypeString) {
+            // Bypass logic for DineIn orders so staff never get stuck on tables processing
+            if(orderTypeString === 'DineIn') {
+                if(confirm('Clear this Dine-In order node?')) {
+                    window.updateStatusNode(orderId, 'delivered', 0);
+                }
+                return;
+            }
+
+            // Fallback safety if database connectivity drops out or otp fields fail to cache 
+            if(!exactDbOtpString || exactDbOtpString.trim() === "") {
+                if(confirm("Warning: Security code parameter offline. Proceed bypass?")) {
+                    window.updateStatusNode(orderId, 'delivered', 0);
+                }
+                return;
+            }
+
+            // Bind values directly into virtual modal hidden input elements
+            document.getElementById('secure-verification-target-order-id').value = orderId;
+            document.getElementById('secure-verification-target-raw-otp').value = exactDbOtpString;
+            document.getElementById('secure-admin-otp-input-field').value = ""; // Refresh previous entries
+            
+            document.getElementById('secure-otp-popup-modal-layer').classList.remove('hidden');
+            setTimeout(() => document.getElementById('secure-admin-otp-input-field').focus(), 50);
+        }
+
+        window.closeSecureOTPModalNode = function() {
+            document.getElementById('secure-otp-popup-modal-layer').classList.add('hidden');
+        }
+
+        window.validateAndCommitSecureDeliveryNode = function() {
+            const targetOrderId = document.getElementById('secure-verification-target-order-id').value;
+            const absoluteExpectedOtp = document.getElementById('secure-verification-target-raw-otp').value.trim();
+            const userEnteredOtp = document.getElementById('secure-admin-otp-input-field').value.trim();
+
+            if(userEnteredOtp === absoluteExpectedOtp) {
+                // If code checks out cleanly, execute transmission update to clear loop node
+                window.updateStatusNode(targetOrderId, 'delivered', 0);
+                window.closeSecureOTPModalNode();
+            } else {
+                alert("❌ Wrong Security Code! Fraud risk detected. Please verify with customer again.");
+                document.getElementById('secure-admin-otp-input-field').value = "";
+                document.getElementById('secure-admin-otp-input-field').focus();
+            }
         }
     </script>
 </body>
