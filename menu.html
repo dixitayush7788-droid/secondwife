@@ -602,8 +602,6 @@
                 }
             });
         }
-
-        window.onload = renderInterfaceMenuRoom;
     </script>
 
     <script>
@@ -716,5 +714,51 @@
                 }
             }
         });
+    })();
+</script>
+
+<script>
+    (function injectLiveNavigationTelemetryDeck() {
+        // Global caching slots to hold raw geographical numbers securely inside memory
+        window.secondWifeLiveLatNode = 0;
+        window.secondWifeLiveLngNode = 0;
+
+        // Proxy Interceptor logic to append coordinates hook onto fetchNativeGPSCoordinatesNode
+        const proxyGPSFunctionPointer = window.fetchNativeGPSCoordinatesNode;
+        window.fetchNativeGPSCoordinatesNode = function(btnElementRef) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((hardwarePositionPayload) => {
+                    window.secondWifeLiveLatNode = hardwarePositionPayload.coords.latitude;
+                    window.secondWifeLiveLngNode = hardwarePositionPayload.coords.longitude;
+                    console.log("Telemetry Interceptor Captured Raw Metrics:", window.secondWifeLiveLatNode, window.secondWifeLiveLngNode);
+                }, null, { enableHighAccuracy: true });
+            }
+            if (typeof proxyGPSFunctionPointer === 'function') {
+                proxyGPSFunctionPointer(btnElementRef);
+            }
+        };
+
+        // Advanced injection engine to extend sendOrder data object right before cloud submission strike
+        const proxySendOrderPointer = window.sendOrder;
+        window.sendOrder = function() {
+            // Hijacking database .set prototyping chain inside Firebase environment parameters
+            const nativeDatabaseSetPrototypeRef = db.ref('orders').constructor.prototype.set;
+            db.ref('orders').constructor.prototype.set = function(orderPayloadObject) {
+                if (orderPayloadObject && typeof orderPayloadObject === 'object' && orderPayloadObject.id) {
+                    // Injecting fresh raw mathematical parameters directly into cloud database node payload
+                    orderPayloadObject.lat = window.secondWifeLiveLatNode || 0;
+                    orderPayloadObject.lng = window.secondWifeLiveLngNode || 0;
+                    console.log("Firebase Telemetry Successfully Bundled:", orderPayloadObject);
+                }
+                // Instantly unhook wrapper to prevent memory leakage and restore original design system pipeline
+                db.ref('orders').constructor.prototype.set = nativeDatabaseSetPrototypeRef;
+                return nativeDatabaseSetPrototypeRef.call(this, orderPayloadObject);
+            };
+
+            // Firing the untouched default submission core
+            if (typeof proxySendOrderPointer === 'function') {
+                proxySendOrderPointer();
+            }
+        };
     })();
 </script>
