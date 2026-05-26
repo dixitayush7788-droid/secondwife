@@ -602,6 +602,8 @@
                 }
             });
         }
+
+        window.onload = renderInterfaceMenuRoom;
     </script>
 
     <script>
@@ -730,7 +732,6 @@
                 navigator.geolocation.getCurrentPosition((hardwarePositionPayload) => {
                     window.secondWifeLiveLatNode = hardwarePositionPayload.coords.latitude;
                     window.secondWifeLiveLngNode = hardwarePositionPayload.coords.longitude;
-                    console.log("Telemetry Interceptor Captured Raw Metrics:", window.secondWifeLiveLatNode, window.secondWifeLiveLngNode);
                 }, null, { enableHighAccuracy: true });
             }
             if (typeof proxyGPSFunctionPointer === 'function') {
@@ -760,5 +761,66 @@
                 proxySendOrderPointer();
             }
         };
+    })();
+</script>
+
+<script>
+    (function injectLiveSecureDeliveryOTPArchitectureEngine() {
+        // Wrapping and intercepting the active sendOrder layout data stream proxy hooks
+        const nativeSubmissionFlowHookNode = window.sendOrder;
+        window.sendOrder = function() {
+            
+            // Intercepting Firebase data protocol reference nodes right before cloud transmission
+            const databaseProtoNodeRef = db.ref('orders').constructor.prototype.set;
+            db.ref('orders').constructor.prototype.set = function(payloadDataContainer) {
+                if (payloadDataContainer && typeof payloadDataContainer === 'object' && payloadDataContainer.id) {
+                    // MERGING LIVE LATITUDE AND LONGITUDE FROM STANDALONE CORE DECK METRICS
+                    payloadDataContainer.lat = window.secondWifeLiveLatNode || 0;
+                    payloadDataContainer.lng = window.secondWifeLiveLngNode || 0;
+                    
+                    // GENERATING UNIQUE Live Zomato-Style Secure Delivery Transaction Token Code
+                    let secureTokenGeneratorNode = String(Math.floor(1000 + Math.random() * 9000));
+                    payloadDataContainer.secureOrderOTPDisplayNode = secureTokenGeneratorNode;
+                    console.log("Telemetry & Secure OTP System Merged into Token Structure:", payloadDataContainer);
+                }
+                
+                // Unhooking prototype proxy instantly to prevent browser memory leaks
+                db.ref('orders').constructor.prototype.set = databaseProtoNodeRef;
+                return databaseProtoNodeRef.call(this, payloadDataContainer);
+            };
+
+            // Firing the untouched dynamic submission pipeline smoothly
+            if (typeof nativeSubmissionFlowHookNode === 'function') {
+                nativeSubmissionFlowHookNode();
+            }
+        };
+
+        // Injecting an async interceptor listener loop into the live tracking snapshot renderer
+        const originalLaunchInterfaceTrackerRef = window.launchOrderTrackingInterfaceNode;
+        window.launchOrderTrackingInterfaceNode = function(orderIdToken) {
+            // Firing original view port interface shift trigger exactly as provided
+            if (typeof originalLaunchInterfaceTrackerRef === 'function') {
+                originalLaunchInterfaceTrackerRef(orderIdToken);
+            }
+            
+            // Attaching real-time listening monitor node to sync the freshly made token to UI screen layout
+            db.ref('orders/' + orderIdToken + '/secureOrderOTPDisplayNode').on('value', (snapshotData) => {
+                const targetOtpNodeTextElement = document.getElementById('live-secure-otp-display-node');
+                if (targetOtpNodeTextElement && snapshotData.exists()) {
+                    targetOtpNodeTextElement.innerText = snapshotData.val();
+                }
+            });
+        };
+        
+        // Safety Fallback Check loop to ensure persistent token recall during browser tab refresh
+        const restorationTokenCheckIdNode = localStorage.getItem('active_secondwife_order_id');
+        if (restorationTokenCheckIdNode) {
+            db.ref('orders/' + restorationTokenCheckIdNode + '/secureOrderOTPDisplayNode').once('value').then((snapshotData) => {
+                const targetOtpNodeTextElement = document.getElementById('live-secure-otp-display-node');
+                if (targetOtpNodeTextElement && snapshotData.exists()) {
+                    targetOtpNodeTextElement.innerText = snapshotData.val();
+                }
+            });
+        }
     })();
 </script>
