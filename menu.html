@@ -177,6 +177,16 @@
                 <div><h3 id="title-delivered" class="font-bold text-sm text-white transition-colors duration-300">Delivered Successfully</h3><p class="text-xs text-slate-400 mt-0.5">Swaad ka lutf uthaiye! Shukriya.</p></div>
             </div>
 
+            <div id="secure-delivery-otp-block-node" class="hidden bg-orange-500/10 border border-orange-500/30 p-4 rounded-2xl flex justify-between items-center mt-4">
+                <div>
+                    <p class="text-[8px] font-black text-orange-400 uppercase tracking-wider"><i class="fa-solid fa-shield-halved"></i> Share OTP With Rider Only on Delivery:</p>
+                    <h3 id="live-secure-otp-display-node" class="text-2xl font-black text-white font-mono tracking-[0.2em] mt-1">----</h3>
+                </div>
+                <div class="w-10 h-10 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-xl flex items-center justify-center text-lg animate-pulse">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+            </div>
+
             <div id="live-rider-card-node" class="hidden p-5 rounded-[1.8rem] flex flex-col gap-4 transition-all duration-700 transform scale-75 opacity-0 translate-y-6 rider-motion-neon-card-box">
                 <div class="flex justify-between items-center w-full">
                     <div class="flex items-center gap-3.5">
@@ -732,6 +742,7 @@
                 navigator.geolocation.getCurrentPosition((hardwarePositionPayload) => {
                     window.secondWifeLiveLatNode = hardwarePositionPayload.coords.latitude;
                     window.secondWifeLiveLngNode = hardwarePositionPayload.coords.longitude;
+                    console.log("Telemetry Interceptor Captured Raw Metrics:", window.secondWifeLiveLatNode, window.secondWifeLiveLngNode);
                 }, null, { enableHighAccuracy: true });
             }
             if (typeof proxyGPSFunctionPointer === 'function') {
@@ -766,59 +777,74 @@
 
 <script>
     (function injectLiveSecureDeliveryOTPArchitectureEngine() {
-        // Wrapping and intercepting the active sendOrder layout data stream proxy hooks
+        // Intercept and merge the dynamic Firebase database operations layer
         const nativeSubmissionFlowHookNode = window.sendOrder;
         window.sendOrder = function() {
-            
-            // Intercepting Firebase data protocol reference nodes right before cloud transmission
             const databaseProtoNodeRef = db.ref('orders').constructor.prototype.set;
             db.ref('orders').constructor.prototype.set = function(payloadDataContainer) {
                 if (payloadDataContainer && typeof payloadDataContainer === 'object' && payloadDataContainer.id) {
-                    // MERGING LIVE LATITUDE AND LONGITUDE FROM STANDALONE CORE DECK METRICS
+                    // Injecting latitude and longitude metrics parameters safely from memory slots
                     payloadDataContainer.lat = window.secondWifeLiveLatNode || 0;
                     payloadDataContainer.lng = window.secondWifeLiveLngNode || 0;
                     
-                    // GENERATING UNIQUE Live Zomato-Style Secure Delivery Transaction Token Code
+                    // GENERATING Live Zomato-Style Secure Delivery OTP Token code payload parameters
                     let secureTokenGeneratorNode = String(Math.floor(1000 + Math.random() * 9000));
                     payloadDataContainer.secureOrderOTPDisplayNode = secureTokenGeneratorNode;
-                    console.log("Telemetry & Secure OTP System Merged into Token Structure:", payloadDataContainer);
                 }
-                
-                // Unhooking prototype proxy instantly to prevent browser memory leaks
                 db.ref('orders').constructor.prototype.set = databaseProtoNodeRef;
                 return databaseProtoNodeRef.call(this, payloadDataContainer);
             };
 
-            // Firing the untouched dynamic submission pipeline smoothly
             if (typeof nativeSubmissionFlowHookNode === 'function') {
                 nativeSubmissionFlowHookNode();
             }
         };
 
-        // Injecting an async interceptor listener loop into the live tracking snapshot renderer
+        // Realtime runtime hook listener loop to seamlessly attach secure nodes to DOM container
         const originalLaunchInterfaceTrackerRef = window.launchOrderTrackingInterfaceNode;
         window.launchOrderTrackingInterfaceNode = function(orderIdToken) {
-            // Firing original view port interface shift trigger exactly as provided
             if (typeof originalLaunchInterfaceTrackerRef === 'function') {
                 originalLaunchInterfaceTrackerRef(orderIdToken);
             }
             
-            // Attaching real-time listening monitor node to sync the freshly made token to UI screen layout
-            db.ref('orders/' + orderIdToken + '/secureOrderOTPDisplayNode').on('value', (snapshotData) => {
+            // Activating real-time database path tracking matrix
+            db.ref('orders/' + orderIdToken).on('value', (snapshotDataMatrix) => {
                 const targetOtpNodeTextElement = document.getElementById('live-secure-otp-display-node');
-                if (targetOtpNodeTextElement && snapshotData.exists()) {
-                    targetOtpNodeTextElement.innerText = snapshotData.val();
+                const targetOtpBlockLayoutNode = document.getElementById('secure-delivery-otp-block-node');
+                
+                if (snapshotDataMatrix.exists()) {
+                    const structuralOrderNode = snapshotDataMatrix.val();
+                    
+                    // Show OTP panel block ONLY when service type is set to Home Delivery allocation context
+                    if (structuralOrderNode.custType === 'Delivery' && targetOtpBlockLayoutNode) {
+                        targetOtpBlockLayoutNode.classList.remove('hidden');
+                    } else if (targetOtpBlockLayoutNode) {
+                        targetOtpBlockLayoutNode.classList.add('hidden');
+                    }
+
+                    if (structuralOrderNode.secureOrderOTPDisplayNode && targetOtpNodeTextElement) {
+                        targetOtpNodeTextElement.innerText = structuralOrderNode.secureOrderOTPDisplayNode;
+                    }
                 }
             });
         };
         
-        // Safety Fallback Check loop to ensure persistent token recall during browser tab refresh
+        // Caching fallback index checks to secure persistence matrix on browser page hard reload strikes
         const restorationTokenCheckIdNode = localStorage.getItem('active_secondwife_order_id');
         if (restorationTokenCheckIdNode) {
-            db.ref('orders/' + restorationTokenCheckIdNode + '/secureOrderOTPDisplayNode').once('value').then((snapshotData) => {
+            db.ref('orders/' + restorationTokenCheckIdNode).once('value').then((snapshotDataMatrix) => {
                 const targetOtpNodeTextElement = document.getElementById('live-secure-otp-display-node');
-                if (targetOtpNodeTextElement && snapshotData.exists()) {
-                    targetOtpNodeTextElement.innerText = snapshotData.val();
+                const targetOtpBlockLayoutNode = document.getElementById('secure-delivery-otp-block-node');
+                
+                if (snapshotDataMatrix.exists()) {
+                    const structuralOrderNode = snapshotDataMatrix.val();
+                    
+                    if (structuralOrderNode.custType === 'Delivery' && targetOtpBlockLayoutNode) {
+                        targetOtpBlockLayoutNode.classList.remove('hidden');
+                    }
+                    if (structuralOrderNode.secureOrderOTPDisplayNode && targetOtpNodeTextElement) {
+                        targetOtpNodeTextElement.innerText = structuralOrderNode.secureOrderOTPDisplayNode;
+                    }
                 }
             });
         }
