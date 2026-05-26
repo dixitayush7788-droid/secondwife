@@ -27,6 +27,13 @@
             50% { border-color: rgba(59, 130, 246, 0.8); box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
         }
         .incoming-msg-radar-glow { animation: messagePulseGlowNode 1.4s infinite ease-in-out; background: rgba(30, 58, 138, 0.25) !important; }
+
+        /* PULSING NEON BLUE LINK MODULE FOR DYNAMIC MAPS OVERLAY */
+        @keyframes mapGlowPulseActionNode {
+            0%, 100% { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 4px 25px rgba(59, 130, 246, 0.6); border-color: rgba(96, 165, 250, 0.8); }
+        }
+        .dynamic-map-btn-neon { animation: mapGlowPulseActionNode 1.8s infinite ease-in-out; }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen antialiased pb-24">
@@ -186,6 +193,18 @@
                         `;
                     }
 
+                    // GENERATE DYNAMIC GOOGLE MAPS NAVIGATION DECK Short-link
+                    let adminMapsRouteMarkupNode = "";
+                    if(order.custType === 'Delivery' && order.lat && order.lng) {
+                        adminMapsRouteMarkupNode = `
+                            <div class="mt-3">
+                                <a href="https://www.google.com/maps/search/?api=1&query=${order.lat},${order.lng}" target="_blank" class="w-full bg-blue-500/10 hover:bg-blue-500 hover:text-black border border-blue-500/30 dynamic-map-btn-neon py-2 rounded-xl text-[10px] font-black tracking-wide uppercase flex items-center justify-center gap-1.5 transition-all duration-200">
+                                    <i class="fa-solid fa-map-location-dot text-xs"></i> 📍 Open Live Route Map
+                                </a>
+                            </div>
+                        `;
+                    }
+
                     grid.innerHTML += `
                         <div class="glass-card ${emergencyClass} p-6 rounded-[2rem] flex flex-col justify-between border border-white/[0.04] transition duration-300 transform hover:-translate-y-1 shadow-2xl relative">
                             <div>
@@ -202,6 +221,7 @@
                                     ${riderInfoLineNode}
                                 </div>
                                 <div class="bg-slate-950/60 p-3 rounded-xl text-xs font-bold text-slate-200 mb-4 whitespace-pre-line leading-relaxed">${order.items}</div>
+                                ${adminMapsRouteMarkupNode}
                                 ${adminChatBoxMarkupNode}
                             </div>
                             <div class="border-t border-white/[0.04] pt-4 space-y-3">
