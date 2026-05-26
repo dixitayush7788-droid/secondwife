@@ -36,13 +36,15 @@
             --card-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
         }
 
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); scroll-behavior: smooth; transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body) !important; color: var(--text-main) !important; scroll-behavior: smooth; transition: background-color 0.4s ease, color 0.4s ease; }
+        .text-main-class { color: var(--text-main) !important; }
+        .text-muted-class { color: var(--text-muted) !important; }
         .brand-font-premium { font-family: 'Playfair Display SC', serif; }
-        .glass-premium { background: var(--bg-card); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid var(--border-card); box-shadow: var(--card-shadow); transition: background 0.3s, border 0.3s, box-shadow 0.3s; }
-        .glass-header { background: var(--bg-header); backdrop-blur: 24px; -webkit-backdrop-filter: blur(24px); transition: background 0.3s; }
+        .glass-premium { background: var(--bg-card) !important; backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid var(--border-card) !important; box-shadow: var(--card-shadow); transition: background 0.3s, border 0.3s, box-shadow 0.3s; }
+        .glass-header { background: var(--bg-header) !important; backdrop-blur: 24px; -webkit-backdrop-filter: blur(24px); transition: background 0.3s; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scroll-bar-width: none; }
-        .active-pill { background: linear-gradient(135deg, #f97316, #ea580c); color: #000000; font-weight: 800; box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3); border-color: transparent; }
+        .active-pill { background: linear-gradient(135deg, #f97316, #ea580c); color: #000000 !important; font-weight: 800; box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3); border-color: transparent; }
         
         /* CINEMATIC EFFECTS & MOTION ENGINES */
         @keyframes drift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(45px, 35px) scale(1.08); } }
@@ -82,7 +84,7 @@
         .rider-motion-neon-card-box { animation: riderGlowWavePulseNode 1.5s infinite ease-in-out; }
     </style>
 </head>
-<body class="dark antialiased overflow-x-hidden selection:bg-orange-500 selection:text-black">
+<body class="dark antialiased overflow-x-hidden">
 
     <div id="music-control" class="fixed top-24 right-4 z-[60] bg-slate-950/80 border border-white/10 p-3 rounded-full cursor-pointer hover:scale-110 transition shadow-lg secure-pulse" onclick="toggleMusic()">
         <button class="text-orange-500 text-sm w-5 h-5 flex items-center justify-center focus:outline-none">
@@ -150,6 +152,21 @@
             </div>
         </nav>
 
+        <div id="pwa-install-app-banner-node" class="hidden max-w-xl mx-auto px-4 mt-4 animate-in fade-in slide-in-from-top duration-300">
+            <div class="bg-gradient-to-r from-orange-600 to-amber-500 text-black rounded-2xl p-3.5 flex justify-between items-center shadow-lg group secure-pulse">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-black/10 rounded-xl flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-mobile-screen-button animate-bounce" style="animation-duration: 2s;"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-black uppercase tracking-wide">Install Our Official App</h4>
+                        <p class="text-[9px] font-bold opacity-80 mt-0.5">Fast Ordering • Live Status Tracking</p>
+                    </div>
+                </div>
+                <button onclick="executeNativePWAAppInstallationEngine()" class="bg-black text-white font-black text-[10px] px-4 py-2 rounded-xl uppercase tracking-wide transition active:scale-95 shadow-md">Add Now</button>
+            </div>
+        </div>
+
         <div id="category-nav-pills" class="sticky top-[73px] z-40 glass-header border-b border-white/[0.02] py-3.5 px-4 overflow-x-auto hide-scrollbar flex gap-2.5">
             <button id="pill-section-biryani" onclick="scrollToSection('section-biryani', this)" class="category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap">🍲 Biryani Special</button>
             <button id="pill-section-thali" onclick="scrollToSection('section-thali', this)" class="category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap">🍽️ Thali Menu</button>
@@ -163,8 +180,8 @@
 
         <header class="py-12 px-6 text-center relative max-w-xl mx-auto">
             <span class="text-[9px] font-extrabold uppercase tracking-[0.25em] text-orange-400 bg-orange-500/10 border border-orange-500/20 px-4 py-2 rounded-full backdrop-blur-md">Kanpur's Finest Dining System</span>
-            <h1 class="text-4xl font-extrabold tracking-tight text-main mt-6 leading-tight brand-font-premium">Swaad Jo Bane <span class="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 italic underline decoration-wavy underline-offset-8 decoration-orange-500/40">Aapki Pehli</span> Pasand!</h1>
-            <p class="text-muted text-xs mt-6 font-medium leading-relaxed max-w-xs mx-auto"><i class="fa-solid fa-location-dot text-red-500"></i> R.R. Galaxy, Near Pratap Hotel, Shyam Nagar, Kanpur.</p>
+            <h1 class="text-4xl font-extrabold tracking-tight text-main-class mt-6 leading-tight brand-font-premium">Swaad Jo Bane <span class="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 italic underline decoration-wavy underline-offset-8 decoration-orange-500/40">Aapki Pehli</span> Pasand!</h1>
+            <p class="text-muted-class text-xs mt-6 font-medium leading-relaxed max-w-xs mx-auto"><i class="fa-solid fa-location-dot text-red-500"></i> R.R. Galaxy, Near Pratap Hotel, Shyam Nagar, Kanpur.</p>
         </header>
 
         <div class="max-w-xl mx-auto px-4 mb-10 group">
@@ -323,7 +340,7 @@
             { id: 4, cat: "thali", name: "Special Thali", price: 260 }, { id: 5, cat: "thali", name: "Golden Thali", price: 299 },
             { id: 6, cat: "main", name: "Makhmali Malai Chaap Gravy", price: 289 }, { id: 7, cat: "main", name: "Mushroom Masala", price: 179 }, { id: 8, cat: "main", name: "Matar Mushroom", price: 179 }, { id: 9, cat: "main", name: "Malai Kofta", price: 189 }, { id: 10, cat: "main", name: "Handi Paneer", price: 179 }, { id: 11, cat: "main", name: "Veg Kofta", price: 169 }, { id: 12, cat: "main", name: "Dum Aloo", price: 269 }, { id: 13, cat: "main", name: "Kashmiri Dum Aloo", price: 279 }, { id: 14, cat: "main", name: "Jeera Aloo", price: 169 }, { id: 15, cat: "main", name: "Veg Mixed", price: 149 },
             { id: 16, cat: "side", name: "Green Garden Salad", price: 69 }, { id: 17, cat: "side", name: "Papad Dry", price: 29 }, { id: 18, cat: "side", name: "Masala Papad", price: 45 }, { id: 19, cat: "side", name: "Plain Curd", price: 99 }, { id: 20, cat: "side", name: "Boondi Raita", price: 109 }, { id: 21, cat: "side", name: "Mint Raita", price: 109 }, { id: 22, cat: "side", name: "Mixed Fruit Raita", price: 149 },
-            { id: 23, cat: "breads", name: "Tandoori Roti", price: 12 }, { id: 24, cat: "breads", name: "Butter Tandoori Roti", price: 14 }, { id: 25, cat: "breads", name: "Missi Roti", price: 35 }, { id: 26, cat: "breads", name: "Plain Naan", price: 35 }, { id: 27, cat: "breads", name: "Butter Naan", price: 45 }, { id: 28, cat: "breads", name: "Garlic Naan", price: 49 }, { id: 29, cat: "breads", name: "Plain Kulcha", price: 49 }, { id: 30, cat: "breads", name: "Special Stuff Paratha", price: 69 }, { id: 31, cat: "breads", name: "Stuffed Paneer Paratha", price: 69 }, { id: 32, cat: "breads", name: "Onion Missi Roti", price: 35 }, { id: 33, cat: "breads", name: "Lachha Paratha", price: 45 }, { id: 34, cat: "breads", name: "Pudina Paratha", price: 49 }, { id: 35, cat: "breads", name: "Mirchi Paratha", price: 49 }, { id: 36, cat: "breads", name: "Paneer Naan", price: 55 },
+            { id: 23, cat: "breads", name: "Tandoori Roti", price: 12 }, { id: 24, cat: "breads", name: "Butter Tandoori Roti", price: 14 }, { id: 25, cat: "breads", name: "Missi Roti", price: 35 }, { id: 26, cat: "breads", name: "Plain Naan", price: 35 }, { id: 27, cat: "breads", name: "Butter Naan", price: 45 }, { id: 28, cat: "breads", name: "Garlic Naan", price: 49 }, { id: 29, cat: "breads", name: "Plain Kulcha", price: 49 }, { id: 30, cat: "breads", name: "Special Stuff Paratha", price: 69 }, { id: 31, cat: "breads", name: "Stuffed Paneer Paratha", price: 69 }, { id: 32, cat: "breads", name: "Onion Missi Roti", price: 35 }, { id: 33, cat: "breads", name: "Lachha Paratha", price: 45 }, { id: 34, cat: "pudina", name: "Pudina Paratha", price: 49 }, { id: 35, cat: "breads", name: "Mirchi Paratha", price: 49 }, { id: 36, cat: "breads", name: "Paneer Naan", price: 55 },
             { id: 37, cat: "starters", name: "Dahi Kebab", price: 229 }, { id: 38, cat: "starters", name: "Makhmali Malai Chaap", price: 279 }, { id: 39, cat: "starters", name: "Hariyali Paneer Tikka", price: 269 }, { id: 40, cat: "starters", name: "Paneer Tikka", price: 269 }, { id: 41, cat: "starters", name: "Mushroom Tikka", price: 269 }, { id: 42, cat: "starters", name: "Veg Manchurian Dry", price: 239 }, { id: 43, cat: "starters", name: "Paneer Manchurian Dry", price: 269 }, { id: 44, cat: "starters", name: "Paneer Chilli Dry", price: 269 },
             { id: 45, cat: "rice", name: "Plain Rice", price: 89 }, { id: 46, cat: "rice", name: "Jeera Rice", price: 99 }, { id: 47, cat: "rice", name: "Veg Pulao", price: 149 }, { id: 48, cat: "rice", name: "Matar Pulao", price: 139 }, { id: 49, cat: "rice", name: "Kashmiri Pulao", price: 169 },
             { id: 50, cat: "snacks", name: "French Fries", price: 139 }, { id: 51, cat: "snacks", name: "Paneer Pakoda (8 pcs)", price: 199 }, { id: 52, div: "snacks", name: "Spring Roll", price: 129 }, { id: 53, cat: "snacks", name: "Stuffed Paneer Kulcha", price: 79 }, { id: 54, cat: "snacks", name: "Aloo Stuffed Kulcha", price: 69 }
@@ -885,6 +902,69 @@
             });
         }
     })();
+</script>
+
+<script>
+    // Global variable caching slot to intercept native browser install pipelines securely
+    window.secondWifeDeferredPWAInstallPrompt = null;
+
+    (function initProgressiveWebAppEngineCore() {
+        // Listening to the browser device system's core app injection request event
+        window.addEventListener('beforeinstallprompt', (devicePromptPayloadEvent) => {
+            // Prevent the native default browser minimal popup banner from hijacking the UX layout
+            devicePromptPayloadEvent.preventDefault();
+            
+            // Storing the hardware trigger safely inside global window object stack memory
+            window.secondWifeDeferredPWAInstallPrompt = devicePromptPayloadEvent;
+            
+            // Unhiding the custom premium floating App Install Banner dynamically
+            const targetPwaInstallBannerElement = document.getElementById('pwa-install-app-banner-node');
+            if (targetPwaInstallBannerElement) {
+                targetPwaInstallBannerElement.classList.remove('hidden');
+                console.log("PWA Installation Gateway Radar Hook: Native Android/PC trigger operational.");
+            }
+        });
+
+        // Listening to successful installation loop context updates
+        window.addEventListener('appinstalled', (installationSuccessEvent) => {
+            console.log("✓ Second Wife App successfully deployed and installed onto device home-screen!");
+            // Automatically clear the banner display view block gracefully
+            const targetPwaInstallBannerElement = document.getElementById('pwa-install-app-banner-node');
+            if (targetPwaInstallBannerElement) {
+                targetPwaInstallBannerElement.classList.add('hidden');
+            }
+            window.secondWifeDeferredPWAInstallPrompt = null;
+            alert("🎉 Second Wife Cafe & Restaurant App installed successfully on your Home Screen!");
+        });
+    })();
+
+    // Interactive Core Engine Function to execute native system app install routines on click strike
+    window.executeNativePWAAppInstallationEngine = function() {
+        const structuralPromptRef = window.secondWifeDeferredPWAInstallPrompt;
+        if (!structuralPromptRef) {
+            // Fallback context guidance loop alert if system is running inside unsupportive browsers
+            alert("Bhaiya, agar Add button direct nahi chal raha, toh browser ke Option (3 Dots) ya Share icon par tap karke 'Add to Home Screen' select kijiye, instant App ban jayega! 🔥");
+            return;
+        }
+        
+        // Firing the stored deep hardware system prompt overlay engine smoothly
+        structuralPromptRef.prompt();
+        
+        // Waiting for customer decision callback token registry parameters
+        structuralPromptRef.userChoice.then((choiceResultPayload) => {
+            if (choiceResultPayload.outcome === 'accepted') {
+                console.log('Customer accepted the installation loop protocol pipeline.');
+            } else {
+                console.log('Customer dismissed the app injection payload query.');
+            }
+            // Clear the deferred prompt registry variable to save resource execution pipeline slots
+            window.secondWifeDeferredPWAInstallPrompt = null;
+            const targetPwaInstallBannerElement = document.getElementById('pwa-install-app-banner-node');
+            if (targetPwaInstallBannerElement) {
+                targetPwaInstallBannerElement.classList.add('hidden');
+            }
+        });
+    };
 </script>
 
 <script>
