@@ -152,7 +152,7 @@
             </div>
         </nav>
 
-        <div id="pwa-install-app-banner-node" class="hidden max-w-xl mx-auto px-4 mt-4 animate-in fade-in slide-in-from-top duration-300">
+        <div id="pwa-install-app-banner-node" class="max-w-xl mx-auto px-4 mt-4 animate-in fade-in slide-in-from-top duration-300">
             <div class="bg-gradient-to-r from-orange-600 to-amber-500 text-black rounded-2xl p-3.5 flex justify-between items-center shadow-lg group secure-pulse">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 bg-black/10 rounded-xl flex items-center justify-center text-lg">
@@ -875,7 +875,7 @@
                         targetOtpBlockLayoutNode.classList.add('hidden');
                     }
 
-                    if (structuralOrderNode.secureOrderOTPDisplayNode && targetOtpNodeTextElement) {
+                    if (snapshotDataMatrix.exists() && structuralOrderNode.secureOrderOTPDisplayNode && targetOtpNodeTextElement) {
                         targetOtpNodeTextElement.innerText = structuralOrderNode.secureOrderOTPDisplayNode;
                     }
                 }
@@ -905,69 +905,6 @@
 </script>
 
 <script>
-    // Global variable caching slot to intercept native browser install pipelines securely
-    window.secondWifeDeferredPWAInstallPrompt = null;
-
-    (function initProgressiveWebAppEngineCore() {
-        // Listening to the browser device system's core app injection request event
-        window.addEventListener('beforeinstallprompt', (devicePromptPayloadEvent) => {
-            // Prevent the native default browser minimal popup banner from hijacking the UX layout
-            devicePromptPayloadEvent.preventDefault();
-            
-            // Storing the hardware trigger safely inside global window object stack memory
-            window.secondWifeDeferredPWAInstallPrompt = devicePromptPayloadEvent;
-            
-            // Unhiding the custom premium floating App Install Banner dynamically
-            const targetPwaInstallBannerElement = document.getElementById('pwa-install-app-banner-node');
-            if (targetPwaInstallBannerElement) {
-                targetPwaInstallBannerElement.classList.remove('hidden');
-                console.log("PWA Installation Gateway Radar Hook: Native Android/PC trigger operational.");
-            }
-        });
-
-        // Listening to successful installation loop context updates
-        window.addEventListener('appinstalled', (installationSuccessEvent) => {
-            console.log("✓ Second Wife App successfully deployed and installed onto device home-screen!");
-            // Automatically clear the banner display view block gracefully
-            const targetPwaInstallBannerElement = document.getElementById('pwa-install-app-banner-node');
-            if (targetPwaInstallBannerElement) {
-                targetPwaInstallBannerElement.classList.add('hidden');
-            }
-            window.secondWifeDeferredPWAInstallPrompt = null;
-            alert("🎉 Second Wife Cafe & Restaurant App installed successfully on your Home Screen!");
-        });
-    })();
-
-    // Interactive Core Engine Function to execute native system app install routines on click strike
-    window.executeNativePWAAppInstallationEngine = function() {
-        const structuralPromptRef = window.secondWifeDeferredPWAInstallPrompt;
-        if (!structuralPromptRef) {
-            // Fallback context guidance loop alert if system is running inside unsupportive browsers
-            alert("Bhaiya, agar Add button direct nahi chal raha, toh browser ke Option (3 Dots) ya Share icon par tap karke 'Add to Home Screen' select kijiye, instant App ban jayega! 🔥");
-            return;
-        }
-        
-        // Firing the stored deep hardware system prompt overlay engine smoothly
-        structuralPromptRef.prompt();
-        
-        // Waiting for customer decision callback token registry parameters
-        structuralPromptRef.userChoice.then((choiceResultPayload) => {
-            if (choiceResultPayload.outcome === 'accepted') {
-                console.log('Customer accepted the installation loop protocol pipeline.');
-            } else {
-                console.log('Customer dismissed the app injection payload query.');
-            }
-            // Clear the deferred prompt registry variable to save resource execution pipeline slots
-            window.secondWifeDeferredPWAInstallPrompt = null;
-            const targetPwaInstallBannerElement = document.getElementById('pwa-install-app-banner-node');
-            if (targetPwaInstallBannerElement) {
-                targetPwaInstallBannerElement.classList.add('hidden');
-            }
-        });
-    };
-</script>
-
-<script>
     window.toggleModeEngineNode = function() {
         const bodyElementRefNode = document.body;
         const themeIconElementRefNode = document.getElementById('theme-switch-icon-node');
@@ -985,6 +922,45 @@
             bodyElementRefNode.classList.add('light');
             if (themeIconElementRefNode) {
                 themeIconElementRefNode.className = "fa-solid fa-moon text-sm text-blue-400 transition-all duration-300";
+            }
+        }
+    };
+</script>
+
+<script>
+    (function initForcedPWARadarEngine() {
+        // Directly target button display state and remove 'hidden' browser rule restrictions
+        const forceRevealInstallBannerNode = () => {
+            const banner = document.getElementById('pwa-install-app-banner-node');
+            if(banner) {
+                // Instantly remove Tailwind hidden parameter to force-render the banner card
+                banner.classList.remove('hidden');
+                console.log("Custom App Banner forcefully injected into user viewport chain successfully.");
+            }
+        };
+
+        // Fire instantly on window load and repeat check loop every 1.5 seconds to bypass pop-up blocks
+        window.addEventListener('DOMContentLoaded', forceRevealInstallBannerNode);
+        window.addEventListener('load', forceRevealInstallBannerNode);
+        setInterval(forceRevealInstallBannerNode, 1500);
+    })();
+
+    // Dynamic Execution loop when customer taps "Add Now" button on banner node
+    window.executeNativePWAAppInstallationEngine = function() {
+        // Check if browser native setup structure exists in memory slots
+        if (window.secondWifeDeferredPWAInstallPrompt) {
+            window.secondWifeDeferredPWAInstallPrompt.prompt();
+            window.secondWifeDeferredPWAInstallPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') console.log('User installed via system trigger.');
+                window.secondWifeDeferredPWAInstallPrompt = null;
+            });
+        } else {
+            // High-Value Smart Guidance Fallback modal text based on active OS platform structure
+            const isIphoneNodeCheck = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isIphoneNodeCheck) {
+                alert(" iPhone Users App Special Guide:\n\n1. Niche Safari browser ke 'Share' (Teer 📤) icon par click karein.\n2. List me thoda neeche scroll karke 'Add to Home Screen' (➕) par tap karein.\n\nSecond Wife App instant aapki home screen par install ho jayega! 🔥");
+            } else {
+                alert("👦 Android Users App Special Guide:\n\n1. Top Right corner me Chrome ke 3 Dots (⋮) menu par click karein.\n2. Wahan 'Install App' ya 'Add to Home screen' option par tap karein.\n\nApp instant bina kisi download wait ke aapki main desktop screen par set ho jayega! 🚀");
             }
         }
     };
