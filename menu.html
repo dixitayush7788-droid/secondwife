@@ -292,8 +292,17 @@
         <button id="tracking-exit-btn" onclick="minimizeTrackingViewNode()" class="mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50 transition w-full"><i class="fa-solid fa-house-chimney"></i> Back to Menu (Keep Tracking)</button>
     </div>
 
-    <div id="checkout-bar" class="fixed inset-0 bg-[#030712] p-6 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-[65] overflow-y-auto hide-scrollbar">
-        <div class="w-full max-w-md flex justify-between items-center mb-5 border-b border-white/5 pb-3">
+    <div id="history-drawer" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[85vh] overflow-y-auto shadow-2xl max-w-xl mx-auto">
+        <div class="w-full max-w-md flex justify-between items-center mb-4 border-b border-white/5 pb-2.5">
+            <span class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em] flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left"></i> Your Order Ledger History</span>
+            <button onclick="document.getElementById('history-drawer').classList.add('translate-y-full')" class="h-8 w-8 bg-slate-900 border border-white/5 text-slate-400 hover:text-orange-500 font-bold rounded-full flex items-center justify-center transition active:scale-95">✕</button>
+        </div>
+        <div class="w-full max-w-md space-y-3 overflow-y-auto pr-1" id="history-items-container"></div>
+    </div>
+
+    <div id="checkout-bar" class="fixed inset-0 bg-[#030712] p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-[65] overflow-y-auto overflow-x-hidden hide-scrollbar">
+        
+        <div class="w-full max-w-md flex justify-between items-center mb-6 border-b border-white/5 pb-3">
             <span class="text-xs font-black text-orange-400 uppercase tracking-widest"><i class="fa-solid fa-basket-shopping"></i> Secure Checkout Basket</span>
             <button onclick="closeCartDrawer()" class="text-slate-400 bg-slate-900 border border-white/5 w-8 h-8 rounded-full text-xs font-bold transition active:scale-90 flex items-center justify-center">✕</button>
         </div>
@@ -315,13 +324,13 @@
             <input type="text" id="cust-loc" onkeyup="validateFormStateNode()" placeholder="Table Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold">
         </div>
 
-        <div class="w-full max-w-md space-y-2.5 mb-4 max-h-[25vh] overflow-y-auto hide-scrollbar bg-slate-950/40 p-1.5 rounded-2xl border border-white/[0.02]" id="cart-live-items-renderer-node">
-            </div>
-
         <div class="w-full max-w-md bg-slate-900 border border-white/5 p-4 rounded-xl mb-4">
             <div class="flex justify-between items-center mb-1.5"><span class="text-[10px] font-extrabold uppercase tracking-wide text-slate-300">Delivery Threshold Progress</span><span id="delivery-msg" class="text-[10px] font-black text-amber-400">Order minimum ₹100</span></div>
             <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden relative"><div id="delivery-progress" class="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-emerald-500 w-0 transition-all duration-300"></div></div>
         </div>
+
+        <div class="w-full max-w-md bg-slate-900/40 border border-white/5 p-3 rounded-2xl mb-4 space-y-2.5 text-left flex flex-col" id="cart-live-items-renderer-node">
+            </div>
 
         <div class="w-full max-w-md bg-slate-950/60 border border-white/5 p-4 rounded-2xl mb-4 text-xs font-bold space-y-2 text-left text-slate-300">
             <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5"><i class="fa-solid fa-file-invoice-dollar"></i> Bill Detailed Summary:</p>
@@ -345,9 +354,11 @@
             <div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center border border-slate-200"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" alt="UPI QR" class="w-40 h-40 object-contain"><input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs mt-3 text-white focus:outline-none"></div>
         </div>
 
-        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 text-black py-4.5 rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer shadow-xl shadow-emerald-950/20 transform transition active:scale-95 flex items-center justify-center gap-2" disabled>
-            <span>PLACE CLOUD ORDER VIA FIREBASE</span> <i class="fa-solid fa-circle-arrow-right animate-pulse"></i>
-        </button>
+        <div class="w-full max-w-md pt-2 pb-6">
+            <button id="checkout-btn" onclick="sendOrder()" class="w-full bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 text-black py-4.5 rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer shadow-xl shadow-emerald-950/20 transform transition active:scale-95 flex items-center justify-center gap-2" disabled>
+                <span>PLACE CLOUD ORDER VIA FIREBASE</span> <i class="fa-solid fa-circle-arrow-right animate-pulse"></i>
+            </button>
+        </div>
     </div>
 
     <div id="zomato-floating-toast-action-deck-node" class="fixed bottom-20 inset-x-0 px-4 z-[54] max-w-xl mx-auto hidden transform transition duration-300">
@@ -425,7 +436,7 @@
             db.ref('menu_stock').on('value', (snapshot) => {
                 const stock = snapshot.val() || {};
                 fullMenu.forEach(item => {
-                    const card = document.getElementById(`dish-node-card-${item.id}`); const btn = document.getElementById(`plus-btn-node-${item.id}`); const tag = document.getElementById(`price-tag-node-${item.id}`);
+                    const card = document.getElementById('dish-node-card-' + item.id); const btn = document.getElementById('plus-btn-node-' + item.id); const tag = document.getElementById('price-tag-node-' + item.id);
                     if(card && btn && tag) {
                         if(snapshot.exists() && stock[item.id] === false) { card.classList.add('opacity-30', 'pointer-events-none'); btn.disabled = true; tag.innerHTML = `<span class="text-red-500 text-[10px] font-black uppercase tracking-wider bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">Out of Stock</span>`; }
                         else { card.classList.remove('opacity-30', 'pointer-events-none'); btn.disabled = false; tag.innerHTML = `₹${item.price}`; }
@@ -464,8 +475,8 @@
         // HELPER LOGIC MATRIX TO SYNC CORE QUANTITIES WITHIN MEMORY DOM CACHE BUNDLES
         function syncVisualQtyStatesFromCartMemory() {
             fullMenu.forEach(item => {
-                const qtyTextNode = document.getElementById(`qty-${item.id}`);
-                const minusBtnNode = document.getElementById(`minus-${item.id}`);
+                const qtyTextNode = document.getElementById('qty-' + item.id);
+                const minusBtnNode = document.getElementById('minus-' + item.id);
                 const memoryQty = window.cart[item.id] ? window.cart[item.id].qty : 0;
                 
                 if(qtyTextNode && minusBtnNode) {
@@ -481,7 +492,7 @@
             });
         }
 
-        // SWIGGY/ZOMATO ACCESSIBLE INTERACTION CORE: RE-RENDER LIVE CART DECK ON MODIFICATION STRIKE
+        // SWIGGY/ZOMATO ACCESSIBLE INTERACTION CORE: RE-RENDER LIVE CART DECK ON MODIFICATION STRIRE
         function renderLiveBasketItemsDeckNode() {
             const container = document.getElementById('cart-live-items-renderer-node');
             if(!container) return;
@@ -496,17 +507,17 @@
             activeKeys.forEach(id => {
                 const cartItem = window.cart[id];
                 container.innerHTML += `
-                    <div class="bg-slate-900/90 border border-white/5 p-3 rounded-xl flex justify-between items-center transition-all">
-                        <div class="flex items-center gap-2 truncate">
-                            <span class="w-2 h-2 rounded-sm border border-emerald-600 flex items-center justify-center p-0.5 flex-shrink-0"><span class="w-0.5 h-0.5 rounded-full bg-emerald-500 block"></span></span>
-                            <span class="text-xs font-extrabold text-white truncate max-w-[160px]">${cartItem.name}</span>
+                    <div class="bg-slate-950/80 border border-white/5 p-4 rounded-xl flex justify-between items-center transition-all shadow-md">
+                        <div class="flex items-center gap-2.5 truncate">
+                            <span class="w-2.5 h-2.5 rounded-sm border border-emerald-600 flex items-center justify-center p-0.5 flex-shrink-0"><span class="w-1 h-1 rounded-full bg-emerald-500 block"></span></span>
+                            <span class="text-xs font-extrabold text-white truncate max-w-[180px]">${cartItem.name}</span>
                         </div>
-                        <div class="flex items-center gap-3 flex-shrink-0">
-                            <span class="text-xs font-bold text-orange-400 font-mono">₹${cartItem.price * cartItem.qty}</span>
-                            <div class="flex items-center bg-slate-950 border border-white/10 rounded-lg overflow-hidden h-7">
-                                <button onclick="changeQty(${id}, -1)" class="px-2 text-slate-400 hover:text-white text-xs font-black transition active:bg-white/5">-</button>
-                                <span class="px-1.5 text-xs font-black text-white font-mono min-w-[14px] text-center">${cartItem.qty}</span>
-                                <button onclick="changeQty(${id}, 1)" class="px-2 text-slate-400 hover:text-white text-xs font-black transition active:bg-white/5">+</button>
+                        <div class="flex items-center gap-3.5 flex-shrink-0">
+                            <span class="text-xs font-black text-orange-400 font-mono">₹${cartItem.price * cartItem.qty}</span>
+                            <div class="flex items-center bg-slate-900 border border-white/10 rounded-lg overflow-hidden h-7.5">
+                                <button onclick="changeQty(${id}, -1)" class="px-2.5 text-slate-400 hover:text-white text-xs font-black transition active:bg-white/5">-</button>
+                                <span class="px-1.5 text-xs font-black text-white font-mono min-w-[16px] text-center">${cartItem.qty}</span>
+                                <button onclick="changeQty(${id}, 1)" class="px-2.5 text-slate-400 hover:text-white text-xs font-black transition active:bg-white/5">+</button>
                             </div>
                         </div>
                     </div>
@@ -844,7 +855,7 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const sectionIdNode = entry.target.id;
-                    const correspondingPillNode = document.getElementById(`pill-${sectionIdNode}`);
+                    const correspondingPillNode = document.getElementById('pill-' + sectionIdNode);
                     if (correspondingPillNode) {
                         document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap");
                         correspondingPillNode.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap";
@@ -1118,4 +1129,66 @@
             });
         }
     })();
+</script>
+
+<script>
+    window.toggleModeEngineNode = function() {
+        const bodyElementRefNode = document.body;
+        const themeIconElementRefNode = document.getElementById('theme-switch-icon-node');
+        
+        if (bodyElementRefNode.classList.contains('light')) {
+            // Shift interface context completely to premium dark mode engine matrix
+            bodyElementRefNode.classList.remove('light');
+            bodyElementRefNode.classList.add('dark');
+            if (themeIconElementRefNode) {
+                themeIconElementRefNode.className = "fa-solid fa-sun text-sm text-amber-400 transition-all duration-300";
+            }
+        } else {
+            // Shift interface context completely to lightful high-value clean profile
+            bodyElementRefNode.classList.remove('dark');
+            bodyElementRefNode.classList.add('light');
+            if (themeIconElementRefNode) {
+                themeIconElementRefNode.className = "fa-solid fa-moon text-sm text-blue-400 transition-all duration-300";
+            }
+        }
+    };
+</script>
+
+<script>
+    (function initForcedPWARadarEngine() {
+        // Directly target button display state and remove 'hidden' browser rule restrictions
+        const forceRevealInstallBannerNode = () => {
+            const banner = document.getElementById('pwa-install-app-banner-node');
+            if(banner) {
+                // Instantly remove Tailwind hidden parameter to force-render the banner card
+                banner.classList.remove('hidden');
+                console.log("Custom App Banner forcefully injected into user viewport chain successfully.");
+            }
+        };
+
+        // Fire instantly on window load and repeat check loop every 1.5 seconds to bypass pop-up blocks
+        window.addEventListener('DOMContentLoaded', forceRevealInstallBannerNode);
+        window.addEventListener('load', forceRevealInstallBannerNode);
+        setInterval(forceRevealInstallBannerNode, 1500);
+    })();
+
+    // Dynamic Execution loop when customer taps "Add Now" button on banner node
+    window.executeNativePWAAppInstallationEngine = function() {
+        // Check if browser native setup structure exists in memory slots
+        if (window.secondWifeDeferredPWAInstallPrompt) {
+            window.secondWifeDeferredPWAInstallPrompt.prompt();
+            window.secondWifeDeferredPWAInstallPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') console.log('User installed via system trigger.');
+                window.secondWifeDeferredPWAInstallPrompt = null;
+            });
+        } else {
+            // High-Value Smart Guidance Fallback modal text based on active OS platform structure
+            const isIphoneNodeCheck = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isIphoneNodeCheck) {
+                alert(" iPhone Users App Special Guide:\n\n1. Niche Safari browser ke 'Share' (Teer 📤) icon par click karein.\n2. List me thoda neeche scroll karke 'Add to Home Screen' (➕) par tap karein.\n\nSecond Wife App instant aapki home screen par install ho jayega! 🔥");
+            } else {
+                alert("👦 Android Users App Special Guide:\n\n1. Top Right corner me Chrome ke 3 Dots (⋮) menu par click karein.\n2. Wahan 'Install App' ya 'Add to Home screen' option par tap karein.\n\nApp instant bina kisi download wait ke aapki main desktop screen par set ho jayega! 🚀");
+            }
+        }
+    };
 </script>
