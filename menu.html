@@ -292,18 +292,10 @@
         <button id="tracking-exit-btn" onclick="minimizeTrackingViewNode()" class="mt-8 text-xs font-bold text-slate-400 hover:text-white border border-white/10 px-6 py-3 rounded-xl bg-slate-900/50 transition w-full"><i class="fa-solid fa-house-chimney"></i> Back to Menu (Keep Tracking)</button>
     </div>
 
-    <div id="history-drawer" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[85vh] overflow-y-auto shadow-2xl max-w-xl mx-auto">
-        <div class="w-full max-w-md flex justify-between items-center mb-4 border-b border-white/5 pb-2.5">
-            <span class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em] flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left"></i> Your Order Ledger History</span>
-            <button onclick="document.getElementById('history-drawer').classList.add('translate-y-full')" class="h-8 w-8 bg-slate-900 border border-white/5 text-slate-400 hover:text-orange-500 font-bold rounded-full flex items-center justify-center transition active:scale-95">✕</button>
-        </div>
-        <div class="w-full max-w-md space-y-3 overflow-y-auto pr-1" id="history-items-container"></div>
-    </div>
-
-    <div id="checkout-bar" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[92vh] overflow-y-auto shadow-2xl max-w-xl mx-auto hide-scrollbar">
-        <div class="w-full max-w-md flex justify-between items-center mb-3 border-b border-white/5 pb-2.5">
-            <span class="text-[10px] font-black text-orange-400 uppercase tracking-widest"><i class="fa-solid fa-basket-shopping"></i> Review Basket Summary</span>
-            <button onclick="closeCartDrawer()" class="text-slate-400 bg-slate-900 border border-white/5 w-7 h-7 rounded-full text-xs font-bold transition active:scale-90">✕</button>
+    <div id="checkout-bar" class="fixed inset-0 bg-[#030712] p-6 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-[65] overflow-y-auto hide-scrollbar">
+        <div class="w-full max-w-md flex justify-between items-center mb-5 border-b border-white/5 pb-3">
+            <span class="text-xs font-black text-orange-400 uppercase tracking-widest"><i class="fa-solid fa-basket-shopping"></i> Secure Checkout Basket</span>
+            <button onclick="closeCartDrawer()" class="text-slate-400 bg-slate-900 border border-white/5 w-8 h-8 rounded-full text-xs font-bold transition active:scale-90 flex items-center justify-center">✕</button>
         </div>
 
         <div class="w-full max-w-md bg-slate-900/60 border border-white/5 p-4 rounded-2xl mb-4 space-y-3 text-left">
@@ -323,7 +315,7 @@
             <input type="text" id="cust-loc" onkeyup="validateFormStateNode()" placeholder="Table Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold">
         </div>
 
-        <div class="w-full max-w-md space-y-2.5 mb-4 max-h-[22vh] overflow-y-auto hide-scrollbar bg-slate-950/40 p-1.5 rounded-2xl border border-white/[0.02]" id="cart-live-items-renderer-node">
+        <div class="w-full max-w-md space-y-2.5 mb-4 max-h-[25vh] overflow-y-auto hide-scrollbar bg-slate-950/40 p-1.5 rounded-2xl border border-white/[0.02]" id="cart-live-items-renderer-node">
             </div>
 
         <div class="w-full max-w-md bg-slate-900 border border-white/5 p-4 rounded-xl mb-4">
@@ -371,7 +363,7 @@
         </div>
     </div>
 
-    <div class="fixed bottom-0 inset-x-0 h-16 bg-[rgba(255,255,255,0.85)] dark:bg-[rgba(3,7,18,0.85)] border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.05)] backdrop-blur-xl z-[55] flex justify-around items-center px-4 max-w-xl mx-auto shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
+    <div id="bottom-dock-nav-bar-node" class="fixed bottom-0 inset-x-0 h-16 bg-[rgba(255,255,255,0.85)] dark:bg-[rgba(3,7,18,0.85)] border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.05)] backdrop-blur-xl z-[55] flex justify-around items-center px-4 max-w-xl mx-auto shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
         <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-1 text-[var(--text-muted)] hover:text-orange-500 transition duration-200 active:scale-90">
             <i class="fa-solid fa-house-chimney text-base"></i><span class="text-[9px] font-black uppercase tracking-wider">Home</span>
         </button>
@@ -398,7 +390,7 @@
             { id: 1, cat: "biryani", name: "Veg Biryani", price: 199, isVeg: true, isBestseller: true }, { id: 2, cat: "biryani", name: "Soya Chaap Biryani", price: 229, isVeg: true, isBestseller: false }, { id: 3, cat: "biryani", name: "Hyderabadi Dum Biryani", price: 230, isVeg: true, isBestseller: true },
             { id: 4, cat: "thali", name: "Special Thali", price: 260, isVeg: true, isBestseller: true }, { id: 5, cat: "thali", name: "Golden Thali", price: 299, isVeg: true, isBestseller: true },
             { id: 6, cat: "main", name: "Makhmali Malai Chaap Gravy", price: 289, isVeg: true, isBestseller: true }, { id: 7, cat: "main", name: "Mushroom Masala", price: 179, isVeg: true, isBestseller: false }, { id: 8, cat: "main", name: "Matar Mushroom", price: 179, isVeg: true, isBestseller: false }, { id: 9, cat: "main", name: "Malai Kofta", price: 189, isVeg: true, isBestseller: true }, { id: 10, cat: "main", name: "Handi Paneer", price: 179, isVeg: true, isBestseller: true }, { id: 11, cat: "main", name: "Veg Kofta", price: 169, isVeg: true, isBestseller: false }, { id: 12, cat: "main", name: "Dum Aloo", price: 269, isVeg: true, isBestseller: false }, { id: 13, cat: "main", name: "Kashmiri Dum Aloo", price: 279, isVeg: true, isBestseller: false }, { id: 14, cat: "main", name: "Jeera Aloo", price: 169, isVeg: true, isBestseller: false }, { id: 15, cat: "main", name: "Veg Mixed", price: 149, isVeg: true, isBestseller: false },
-            { id: 16, cat: "side", name: "Green Garden Salad", price: 69, isVeg: true, isBestseller: false }, { id: 17, cat: "side", name: "Papad Dry", price: 29, isVeg: true, isBestseller: false }, { id: 18, cat: "side", name: "Massala Papad", price: 45, isVeg: true, isBestseller: false }, { id: 19, cat: "side", name: "Plain Curd", price: 99, isVeg: true, isBestseller: false }, { id: 20, cat: "side", name: "Boondi Raita", price: 109, isVeg: true, isBestseller: false }, { id: 21, cat: "side", name: "Mint Raita", price: 109, isVeg: true, isBestseller: false }, { id: 22, cat: "side", name: "Mixed Fruit Raita", price: 149, isVeg: true, isBestseller: true },
+            { id: 16, cat: "side", name: "Green Garden Salad", price: 69, isVeg: true, isBestseller: false }, { id: 17, cat: "side", name: "Papad Dry", price: 29, isVeg: true, isBestseller: false }, { id: 18, cat: "side", name: "Masala Papad", price: 45, isVeg: true, isBestseller: false }, { id: 19, cat: "side", name: "Plain Curd", price: 99, isVeg: true, isBestseller: false }, { id: 20, cat: "side", name: "Boondi Raita", price: 109, isVeg: true, isBestseller: false }, { id: 21, cat: "side", name: "Mint Raita", price: 109, isVeg: true, isBestseller: false }, { id: 22, cat: "side", name: "Mixed Fruit Raita", price: 149, isVeg: true, isBestseller: true },
             { id: 23, cat: "breads", name: "Tandoori Roti", price: 12, isVeg: true, isBestseller: false }, { id: 24, cat: "breads", name: "Butter Tandoori Roti", price: 14, isVeg: true, isBestseller: false }, { id: 25, cat: "breads", name: "Missi Roti", price: 35, isVeg: true, isBestseller: false }, { id: 26, cat: "breads", name: "Plain Naan", price: 35, isVeg: true, isBestseller: false }, { id: 27, cat: "breads", name: "Butter Naan", price: 45, isVeg: true, isBestseller: true }, { id: 28, cat: "breads", name: "Garlic Naan", price: 49, isVeg: true, isBestseller: true }, { id: 29, cat: "breads", name: "Plain Kulcha", price: 49, isVeg: true, isBestseller: false }, { id: 30, cat: "breads", name: "Special Stuff Paratha", price: 69, isVeg: true, isBestseller: false }, { id: 31, cat: "breads", name: "Stuffed Paneer Paratha", price: 69, isVeg: true, isBestseller: false }, { id: 32, cat: "breads", name: "Onion Missi Roti", price: 35, isVeg: true, isBestseller: false }, { id: 33, cat: "breads", name: "Lachha Paratha", price: 45, isVeg: true, isBestseller: false }, { id: 34, cat: "breads", name: "Pudina Paratha", price: 49, isVeg: true, isBestseller: false }, { id: 35, cat: "breads", name: "Mirchi Paratha", price: 49, isVeg: true, isBestseller: false }, { id: 36, cat: "breads", name: "Paneer Naan", price: 55, isVeg: true, isBestseller: true },
             { id: 37, cat: "starters", name: "Dahi Kebab", price: 229, isVeg: true, isBestseller: true }, { id: 38, cat: "starters", name: "Makhmali Malai Chaap", price: 279, isVeg: true, isBestseller: true }, { id: 39, cat: "starters", name: "Hariyali Paneer Tikka", price: 269, isVeg: true, isBestseller: false }, { id: 40, cat: "starters", name: "Paneer Tikka", price: 269, isVeg: true, isBestseller: true }, { id: 41, cat: "starters", name: "Mushroom Tikka", price: 269, isVeg: true, isBestseller: false }, { id: 42, cat: "starters", name: "Veg Manchurian Dry", price: 239, isVeg: true, isBestseller: false }, { id: 43, cat: "starters", name: "Paneer Manchurian Dry", price: 269, isVeg: true, isBestseller: false }, { id: 44, cat: "starters", name: "Paneer Chilli Dry", price: 269, isVeg: true, isBestseller: true },
             { id: 45, cat: "rice", name: "Plain Rice", price: 89, isVeg: true, isBestseller: false }, { id: 46, cat: "rice", name: "Jeera Rice", price: 99, isVeg: true, isBestseller: false }, { id: 47, cat: "rice", name: "Veg Pulao", price: 149, isVeg: true, isBestseller: false }, { id: 48, cat: "rice", name: "Matar Pulao", price: 139, isVeg: true, isBestseller: false }, { id: 49, cat: "rice", name: "Kashmiri Pulao", price: 169, isVeg: true, isBestseller: false },
@@ -540,7 +532,7 @@
                 if(bottomDockBadge) { bottomDockBadge.innerText = tItems; bottomDockBadge.classList.remove('hidden'); }
                 
                 // UNHIDE SLIM SWIGGY TOAST CONTROL DECK (POP-UP DRAWER NEVER AUTO OPENS ANYMORE)
-                if(floatingToast) {
+                if(floatingToast && document.getElementById('checkout-bar').classList.contains('translate-y-full')) {
                     document.getElementById('toast-items-count-badge').innerText = tItems;
                     document.getElementById('toast-cart-pricing-summary-node').innerText = `₹${tPrice} Total Bill Value`;
                     floatingToast.classList.remove('hidden');
@@ -554,7 +546,11 @@
                 if(badge) badge.classList.add('hidden');
                 if(bottomDockBadge) bottomDockBadge.classList.add('hidden');
                 if(floatingToast) floatingToast.classList.add('hidden');
+                
+                // If cart gets completely empty, automatically drop out and show store front menu
                 document.getElementById('checkout-bar').classList.add('translate-y-full'); 
+                document.getElementById('store-front-view').classList.remove('hidden');
+                document.getElementById('bottom-dock-nav-bar-node').classList.remove('hidden');
             }
             
             // Re-render live dynamic review basket view section modules list
@@ -579,14 +575,33 @@
 
         window.injectCachedPastAddressNode = function() { document.getElementById('cust-loc').value = localStorage.getItem('sw_cached_delivery_address'); validateFormStateNode(); }
         
+        // ZOMATO-STYLE FULLSCREEN ENGINE ENTRY PINHOLE
         window.openCartDrawer = function() { 
             if (Object.keys(window.cart).length > 0) {
-                renderLiveBasketItemsDeckNode(); // Sync rendering logs right before entrance sliding transition
+                renderLiveBasketItemsDeckNode(); // Sync rendering dataset
+                
+                // 1. Hide background storefront layouts & footer navigation rails completely
+                document.getElementById('store-front-view').classList.add('hidden');
+                document.getElementById('bottom-dock-nav-bar-node').classList.add('hidden');
+                document.getElementById('zomato-floating-toast-action-deck-node').classList.add('hidden');
+                
+                // 2. Slide the pristine standalone fullscreen cart onto user layout view deck
                 document.getElementById('checkout-bar').classList.remove('translate-y-full'); 
+                window.scrollTo({ top: 0, behavior: 'instant' });
             }
         }
         
-        window.closeCartDrawer = function() { document.getElementById('checkout-bar').classList.add('translate-y-full'); }
+        // ZOMATO-STYLE DE-ESCALATE NAVIGATION ROUTINE
+        window.closeCartDrawer = function() { 
+            // 1. Retract the checkout file overlay completely backwards
+            document.getElementById('checkout-bar').classList.add('translate-y-full'); 
+            
+            // 2. Re-activate background marketplace grid layouts & dynamic sticky anchors instantly
+            document.getElementById('store-front-view').classList.remove('hidden');
+            document.getElementById('bottom-dock-nav-bar-node').classList.remove('hidden');
+            document.getElementById('zomato-floating-toast-action-deck-node').classList.remove('hidden');
+        }
+
         window.togglePaymentView = function(method) { window.selectedMethod = method; const b = document.getElementById('online-pay-block'); if(method==='Online') b.classList.remove('hidden'); else b.classList.add('hidden'); validateFormStateNode(); }
 
         window.validateFormStateNode = function() {
@@ -634,6 +649,8 @@
                         
                         document.getElementById('store-front-view').classList.add('hidden');
                         document.getElementById('checkout-bar').classList.add('translate-y-full');
+                        document.getElementById('bottom-dock-nav-bar-node').classList.add('hidden');
+                        document.getElementById('zomato-floating-toast-action-deck-node').classList.add('hidden');
                         document.getElementById('ty-order-id-node').innerText = id;
                         
                         const tyModal = document.getElementById('thankyou-modal-layer');
@@ -655,7 +672,7 @@
             });
         }
 
-        window.launchOrderTrackingInterfaceNode = function(id) { document.getElementById('store-front-view').classList.add('hidden'); document.getElementById('checkout-bar').classList.add('translate-y-full'); document.getElementById('mini-tracker-bar').classList.remove('hidden'); document.getElementById('tracking-screen-view').classList.remove('hidden'); document.getElementById('track-order-id').innerText = `Order ID: ${id}`; listenToOrderLive(id); }
+        window.launchOrderTrackingInterfaceNode = function(id) { document.getElementById('store-front-view').classList.add('hidden'); document.getElementById('checkout-bar').classList.add('translate-y-full'); document.getElementById('bottom-dock-nav-bar-node').classList.add('hidden'); document.getElementById('zomato-floating-toast-action-deck-node').classList.add('hidden'); document.getElementById('mini-tracker-bar').classList.remove('hidden'); document.getElementById('tracking-screen-view').classList.remove('hidden'); document.getElementById('track-order-id').innerText = `Order ID: ${id}`; listenToOrderLive(id); }
         
         function listenToOrderLive(id) {
             db.ref('orders/' + id).on('value', (s) => {
@@ -742,8 +759,8 @@
             });
         }
 
-        window.minimizeTrackingViewNode = function() { localStorage.setItem('secondwife_tracker_state', 'mini'); document.getElementById('tracking-screen-view').classList.add('hidden'); document.getElementById('store-front-view').classList.remove('hidden'); document.getElementById('mini-tracker-bar').classList.remove('hidden'); }
-        window.maximizeTrackingViewNode = function() { document.getElementById('store-front-view').classList.add('hidden'); document.getElementById('mini-tracker-bar').classList.add('hidden'); document.getElementById('tracking-screen-view').classList.remove('hidden'); }
+        window.minimizeTrackingViewNode = function() { localStorage.setItem('secondwife_tracker_state', 'mini'); document.getElementById('tracking-screen-view').classList.add('hidden'); document.getElementById('store-front-view').classList.remove('hidden'); document.getElementById('bottom-dock-nav-bar-node').classList.remove('hidden'); document.getElementById('mini-tracker-bar').classList.remove('hidden'); }
+        window.maximizeTrackingViewNode = function() { document.getElementById('store-front-view').classList.add('hidden'); document.getElementById('bottom-dock-nav-bar-node').classList.add('hidden'); document.getElementById('mini-tracker-bar').classList.add('hidden'); document.getElementById('tracking-screen-view').classList.remove('hidden'); }
         window.scrollToSection = function(id, el) { const t = document.getElementById(id); if(t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 138, behavior: 'smooth' }); document.querySelectorAll('.category-pill').forEach(p => p.className = "category-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 text-slate-400 bg-slate-900/40 whitespace-nowrap"); el.className = "category-pill active-pill px-4 py-2.5 rounded-xl text-xs font-bold border border-white/5 whitespace-nowrap"; }
         window.searchDish = function() { const input = document.getElementById('search-bar').value.toLowerCase().trim(); const cards = document.getElementsByClassName('dish-card'); for (let i = 0; i < cards.length; i++) cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "flex" : "none"; }
         
@@ -773,6 +790,7 @@
                 if(orderData && orderData.status !== 'delivered') {
                     if(internalSavedViewState === 'mini') {
                         document.getElementById('store-front-view').classList.add('hidden');
+                        document.getElementById('bottom-dock-nav-bar-node').classList.add('hidden');
                         document.getElementById('mini-tracker-bar').classList.remove('hidden');
                         document.getElementById('tracking-screen-view').classList.add('hidden');
                         listenToOrderLive(structuralCheckId);
@@ -1100,66 +1118,4 @@
             });
         }
     })();
-</script>
-
-<script>
-    window.toggleModeEngineNode = function() {
-        const bodyElementRefNode = document.body;
-        const themeIconElementRefNode = document.getElementById('theme-switch-icon-node');
-        
-        if (bodyElementRefNode.classList.contains('light')) {
-            // Shift interface context completely to premium dark mode engine matrix
-            bodyElementRefNode.classList.remove('light');
-            bodyElementRefNode.classList.add('dark');
-            if (themeIconElementRefNode) {
-                themeIconElementRefNode.className = "fa-solid fa-sun text-sm text-amber-400 transition-all duration-300";
-            }
-        } else {
-            // Shift interface context completely to lightful high-value clean profile
-            bodyElementRefNode.classList.remove('dark');
-            bodyElementRefNode.classList.add('light');
-            if (themeIconElementRefNode) {
-                themeIconElementRefNode.className = "fa-solid fa-moon text-sm text-blue-400 transition-all duration-300";
-            }
-        }
-    };
-</script>
-
-<script>
-    (function initForcedPWARadarEngine() {
-        // Directly target button display state and remove 'hidden' browser rule restrictions
-        const forceRevealInstallBannerNode = () => {
-            const banner = document.getElementById('pwa-install-app-banner-node');
-            if(banner) {
-                // Instantly remove Tailwind hidden parameter to force-render the banner card
-                banner.classList.remove('hidden');
-                console.log("Custom App Banner forcefully injected into user viewport chain successfully.");
-            }
-        };
-
-        // Fire instantly on window load and repeat check loop every 1.5 seconds to bypass pop-up blocks
-        window.addEventListener('DOMContentLoaded', forceRevealInstallBannerNode);
-        window.addEventListener('load', forceRevealInstallBannerNode);
-        setInterval(forceRevealInstallBannerNode, 1500);
-    })();
-
-    // Dynamic Execution loop when customer taps "Add Now" button on banner node
-    window.executeNativePWAAppInstallationEngine = function() {
-        // Check if browser native setup structure exists in memory slots
-        if (window.secondWifeDeferredPWAInstallPrompt) {
-            window.secondWifeDeferredPWAInstallPrompt.prompt();
-            window.secondWifeDeferredPWAInstallPrompt.userChoice.then((choice) => {
-                if (choice.outcome === 'accepted') console.log('User installed via system trigger.');
-                window.secondWifeDeferredPWAInstallPrompt = null;
-            });
-        } else {
-            // High-Value Smart Guidance Fallback modal text based on active OS platform structure
-            const isIphoneNodeCheck = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-            if (isIphoneNodeCheck) {
-                alert(" iPhone Users App Special Guide:\n\n1. Niche Safari browser ke 'Share' (Teer 📤) icon par click karein.\n2. List me thoda neeche scroll karke 'Add to Home Screen' (➕) par tap karein.\n\nSecond Wife App instant aapki home screen par install ho jayega! 🔥");
-            } else {
-                alert("👦 Android Users App Special Guide:\n\n1. Top Right corner me Chrome ke 3 Dots (⋮) menu par click karein.\n2. Wahan 'Install App' ya 'Add to Home screen' option par tap karein.\n\nApp instant bina kisi download wait ke aapki main desktop screen par set ho jayega! 🚀");
-            }
-        }
-    };
 </script>
