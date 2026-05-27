@@ -40,7 +40,7 @@
             --nav-dock-border: rgba(255, 255, 255, 0.05);
         }
 
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body) !important; color: var(--text-main) !important; scroll-behavior: smooth; transition: background-color 0.4s ease, color 0.4s ease; padding-bottom: 85px !important; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body) !important; color: var(--text-main) !important; scroll-behavior: smooth; transition: background-color 0.4s ease, color 0.4s ease; padding-bottom: 140px !important; }
         .text-main-class { color: var(--text-main) !important; }
         .text-muted-class { color: var(--text-muted) !important; }
         .brand-font-premium { font-family: 'Playfair Display SC', serif; }
@@ -103,7 +103,7 @@
     <div class="fixed top-[-15%] left-[-15%] w-[75vw] h-[75vw] bg-gradient-to-tr from-orange-600/12 to-transparent rounded-full blur-[150px] pointer-events-none z-0 drift"></div>
     <div class="fixed bottom-[8%] right-[-15%] w-[65vw] h-[65vw] bg-gradient-to-br from-blue-600/10 to-orange-500/10 rounded-full blur-[130px] pointer-events-none z-0 drift" style="animation-delay: -7s;"></div>
 
-    <div id="mini-tracker-bar" class="fixed bottom-24 right-4 left-4 sm:left-auto sm:w-80 bg-slate-950/95 border border-orange-500/40 p-4 rounded-2xl shadow-2xl flex items-center justify-between z-50 hidden cursor-pointer secure-pulse" onclick="maximizeTrackingViewNode()">
+    <div id="mini-tracker-bar" class="fixed bottom-32 right-4 left-4 sm:left-auto sm:w-80 bg-slate-950/95 border border-orange-500/40 p-4 rounded-2xl shadow-2xl flex items-center justify-between z-50 hidden cursor-pointer secure-pulse" onclick="maximizeTrackingViewNode()">
         <div class="flex items-center gap-3 truncate">
             <div class="h-9 w-9 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-500 flex-shrink-0">
                 <i class="fa-solid fa-pizza-slice animate-spin" style="animation-duration: 5s;"></i>
@@ -302,16 +302,8 @@
 
     <div id="checkout-bar" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[92vh] overflow-y-auto shadow-2xl max-w-xl mx-auto hide-scrollbar">
         <div class="w-full max-w-md flex justify-between items-center mb-3 border-b border-white/5 pb-2.5">
-            <span class="text-[10px] font-black text-orange-400 uppercase tracking-widest"><i class="fa-solid fa-basket-shopping"></i> Review Basket</span>
+            <span class="text-[10px] font-black text-orange-400 uppercase tracking-widest"><i class="fa-solid fa-basket-shopping"></i> Review Basket Summary</span>
             <button onclick="closeCartDrawer()" class="text-slate-400 bg-slate-900 border border-white/5 w-7 h-7 rounded-full text-xs font-bold transition active:scale-90">✕</button>
-        </div>
-
-        <div class="w-full max-w-md space-y-2.5 mb-4 max-h-[28vh] overflow-y-auto hide-scrollbar bg-slate-950/40 p-1.5 rounded-2xl border border-white/[0.02]" id="cart-live-items-renderer-node">
-            </div>
-
-        <div class="w-full max-w-md bg-slate-900 border border-white/5 p-4 rounded-xl mb-4">
-            <div class="flex justify-between items-center mb-1.5"><span class="text-[10px] font-extrabold uppercase tracking-wide text-slate-300">Delivery Threshold Progress</span><span id="delivery-msg" class="text-[10px] font-black text-amber-400">Order minimum ₹100</span></div>
-            <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden relative"><div id="delivery-progress" class="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-emerald-500 w-0 transition-all duration-300"></div></div>
         </div>
 
         <div class="w-full max-w-md bg-slate-900/60 border border-white/5 p-4 rounded-2xl mb-4 space-y-3 text-left">
@@ -329,6 +321,14 @@
                 <button type="button" id="btn-prev-location-pill" onclick="injectCachedPastAddressNode()" class="hidden bg-orange-500/10 border border-orange-500/20 text-orange-400 font-black text-[10px] px-3 py-2 rounded-xl truncate w-full">🕒 Purana Address</button>
             </div>
             <input type="text" id="cust-loc" onkeyup="validateFormStateNode()" placeholder="Table Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold">
+        </div>
+
+        <div class="w-full max-w-md space-y-2.5 mb-4 max-h-[22vh] overflow-y-auto hide-scrollbar bg-slate-950/40 p-1.5 rounded-2xl border border-white/[0.02]" id="cart-live-items-renderer-node">
+            </div>
+
+        <div class="w-full max-w-md bg-slate-900 border border-white/5 p-4 rounded-xl mb-4">
+            <div class="flex justify-between items-center mb-1.5"><span class="text-[10px] font-extrabold uppercase tracking-wide text-slate-300">Delivery Threshold Progress</span><span id="delivery-msg" class="text-[10px] font-black text-amber-400">Order minimum ₹100</span></div>
+            <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden relative"><div id="delivery-progress" class="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-emerald-500 w-0 transition-all duration-300"></div></div>
         </div>
 
         <div class="w-full max-w-md bg-slate-950/60 border border-white/5 p-4 rounded-2xl mb-4 text-xs font-bold space-y-2 text-left text-slate-300">
@@ -358,6 +358,19 @@
         </button>
     </div>
 
+    <div id="zomato-floating-toast-action-deck-node" class="fixed bottom-20 inset-x-0 px-4 z-[54] max-w-xl mx-auto hidden transform transition duration-300">
+        <div onclick="openCartDrawer()" class="bg-gradient-to-r from-orange-600 via-red-500 to-orange-500 text-white rounded-xl p-3.5 flex justify-between items-center shadow-xl cursor-pointer active:scale-98 secure-pulse">
+            <div class="flex items-center gap-2.5">
+                <div class="h-6 w-6 rounded-lg bg-black/20 flex items-center justify-center text-xs font-black" id="toast-items-count-badge">0</div>
+                <div class="text-left">
+                    <h5 class="text-[11px] font-extrabold uppercase tracking-wide">Basket Active Matrix</h5>
+                    <p class="text-[9px] font-bold opacity-80" id="toast-cart-pricing-summary-node">₹0 Total Bill Value</p>
+                </div>
+            </div>
+            <span class="text-[10px] font-black uppercase tracking-widest bg-black/20 px-3 py-1.5 rounded-lg flex items-center gap-1">View Cart <i class="fa-solid fa-chevron-right text-[8px]"></i></span>
+        </div>
+    </div>
+
     <div class="fixed bottom-0 inset-x-0 h-16 bg-[rgba(255,255,255,0.85)] dark:bg-[rgba(3,7,18,0.85)] border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.05)] backdrop-blur-xl z-[55] flex justify-around items-center px-4 max-w-xl mx-auto shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
         <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-1 text-[var(--text-muted)] hover:text-orange-500 transition duration-200 active:scale-90">
             <i class="fa-solid fa-house-chimney text-base"></i><span class="text-[9px] font-black uppercase tracking-wider">Home</span>
@@ -385,7 +398,7 @@
             { id: 1, cat: "biryani", name: "Veg Biryani", price: 199, isVeg: true, isBestseller: true }, { id: 2, cat: "biryani", name: "Soya Chaap Biryani", price: 229, isVeg: true, isBestseller: false }, { id: 3, cat: "biryani", name: "Hyderabadi Dum Biryani", price: 230, isVeg: true, isBestseller: true },
             { id: 4, cat: "thali", name: "Special Thali", price: 260, isVeg: true, isBestseller: true }, { id: 5, cat: "thali", name: "Golden Thali", price: 299, isVeg: true, isBestseller: true },
             { id: 6, cat: "main", name: "Makhmali Malai Chaap Gravy", price: 289, isVeg: true, isBestseller: true }, { id: 7, cat: "main", name: "Mushroom Masala", price: 179, isVeg: true, isBestseller: false }, { id: 8, cat: "main", name: "Matar Mushroom", price: 179, isVeg: true, isBestseller: false }, { id: 9, cat: "main", name: "Malai Kofta", price: 189, isVeg: true, isBestseller: true }, { id: 10, cat: "main", name: "Handi Paneer", price: 179, isVeg: true, isBestseller: true }, { id: 11, cat: "main", name: "Veg Kofta", price: 169, isVeg: true, isBestseller: false }, { id: 12, cat: "main", name: "Dum Aloo", price: 269, isVeg: true, isBestseller: false }, { id: 13, cat: "main", name: "Kashmiri Dum Aloo", price: 279, isVeg: true, isBestseller: false }, { id: 14, cat: "main", name: "Jeera Aloo", price: 169, isVeg: true, isBestseller: false }, { id: 15, cat: "main", name: "Veg Mixed", price: 149, isVeg: true, isBestseller: false },
-            { id: 16, cat: "side", name: "Green Garden Salad", price: 69, isVeg: true, isBestseller: false }, { id: 17, cat: "side", name: "Papad Dry", price: 29, isVeg: true, isBestseller: false }, { id: 18, cat: "side", name: "Masala Papad", price: 45, isVeg: true, isBestseller: false }, { id: 19, cat: "side", name: "Plain Curd", price: 99, isVeg: true, isBestseller: false }, { id: 20, cat: "side", name: "Boondi Raita", price: 109, isVeg: true, isBestseller: false }, { id: 21, cat: "side", name: "Mint Raita", price: 109, isVeg: true, isBestseller: false }, { id: 22, cat: "side", name: "Mixed Fruit Raita", price: 149, isVeg: true, isBestseller: true },
+            { id: 16, cat: "side", name: "Green Garden Salad", price: 69, isVeg: true, isBestseller: false }, { id: 17, cat: "side", name: "Papad Dry", price: 29, isVeg: true, isBestseller: false }, { id: 18, cat: "side", name: "Massala Papad", price: 45, isVeg: true, isBestseller: false }, { id: 19, cat: "side", name: "Plain Curd", price: 99, isVeg: true, isBestseller: false }, { id: 20, cat: "side", name: "Boondi Raita", price: 109, isVeg: true, isBestseller: false }, { id: 21, cat: "side", name: "Mint Raita", price: 109, isVeg: true, isBestseller: false }, { id: 22, cat: "side", name: "Mixed Fruit Raita", price: 149, isVeg: true, isBestseller: true },
             { id: 23, cat: "breads", name: "Tandoori Roti", price: 12, isVeg: true, isBestseller: false }, { id: 24, cat: "breads", name: "Butter Tandoori Roti", price: 14, isVeg: true, isBestseller: false }, { id: 25, cat: "breads", name: "Missi Roti", price: 35, isVeg: true, isBestseller: false }, { id: 26, cat: "breads", name: "Plain Naan", price: 35, isVeg: true, isBestseller: false }, { id: 27, cat: "breads", name: "Butter Naan", price: 45, isVeg: true, isBestseller: true }, { id: 28, cat: "breads", name: "Garlic Naan", price: 49, isVeg: true, isBestseller: true }, { id: 29, cat: "breads", name: "Plain Kulcha", price: 49, isVeg: true, isBestseller: false }, { id: 30, cat: "breads", name: "Special Stuff Paratha", price: 69, isVeg: true, isBestseller: false }, { id: 31, cat: "breads", name: "Stuffed Paneer Paratha", price: 69, isVeg: true, isBestseller: false }, { id: 32, cat: "breads", name: "Onion Missi Roti", price: 35, isVeg: true, isBestseller: false }, { id: 33, cat: "breads", name: "Lachha Paratha", price: 45, isVeg: true, isBestseller: false }, { id: 34, cat: "breads", name: "Pudina Paratha", price: 49, isVeg: true, isBestseller: false }, { id: 35, cat: "breads", name: "Mirchi Paratha", price: 49, isVeg: true, isBestseller: false }, { id: 36, cat: "breads", name: "Paneer Naan", price: 55, isVeg: true, isBestseller: true },
             { id: 37, cat: "starters", name: "Dahi Kebab", price: 229, isVeg: true, isBestseller: true }, { id: 38, cat: "starters", name: "Makhmali Malai Chaap", price: 279, isVeg: true, isBestseller: true }, { id: 39, cat: "starters", name: "Hariyali Paneer Tikka", price: 269, isVeg: true, isBestseller: false }, { id: 40, cat: "starters", name: "Paneer Tikka", price: 269, isVeg: true, isBestseller: true }, { id: 41, cat: "starters", name: "Mushroom Tikka", price: 269, isVeg: true, isBestseller: false }, { id: 42, cat: "starters", name: "Veg Manchurian Dry", price: 239, isVeg: true, isBestseller: false }, { id: 43, cat: "starters", name: "Paneer Manchurian Dry", price: 269, isVeg: true, isBestseller: false }, { id: 44, cat: "starters", name: "Paneer Chilli Dry", price: 269, isVeg: true, isBestseller: true },
             { id: 45, cat: "rice", name: "Plain Rice", price: 89, isVeg: true, isBestseller: false }, { id: 46, cat: "rice", name: "Jeera Rice", price: 99, isVeg: true, isBestseller: false }, { id: 47, cat: "rice", name: "Veg Pulao", price: 149, isVeg: true, isBestseller: false }, { id: 48, cat: "rice", name: "Matar Pulao", price: 139, isVeg: true, isBestseller: false }, { id: 49, cat: "rice", name: "Kashmiri Pulao", price: 169, isVeg: true, isBestseller: false },
@@ -520,14 +533,17 @@
             
             const badge = document.getElementById('cart-count'); 
             const bottomDockBadge = document.getElementById('bottom-dock-badge-node');
-            const bar = document.getElementById('checkout-bar');
+            const floatingToast = document.getElementById('zomato-floating-toast-action-deck-node');
             
             if(tItems > 0) {
                 if(badge) { badge.innerText = tItems; badge.classList.remove('hidden'); }
                 if(bottomDockBadge) { bottomDockBadge.innerText = tItems; bottomDockBadge.classList.remove('hidden'); }
                 
-                if(delta > 0 && Object.keys(window.cart).length === 1 && window.cart[id].qty === 1) {
-                    bar.classList.remove('translate-y-full'); 
+                // UNHIDE SLIM SWIGGY TOAST CONTROL DECK (POP-UP DRAWER NEVER AUTO OPENS ANYMORE)
+                if(floatingToast) {
+                    document.getElementById('toast-items-count-badge').innerText = tItems;
+                    document.getElementById('toast-cart-pricing-summary-node').innerText = `₹${tPrice} Total Bill Value`;
+                    floatingToast.classList.remove('hidden');
                 }
                 
                 // Update dynamic items calculation summaries logs
@@ -537,7 +553,8 @@
             else {
                 if(badge) badge.classList.add('hidden');
                 if(bottomDockBadge) bottomDockBadge.classList.add('hidden');
-                bar.classList.add('translate-y-full'); 
+                if(floatingToast) floatingToast.classList.add('hidden');
+                document.getElementById('checkout-bar').classList.add('translate-y-full'); 
             }
             
             // Re-render live dynamic review basket view section modules list
