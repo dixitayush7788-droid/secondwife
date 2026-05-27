@@ -300,8 +300,14 @@
         <div class="w-full max-w-md space-y-3 overflow-y-auto pr-1" id="history-items-container"></div>
     </div>
 
-    <div id="checkout-bar" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[95vh] overflow-y-auto shadow-2xl max-w-xl mx-auto">
-        <div class="w-full max-w-md flex justify-between items-center mb-3 border-b border-white/5 pb-2.5"><span class="text-[10px] font-black text-orange-400 uppercase">Review Basket</span><button onclick="closeCartDrawer()" class="text-slate-400">✕</button></div>
+    <div id="checkout-bar" class="fixed bottom-0 inset-x-0 bg-[#090f1e]/98 border-t border-white/10 p-5 flex flex-col items-center transform translate-y-full transition-transform duration-[400ms] z-50 backdrop-blur-xl rounded-t-[2.5rem] max-h-[92vh] overflow-y-auto shadow-2xl max-w-xl mx-auto hide-scrollbar">
+        <div class="w-full max-w-md flex justify-between items-center mb-3 border-b border-white/5 pb-2.5">
+            <span class="text-[10px] font-black text-orange-400 uppercase tracking-widest"><i class="fa-solid fa-basket-shopping"></i> Review Basket</span>
+            <button onclick="closeCartDrawer()" class="text-slate-400 bg-slate-900 border border-white/5 w-7 h-7 rounded-full text-xs font-bold transition active:scale-90">✕</button>
+        </div>
+
+        <div class="w-full max-w-md space-y-2.5 mb-4 max-h-[28vh] overflow-y-auto hide-scrollbar bg-slate-950/40 p-1.5 rounded-2xl border border-white/[0.02]" id="cart-live-items-renderer-node">
+            </div>
 
         <div class="w-full max-w-md bg-slate-900 border border-white/5 p-4 rounded-xl mb-4">
             <div class="flex justify-between items-center mb-1.5"><span class="text-[10px] font-extrabold uppercase tracking-wide text-slate-300">Delivery Threshold Progress</span><span id="delivery-msg" class="text-[10px] font-black text-amber-400">Order minimum ₹100</span></div>
@@ -325,9 +331,14 @@
             <input type="text" id="cust-loc" onkeyup="validateFormStateNode()" placeholder="Table Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold">
         </div>
 
-        <div class="w-full max-w-md flex justify-between items-center mb-4 px-1">
-            <p id="cart-summary" class="text-xs font-semibold text-slate-300">0 Items Selected</p>
-            <p id="cart-total" class="text-3xl font-black text-orange-500 brand-font-premium">₹0</p>
+        <div class="w-full max-w-md bg-slate-950/60 border border-white/5 p-4 rounded-2xl mb-4 text-xs font-bold space-y-2 text-left text-slate-300">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5"><i class="fa-solid fa-file-invoice-dollar"></i> Bill Detailed Summary:</p>
+            <div class="flex justify-between"><span>Item Total Price</span><span id="bill-item-total-node" class="font-mono text-white">₹0</span></div>
+            <div class="flex justify-between text-emerald-400"><span>Platform Fees Breakdown</span><span class="font-black uppercase tracking-wide text-[10px] bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">FREE ✓</span></div>
+            <div class="border-t border-white/5 pt-2 flex justify-between items-center">
+                <span class="text-sm font-extrabold text-white">Grand Total Invoice</span>
+                <span id="cart-total" class="text-2xl font-black text-orange-500 brand-font-premium tracking-tight">₹0</span>
+            </div>
         </div>
 
         <div class="w-full max-w-md mb-4 text-left">
@@ -342,7 +353,9 @@
             <div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center border border-slate-200"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=8467895365@upi%26pn=Second%20Wife" alt="UPI QR" class="w-40 h-40 object-contain"><input type="text" id="utr-input" onkeyup="validateFormStateNode()" placeholder="12-digit UTR Number daalein..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs mt-3 text-white focus:outline-none"></div>
         </div>
 
-        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-gradient-to-r from-emerald-500 to-green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center tracking-wide cursor-pointer shadow-lg transform transition active:scale-95" disabled>PLACE CLOUD ORDER</button>
+        <button id="checkout-btn" onclick="sendOrder()" class="w-full max-w-md bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 text-black py-4.5 rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer shadow-xl shadow-emerald-950/20 transform transition active:scale-95 flex items-center justify-center gap-2" disabled>
+            <span>PLACE CLOUD ORDER VIA FIREBASE</span> <i class="fa-solid fa-circle-arrow-right animate-pulse"></i>
+        </button>
     </div>
 
     <div class="fixed bottom-0 inset-x-0 h-16 bg-[rgba(255,255,255,0.85)] dark:bg-[rgba(3,7,18,0.85)] border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.05)] backdrop-blur-xl z-[55] flex justify-around items-center px-4 max-w-xl mx-auto shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
@@ -357,6 +370,7 @@
         </button>
         <button onclick="openCartDrawer()" class="flex flex-col items-center gap-1 text-[var(--text-muted)] hover:text-orange-500 transition duration-200 active:scale-90 relative">
             <i class="fa-solid fa-basket-shopping text-base"></i><span class="text-[9px] font-black uppercase tracking-wider">Basket</span>
+            <span id="bottom-dock-badge-node" class="absolute top-[-2px] right-2 bg-orange-500 text-black text-[8px] font-black h-4 w-4 rounded-full flex items-center justify-center hidden">0</span>
         </button>
     </div>
 
@@ -413,6 +427,9 @@
                     }
                 });
             });
+            
+            // Sync current items selection mapping with memory sync values
+            syncVisualQtyStatesFromCartMemory();
         }
 
         // SWIGGY-STYLE LIVE QUICK FILTER ENGINE OVERRIDE SWITCHES
@@ -439,18 +456,92 @@
             renderInterfaceMenuRoom();
         }
 
+        // HELPER LOGIC MATRIX TO SYNC CORE QUANTITIES WITHIN MEMORY DOM CACHE BUNDLES
+        function syncVisualQtyStatesFromCartMemory() {
+            fullMenu.forEach(item => {
+                const qtyTextNode = document.getElementById(`qty-${item.id}`);
+                const minusBtnNode = document.getElementById(`minus-${item.id}`);
+                const memoryQty = window.cart[item.id] ? window.cart[item.id].qty : 0;
+                
+                if(qtyTextNode && minusBtnNode) {
+                    if(memoryQty > 0) {
+                        qtyTextNode.innerText = memoryQty;
+                        qtyTextNode.classList.remove('hidden');
+                        minusBtnNode.classList.remove('hidden');
+                    } else {
+                        qtyTextNode.classList.add('hidden');
+                        minusBtnNode.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        // SWIGGY/ZOMATO ACCESSIBLE INTERACTION CORE: RE-RENDER LIVE CART DECK ON MODIFICATION STRIKE
+        function renderLiveBasketItemsDeckNode() {
+            const container = document.getElementById('cart-live-items-renderer-node');
+            if(!container) return;
+            container.innerHTML = "";
+
+            const activeKeys = Object.keys(window.cart);
+            if(activeKeys.length === 0) {
+                container.innerHTML = `<p class="text-center text-xs text-slate-500 py-6 font-bold">Aapka basket khali hai bhaiya!</p>`;
+                return;
+            }
+
+            activeKeys.forEach(id => {
+                const cartItem = window.cart[id];
+                container.innerHTML += `
+                    <div class="bg-slate-900/90 border border-white/5 p-3 rounded-xl flex justify-between items-center transition-all">
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="w-2 h-2 rounded-sm border border-emerald-600 flex items-center justify-center p-0.5 flex-shrink-0"><span class="w-0.5 h-0.5 rounded-full bg-emerald-500 block"></span></span>
+                            <span class="text-xs font-extrabold text-white truncate max-w-[160px]">${cartItem.name}</span>
+                        </div>
+                        <div class="flex items-center gap-3 flex-shrink-0">
+                            <span class="text-xs font-bold text-orange-400 font-mono">₹${cartItem.price * cartItem.qty}</span>
+                            <div class="flex items-center bg-slate-950 border border-white/10 rounded-lg overflow-hidden h-7">
+                                <button onclick="changeQty(${id}, -1)" class="px-2 text-slate-400 hover:text-white text-xs font-black transition active:bg-white/5">-</button>
+                                <span class="px-1.5 text-xs font-black text-white font-mono min-w-[14px] text-center">${cartItem.qty}</span>
+                                <button onclick="changeQty(${id}, 1)" class="px-2 text-slate-400 hover:text-white text-xs font-black transition active:bg-white/5">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         window.changeQty = function(id, delta) {
             const item = fullMenu.find(i => i.id === id); if (!window.cart[id]) window.cart[id] = { name: item.name, price: item.price, qty: 0 };
             window.cart[id].qty += delta; if (window.cart[id].qty <= 0) delete window.cart[id];
             
-            const qTxt = document.getElementById(`qty-${id}`); const mBtn = document.getElementById('minus-' + id);
-            const curr = window.cart[id] ? window.cart[id].qty : 0;
-            if(qTxt && mBtn) { if(curr > 0) { qTxt.innerText = curr; qTxt.classList.remove('hidden'); mBtn.classList.remove('hidden'); } else { qTxt.classList.add('hidden'); mBtn.classList.add('hidden'); } }
+            // Sync standard interface button layouts instantly
+            syncVisualQtyStatesFromCartMemory();
 
             let tItems = 0; let tPrice = 0; Object.keys(window.cart).forEach(k => { tItems += window.cart[k].qty; tPrice += (window.cart[k].price * window.cart[k].qty); });
-            const badge = document.getElementById('cart-count'); const bar = document.getElementById('checkout-bar');
-            if(tItems > 0) { badge.innerText = tItems; badge.classList.remove('hidden'); if(delta > 0) bar.classList.remove('translate-y-full'); document.getElementById('cart-summary').innerText = `${tItems} Dishes Selected`; document.getElementById('cart-total').innerText = `₹${tPrice}`; }
-            else { badge.classList.add('hidden'); bar.classList.add('translate-y-full'); }
+            
+            const badge = document.getElementById('cart-count'); 
+            const bottomDockBadge = document.getElementById('bottom-dock-badge-node');
+            const bar = document.getElementById('checkout-bar');
+            
+            if(tItems > 0) {
+                if(badge) { badge.innerText = tItems; badge.classList.remove('hidden'); }
+                if(bottomDockBadge) { bottomDockBadge.innerText = tItems; bottomDockBadge.classList.remove('hidden'); }
+                
+                if(delta > 0 && Object.keys(window.cart).length === 1 && window.cart[id].qty === 1) {
+                    bar.classList.remove('translate-y-full'); 
+                }
+                
+                // Update dynamic items calculation summaries logs
+                if(document.getElementById('bill-item-total-node')) document.getElementById('bill-item-total-node').innerText = `₹${tPrice}`;
+                if(document.getElementById('cart-total')) document.getElementById('cart-total').innerText = `₹${tPrice}`;
+            }
+            else {
+                if(badge) badge.classList.add('hidden');
+                if(bottomDockBadge) bottomDockBadge.classList.add('hidden');
+                bar.classList.add('translate-y-full'); 
+            }
+            
+            // Re-render live dynamic review basket view section modules list
+            renderLiveBasketItemsDeckNode();
             validateFormStateNode();
         }
 
@@ -470,7 +561,14 @@
         }
 
         window.injectCachedPastAddressNode = function() { document.getElementById('cust-loc').value = localStorage.getItem('sw_cached_delivery_address'); validateFormStateNode(); }
-        window.openCartDrawer = function() { if (Object.keys(window.cart).length > 0) document.getElementById('checkout-bar').classList.remove('translate-y-full'); }
+        
+        window.openCartDrawer = function() { 
+            if (Object.keys(window.cart).length > 0) {
+                renderLiveBasketItemsDeckNode(); // Sync rendering logs right before entrance sliding transition
+                document.getElementById('checkout-bar').classList.remove('translate-y-full'); 
+            }
+        }
+        
         window.closeCartDrawer = function() { document.getElementById('checkout-bar').classList.add('translate-y-full'); }
         window.togglePaymentView = function(method) { window.selectedMethod = method; const b = document.getElementById('online-pay-block'); if(method==='Online') b.classList.remove('hidden'); else b.classList.add('hidden'); validateFormStateNode(); }
 
@@ -480,8 +578,8 @@
             const utr = document.getElementById('utr-input').value.trim();
             let fOk = name.length >= 2 && phone.length === 10 && loc.length >= 1 && Object.keys(window.cart).length > 0;
             let pOk = (window.selectedMethod === 'COD') || (window.selectedMethod === 'Online' && utr.length >= 4);
-            if(fOk && pOk) { btn.disabled = false; btn.className = "w-full bg-gradient-to-r from-emerald-500 to-green- green-600 text-black py-4.5 rounded-2xl font-extrabold text-xs flex items-center justify-center tracking-wide cursor-pointer shadow-lg transform transition active:scale-95"; }
-            else { btn.disabled = true; btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 shadow-xl"; }
+            if(fOk && pOk) { btn.disabled = false; btn.className = "w-full max-w-md bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 text-black py-4.5 rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer shadow-xl shadow-emerald-950/20 transform transition active:scale-95 flex items-center justify-center gap-2"; }
+            else { btn.disabled = true; btn.className = "w-full max-w-md bg-slate-800 text-slate-500 py-4.5 rounded-2xl font-bold text-xs cursor-not-allowed opacity-60 shadow-xl flex items-center justify-center gap-2"; }
         }
 
         function triggerCinematicBlastsNode() {
@@ -657,7 +755,7 @@
                 const orderData = snapshot.val();
                 if(orderData && orderData.status !== 'delivered') {
                     if(internalSavedViewState === 'mini') {
-                        document.getElementById('store-front-view').classList.remove('hidden');
+                        document.getElementById('store-front-view').classList.add('hidden');
                         document.getElementById('mini-tracker-bar').classList.remove('hidden');
                         document.getElementById('tracking-screen-view').classList.add('hidden');
                         listenToOrderLive(structuralCheckId);
