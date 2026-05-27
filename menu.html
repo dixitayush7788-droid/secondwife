@@ -99,6 +99,47 @@
 </head>
 <body class="dark antialiased overflow-x-hidden">
 
+    <div id="sw-secure-gate-login-layer-node" class="fixed inset-0 bg-[#030712] z-[200] flex items-center justify-center p-4">
+        <div class="bg-slate-900/60 border border-white/5 backdrop-blur-2xl rounded-[2.5rem] w-full max-w-md p-8 text-center shadow-2xl space-y-6 relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
+            <div>
+                <span class="brand-font-premium text-3xl font-black leading-none tracking-tight block current-brand-glow rgb-neon-brand-master-3d mb-2">Second Wife</span>
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.25em]">Profile Authentication Lock</p>
+            </div>
+
+            <div id="sw-gate-sub-form-view-box" class="space-y-4 text-left">
+                <div>
+                    <label class="text-[9px] font-black uppercase tracking-wider text-orange-400 block mb-1.5 ml-1"><i class="fa-solid fa-signature"></i> First Name</label>
+                    <input type="text" id="sw-login-fname-input" placeholder="Enter first name..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white font-semibold focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase tracking-wider text-orange-400 block mb-1.5 ml-1"><i class="fa-solid fa-user-tag"></i> Last Name</label>
+                    <input type="text" id="sw-login-lname-input" placeholder="Enter last name..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white font-semibold focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase tracking-wider text-orange-400 block mb-1.5 ml-1"><i class="fa-solid fa-mobile-screen"></i> Mobile Number (WhatsApp Line)</label>
+                    <input type="tel" id="sw-login-phone-input" maxlength="10" placeholder="10-Digit Phone number..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3.5 px-4 text-xs text-white font-mono font-bold focus:outline-none focus:border-orange-500">
+                </div>
+                <button type="button" onclick="executeGatewaySimulatedOtpDispatchNode()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-black font-black text-xs uppercase tracking-widest py-4 rounded-xl shadow-lg transition active:scale-98 mt-2">Send Secure OTP</button>
+            </div>
+
+            <div id="sw-gate-sub-otp-view-box" class="hidden space-y-4 text-center">
+                <div class="bg-blue-500/10 border border-blue-500/20 p-4 rounded-2xl mb-2 text-left">
+                    <p class="text-[8px] font-black text-blue-400 uppercase tracking-wider"><i class="fa-solid fa-shield-halved"></i> High-Tech Simulation Network Gateway Token:</p>
+                    <h3 id="sw-simulated-otp-live-flash-node" class="text-2xl font-black text-white font-mono tracking-[0.3em] mt-1 text-center">----</h3>
+                </div>
+                <div class="text-left">
+                    <label class="text-[9px] font-black uppercase tracking-wider text-orange-400 block mb-1.5 ml-1">Enter Received OTP Code</label>
+                    <input type="text" id="sw-login-otp-verification-field" maxlength="4" placeholder="••••" class="w-full bg-slate-950 border border-white/10 rounded-xl py-3.5 text-center text-xl font-mono font-black tracking-[0.4em] text-orange-500 focus:outline-none">
+                </div>
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="rollbackGatewayAuthInterfaceToInputs()" class="w-full bg-slate-950 border border-white/5 text-slate-400 font-bold text-xs uppercase py-3.5 rounded-xl transition">Back</button>
+                    <button type="button" onclick="validateAndCommitCustomerSessionNode()" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-black font-black text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-md transition active:scale-95">Verify & Enter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="music-control" class="fixed top-24 right-4 z-[60] bg-slate-950/80 border border-white/10 p-3 rounded-full cursor-pointer hover:scale-110 transition shadow-lg secure-pulse" onclick="toggleMusic()">
         <button class="text-orange-500 text-sm w-5 h-5 flex items-center justify-center focus:outline-none">
             <i id="music-icon" class="fa-solid fa-volume-xmark"></i>
@@ -223,7 +264,7 @@
             <section id="section-breads" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🫓 TANDOORI BREADS</h2><div id="breads-container" class="grid gap-3.5"></div></section>
             <section id="section-snacks" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍟 SNACKS & KULCHA</h2><div id="snacks-container" class="grid gap-3.5"></div></section>
             <section id="section-starters" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍢 STARTERS & TIKKA</h2><div id="starters-container" class="grid gap-3.5"></div></section>
-            <section id="section-rice" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍚 RICE VARIETIES</h2><div id="rice-container" class="grid gap-3.5"></div></section>
+            <section id="section-rice" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🍚 Rice VARIETIES</h2><div id="rice-container" class="grid gap-3.5"></div></section>
             <section id="section-side" class="menu-section glass-premium p-5 rounded-[2rem] shadow-xl"><h2 class="text-xs font-extrabold text-orange-400 tracking-[0.2em] mb-4 uppercase">🥗 SALAD & RAITA</h2><div id="side-container" class="grid gap-3.5"></div></section>
         </div>
     </div>
@@ -318,8 +359,8 @@
 
         <div class="w-full max-w-md bg-slate-900/60 border border-white/5 p-4 rounded-2xl mb-4 space-y-3 text-left">
             <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest"><i class="fa-solid fa-user-pen"></i> Enter Customer Identity Info:</p>
-            <input type="text" id="cust-name" onkeyup="validateFormStateNode()" placeholder="Aapka Naam (Your Name)..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold">
-            <input type="tel" id="cust-phone" maxlength="10" onkeyup="validateFormStateNode()" placeholder="10-Digit Mobile Number..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-mono font-bold">
+            <input type="text" id="cust-name" onkeyup="validateFormStateNode()" placeholder="Aapka Naam (Your Name)..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-semibold" readonly>
+            <input type="tel" id="cust-phone" maxlength="10" onkeyup="validateFormStateNode()" placeholder="10-Digit Mobile Number..." class="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-orange-500 font-mono font-bold" readonly>
             
             <div class="grid grid-cols-2 gap-2.5 pt-1">
                 <button type="button" id="tab-srv-dine" onclick="setServiceModeTypeNode('DineIn')" class="bg-orange-500 text-black font-black text-xs py-2.5 rounded-xl w-full transition duration-300 active:scale-95 shadow-md">Dine-In / Table</button>
@@ -1180,12 +1221,35 @@
                         targetOtpBlockLayoutNode.classList.remove('hidden');
                     }
                     if (structuralOrderNode.secureOrderOTPDisplayNode && targetOtpNodeTextElement) {
-                        targetOtpNodeTextElement.innerText = structuralOrderNode.secureOrderOTPDisplayNode;
+                        targetOtpNodeTextElement.innerText = snapshotDataMatrix.val().secureOrderOTPDisplayNode;
                     }
                 }
             });
         }
     })();
+</script>
+
+<script>
+    window.toggleModeEngineNode = function() {
+        const bodyElementRefNode = document.body;
+        const themeIconElementRefNode = document.getElementById('theme-switch-icon-node');
+        
+        if (bodyElementRefNode.classList.contains('light')) {
+            // Shift interface context completely to premium dark mode engine matrix
+            bodyElementRefNode.classList.remove('light');
+            bodyElementRefNode.classList.add('dark');
+            if (themeIconElementRefNode) {
+                themeIconElementRefNode.className = "fa-solid fa-sun text-sm text-amber-400 transition-all duration-300";
+            }
+        } else {
+            // Shift interface context completely to lightful high-value clean profile
+            bodyElementRefNode.classList.remove('dark');
+            bodyElementRefNode.classList.add('light');
+            if (themeIconElementRefNode) {
+                themeIconElementRefNode.className = "fa-solid fa-moon text-sm text-blue-400 transition-all duration-300";
+            }
+        }
+    };
 </script>
 
 <script>
@@ -1317,5 +1381,101 @@
         if(curtainLayerOverlayNode) {
             curtainLayerOverlayNode.style.display = 'none';
         }
+    };
+</script>
+
+<script>
+    window.swGeneratedSimulatedAccessOtpNode = "";
+
+    // 1. Core initialization routine execution on dynamic canvas state loading
+    (function evaluateUserSessionPersistenceStateNode() {
+        const cachedUserFname = localStorage.getItem('sw_user_session_fname');
+        const cachedUserLname = localStorage.getItem('sw_user_session_lname');
+        const cachedUserPhone = localStorage.getItem('sw_user_session_phone');
+
+        if(cachedUserFname && cachedUserPhone) {
+            // If secure parameters exist inside local device memory slots, bypass auth barrier screen immediately
+            const gateOverlayNode = document.getElementById('sw-secure-gate-login-layer-node');
+            if(gateOverlayNode) gateOverlayNode.classList.add('hidden');
+
+            // Pre-fill read-only data variables straight inside checkout profile canvas layers logs
+            document.getElementById('cust-name').value = `${cachedUserFname} ${cachedUserLname || ''}`.trim();
+            document.getElementById('cust-phone').value = cachedUserPhone;
+        }
+    })();
+
+    // 2. Gate Dispatch transaction simulator processing engine routine
+    window.executeGatewaySimulatedOtpDispatchNode = function() {
+        const fName = document.getElementById('sw-login-fname-input').value.trim();
+        const lName = document.getElementById('sw-login-lname-input').value.trim();
+        const phone = document.getElementById('sw-login-phone-input').value.trim();
+
+        if(fName.length < 2) return alert("Bhai, First Name kam se kam 2 aksharo ka hona chahiye!");
+        if(phone.length !== 10 || isNaN(phone)) return alert("Bhai, kripya sahi 10-Digit Mobile Number enter karein!");
+
+        // Generate dynamic high-piston random 4-digit verification string token
+        window.swGeneratedSimulatedAccessOtpNode = String(Math.floor(1000 + Math.random() * 9000));
+        
+        // Render dynamic code token onto simulated mock display block node view panel
+        document.getElementById('sw-simulated-otp-live-flash-node').innerText = window.swGeneratedSimulatedAccessOtpNode;
+
+        // Visual screen switch transition flow
+        document.getElementById('sw-gate-sub-form-view-box').classList.add('hidden');
+        document.getElementById('sw-gate-sub-otp-view-box').classList.remove('hidden');
+        setTimeout(() => document.getElementById('sw-login-otp-verification-field').focus(), 50);
+    };
+
+    window.rollbackGatewayAuthInterfaceToInputs = function() {
+        document.getElementById('sw-gate-sub-otp-view-box').classList.add('hidden');
+        document.getElementById('sw-gate-sub-form-view-box').classList.remove('hidden');
+    };
+
+    // 3. Complete authentication verification tracking loop mechanism commitment
+    window.validateAndCommitCustomerSessionNode = function() {
+        const userEnteredOtp = document.getElementById('sw-login-otp-verification-field').value.trim();
+        
+        if(userEnteredOtp !== window.swGeneratedSimulatedAccessOtpNode) {
+            alert("❌ Invalid Verification OTP! Please enter the correct active code.");
+            document.getElementById('sw-login-otp-verification-field').value = "";
+            document.getElementById('sw-login-otp-verification-field').focus();
+            return;
+        }
+
+        const fName = document.getElementById('sw-login-fname-input').value.trim();
+        const lName = document.getElementById('sw-login-lname-input').value.trim();
+        const phone = document.getElementById('sw-login-phone-input').value.trim();
+
+        // INJECT TIME VARIABLES FOR SERIOUS ANALYTICS RECORDING LOGS
+        const logDateObj = new Date();
+        const humanStringDate = logDateObj.toLocaleDateString('en-GB'); // DD/MM/YYYY
+        const humanStringTime = logDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+        // Compile secure client matrix payload envelope
+        const userDatabasePayloadEnvelope = {
+            firstName: fName,
+            lastName: lName || "N/A",
+            phone: phone,
+            registrationDate: humanStringDate,
+            registrationTime: humanStringTime,
+            registrationTimestamp: Date.now()
+        };
+
+        // Push data asset envelope straight onto secure Firebase customer database path node
+        db.ref('customer_database/' + phone).set(userDatabasePayloadEnvelope).then(() => {
+            // Store variables locally to lock browser session forever context boundary
+            localStorage.setItem('sw_user_session_fname', fName);
+            localStorage.setItem('sw_user_session_lname', lName);
+            localStorage.setItem('sw_user_session_phone', phone);
+
+            // Dynamically inject values directly inside checkout data template slots
+            document.getElementById('cust-name').value = `${fName} ${lName}`.trim();
+            document.getElementById('cust-phone').value = phone;
+
+            // Retract veil overlay screen matrix layer instantly
+            document.getElementById('sw-secure-gate-login-layer-node').classList.add('hidden');
+            
+            // Blast micro cinematic sparks configurations to congratulate login strike
+            confetti({ particleCount: 40, spread: 60, origin: { y: 0.6 } });
+        });
     };
 </script>
