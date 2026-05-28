@@ -60,6 +60,9 @@
                 <button type="button" id="sw-sidebar-btn-customers" onclick="toggleAdminViewModuleSection('customers')" class="w-full text-left hover:bg-white/[0.02] border-l-4 border-transparent px-4 py-3.5 rounded-r-xl text-xs font-bold text-slate-400 hover:text-white tracking-wider uppercase flex items-center gap-3 transition-all">
                     <i class="fa-solid fa-users text-sm"></i> Customer Directory
                 </button>
+                <button type="button" id="sw-sidebar-btn-finance" onclick="toggleAdminViewModuleSection('finance')" class="w-full text-left hover:bg-white/[0.02] border-l-4 border-transparent px-4 py-3.5 rounded-r-xl text-xs font-bold text-slate-400 hover:text-white tracking-wider uppercase flex items-center gap-3 transition-all">
+                    <i class="fa-solid fa-chart-line text-sm"></i> Financial Reports
+                </button>
             </nav>
         </div>
         
@@ -78,6 +81,17 @@
                 <span class="text-[9px] font-black text-orange-500 uppercase tracking-widest mt-1">Kitchen Command Center</span>
             </div>
         </div>
+
+        <div class="flex items-center gap-3 bg-slate-900/90 border border-white/5 px-4 py-2 rounded-2xl shadow-xl w-full sm:w-auto justify-between sm:justify-start">
+            <div class="text-left">
+                <p class="text-[8px] font-black text-slate-500 uppercase tracking-wider">Active Shift Status</p>
+                <h4 id="sw-shift-status-text-node" class="text-xs font-black text-red-500 uppercase tracking-wide">🔴 Shift Closed</h4>
+            </div>
+            <button type="button" id="sw-shift-master-toggle-btn" onclick="executeManualShiftSwitchingEngine()" class="bg-gradient-to-r from-emerald-500 to-green-600 text-black font-black text-[10px] px-4 py-2 rounded-xl uppercase tracking-wider transition active:scale-95 shadow-md">
+                Start Today's Shift
+            </button>
+        </div>
+
         <div class="flex gap-2">
             <button onclick="openStockModalNode()" class="bg-gradient-to-r from-orange-500 to-red-600 text-black font-extrabold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 transition active:scale-95 shadow-md">
                 <i class="fa-solid fa-layer-group"></i> 🥞 MANAGE DISH STOCK
@@ -136,7 +150,34 @@
                         </tr>
                     </thead>
                     <tbody id="sw-customer-directory-table-rows-container" class="divide-y divide-white/[0.02]">
-                        </tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <main id="sw-admin-main-finance-viewport-module" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 hidden">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div>
+                <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-wallet text-emerald-500"></i> Financial Shifts Ledger</h2>
+                <p class="text-slate-400 text-xs mt-0.5">Manual end shift karne ke baad pichla dhandha hafte aur mahine ke hisab se yahan lock hota hai.</p>
+            </div>
+        </div>
+
+        <div class="glass-card rounded-[2rem] border border-white/[0.04] overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto hide-scrollbar">
+                <table class="w-full text-left text-xs font-semibold min-w-[700px]">
+                    <thead class="bg-slate-950/60 border-b border-white/5 text-slate-400 text-[10px] font-black uppercase tracking-wider">
+                        <tr>
+                            <th class="px-6 py-4.5">Shift ID</th>
+                            <th class="px-6 py-4.5">Closing Date</th>
+                            <th class="px-6 py-4.5">Closing Time</th>
+                            <th class="px-6 py-4.5">Total Completed Orders</th>
+                            <th class="px-6 py-4.5">Net Revenue Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sw-financial-ledger-table-rows-container" class="divide-y divide-white/[0.02]">
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -178,11 +219,34 @@
         </div>
     </div>
 
+    <div id="secure-otp-popup-modal-layer" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[110] flex items-center justify-center hidden p-4">
+        <div class="glass-card-popup w-full max-w-sm rounded-[2.2rem] p-6 text-center shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div class="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-xl mx-auto mb-4">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="text-base font-black text-white uppercase tracking-wider mb-1">Verify Delivery OTP</h3>
+            <p class="text-slate-400 text-xs mb-5">Customer se 4-digit code pooch kar input karein.</p>
+            
+            <input type="hidden" id="secure-verification-target-order-id">
+            <input type="hidden" id="secure-verification-target-raw-otp">
+
+            <input type="text" id="secure-admin-otp-input-field" maxlength="4" placeholder="••••" class="w-full bg-slate-950/80 border border-white/10 rounded-xl py-3.5 text-center text-2xl font-mono font-black tracking-[0.4em] text-orange-500 focus:outline-none focus:border-orange-500 mb-4 placeholder-slate-800">
+            
+            <div class="grid grid-cols-2 gap-2.5">
+                <button onclick="closeSecureOTPModalNode()" class="bg-slate-900 border border-white/5 py-3 rounded-xl text-xs font-black text-slate-400 hover:text-white uppercase transition tracking-wider">Cancel</button>
+                <button onclick="validateAndCommitSecureDeliveryNode()" class="bg-gradient-to-r from-emerald-500 to-green-600 py-3 rounded-xl text-xs font-black text-black uppercase transition tracking-wider shadow-md active:scale-95">Verify Code</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const firebaseConfig = { databaseURL: "https://secondwife-1cd1d-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig); const db = firebase.database();
         
-        window.currentFilter = "all"; window.ordersCache = {}; window.reviewsCache = {}; // DUAL STRUCTURAL STORAGE ATTACHED
+        window.currentFilter = "all"; window.ordersCache = {}; window.reviewsCache = {}; 
+        window.swActiveShiftStatusFlag = false; 
+        window.swCurrentShiftNetRevenueCount = 0;
+        window.swCurrentShiftCompletedOrdersCount = 0;
 
         const fullMenu = [
             { id: 1, name: "Veg Biryani" }, { id: 2, name: "Soya Chaap Biryani" }, { id: 3, name: "Hyderabadi Dum Biryani" },
@@ -192,7 +256,7 @@
             { id: 38, name: "Makhmali Malai Chaap" }, { id: 40, name: "Paneer Tikka" }, { id: 46, name: "Jeera Rice" }, { id: 50, name: "French Fries" }
         ];
 
-        // DUAL LAYER PIPELINE SYNCHRONIZATION HOOK LISTENER
+        // REAL-TIME BROADCAST SNAPSHOT PIPELINES 
         db.ref('orders').on('value', (snapshot) => {
             window.ordersCache = snapshot.val() || {};
             filterOrdersEngine();
@@ -201,10 +265,55 @@
 
         db.ref('reviews').on('value', (snapshot) => {
             window.reviewsCache = snapshot.val() || {};
-            filterOrdersEngine(); // Realtime matrix update strike on dynamic review injection
+            filterOrdersEngine(); 
         });
 
-        // CONNECT LIVE CLOUD CUSTOMER ACCOUNT PIPELINE FOR SIDEBAR DIRECTORY LIST
+        db.ref('system_shift_config/isActive').on('value', (snapshot) => {
+            window.swActiveShiftStatusFlag = snapshot.val() || false;
+            const textNode = document.getElementById('sw-shift-status-text-node');
+            const btnNode = document.getElementById('sw-shift-master-toggle-btn');
+            
+            if(!textNode || !btnNode) return;
+
+            if(window.swActiveShiftStatusFlag) {
+                textNode.innerText = "🟢 Shift Active";
+                textNode.className = "text-xs font-black text-emerald-400 uppercase tracking-wide animate-pulse";
+                btnNode.innerText = "End Shift & Settle";
+                btnNode.className = "bg-gradient-to-r from-red-500 to-rose-600 text-white font-black text-[10px] px-4 py-2 rounded-xl uppercase tracking-wider transition active:scale-95 shadow-md";
+            } else {
+                textNode.innerText = "🔴 Shift Closed";
+                textNode.className = "text-xs font-black text-red-500 uppercase tracking-wide";
+                btnNode.innerText = "Start Today's Shift";
+                btnNode.className = "bg-gradient-to-r from-emerald-500 to-green-600 text-black font-black text-[10px] px-4 py-2 rounded-xl uppercase tracking-wider transition active:scale-95 shadow-md";
+            }
+            filterOrdersEngine();
+        });
+
+        db.ref('financial_ledger').on('value', (snapshot) => {
+            const container = document.getElementById('sw-financial-ledger-table-rows-container');
+            if(!container) return;
+            container.innerHTML = "";
+            const rawLedgerData = snapshot.val() || {};
+            
+            if(Object.keys(rawLedgerData).length === 0) {
+                container.innerHTML = `<tr><td colspan="5" class="text-center py-12 text-slate-500 font-bold">Ledger register khali hai bhaiya!</td></tr>`;
+                return;
+            }
+
+            Object.keys(rawLedgerData).sort((a,b) => (rawLedgerData[b].settlementTimestamp || 0) - (rawLedgerData[a].settlementTimestamp || 0)).forEach(shiftKey => {
+                const row = rawLedgerData[shiftKey];
+                container.innerHTML += `
+                    <tr class="hover:bg-white/[0.01] transition duration-150">
+                        <td class="px-6 py-4 font-mono text-orange-400 font-bold">${row.shiftId}</td>
+                        <td class="px-6 py-4 text-white font-medium">${row.closeDate || 'N/A'}</td>
+                        <td class="px-6 py-4 text-slate-400 font-mono">${row.closeTime || 'N/A'}</td>
+                        <td class="px-6 py-4 text-slate-300 font-mono font-bold">${row.totalOrders || 0} Orders</td>
+                        <td class="px-6 py-4 text-emerald-400 font-mono font-black text-sm">₹${row.settledRevenue || 0}</td>
+                    </tr>
+                `;
+            });
+        });
+
         db.ref('customer_database').on('value', (snapshot) => {
             const customerTableRowsContainer = document.getElementById('sw-customer-directory-table-rows-container');
             const counterBadge = document.getElementById('sw-directory-count-badge');
@@ -241,13 +350,20 @@
         window.filterOrdersEngine = function() {
             const grid = document.getElementById('admin-orders-grid'); grid.innerHTML = "";
             const query = document.getElementById('admin-search').value.toLowerCase().trim();
-            let total = 0, pending = 0, transit = 0, revenue = 0;
+            
+            // Reset numerical aggregation metrics buffers safely
+            let total = 0, pending = 0, transit = 0;
+            window.swCurrentShiftNetRevenueCount = 0;
+            window.swCurrentShiftCompletedOrdersCount = 0;
 
             Object.keys(window.ordersCache).sort((a, b) => window.ordersCache[b].timestamp - window.ordersCache[a].timestamp).forEach(id => {
                 const order = window.ordersCache[id]; total++;
                 if (order.status === 'placed' || order.status === 'cooking') pending++;
                 if (order.status === 'dispatched') transit++;
-                if (order.status === 'delivered') revenue += parseInt(order.total || 0);
+                if (order.status === 'delivered') {
+                    window.swCurrentShiftNetRevenueCount += parseInt(order.total || 0);
+                    window.swCurrentShiftCompletedOrdersCount++;
+                }
 
                 const statusMatches = window.currentFilter === 'all' || order.status === window.currentFilter;
                 const queryMatches = order.id.toLowerCase().includes(query) || (order.custName || '').toLowerCase().includes(query) || (order.custLoc || '').toLowerCase().includes(query);
@@ -271,7 +387,6 @@
 
                     let riderInfoLineNode = (order.status === 'dispatched' && order.riderName) ? `<p class="text-blue-400 font-bold text-[11px] mt-1"><i class="fa-solid fa-motorcycle"></i> Rider: ${order.riderName} (${order.riderPhone})</p>` : '';
 
-                    // SWIGGY-STYLE INLINE REALTIME FEEDBACK INJECTOR MODULE
                     let adminLiveReviewBoxNodeMarkup = "";
                     if(window.reviewsCache[order.id]) {
                         const referenceReviewPayload = window.reviewsCache[order.id];
@@ -287,7 +402,6 @@
                         `;
                     }
 
-                    // LIVE DYNAMIC QUICK-REPLY CHAT COMPONENT INSIDE THE GRID INJECTOR
                     let adminChatBoxMarkupNode = "";
                     if(order.status === 'dispatched') {
                         let chatBubbleGlowClass = order.lastCustomerMsg ? "incoming-msg-radar-glow" : "bg-slate-900/60";
@@ -310,7 +424,6 @@
                         `;
                     }
 
-                    // GENERATE DYNAMIC GOOGLE MAPS NAVIGATION DECK Short-link
                     let adminMapsRouteMarkupNode = "";
                     if(order.custType === 'Delivery' && order.lat && order.lng) {
                         adminMapsRouteMarkupNode = `
@@ -358,10 +471,17 @@
                 }
             });
 
+            // Sync structural dashboard badges values
             document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-pending').innerText = pending;
             document.getElementById('stat-transit').innerText = transit;
-            document.getElementById('stat-revenue').innerText = "₹" + revenue;
+            
+            // IF SYSTEM SHIFT SHUTTER ACCIDENTALLY DROPS OUT, INJECT STANDARD COMPRESSION TO ZERO RENDERINGS
+            if(window.swActiveShiftStatusFlag) {
+                document.getElementById('stat-revenue').innerText = "₹" + window.swCurrentShiftNetRevenueCount;
+            } else {
+                document.getElementById('stat-revenue').innerText = "₹0 (Shift Closed)";
+            }
         }
 
         window.updateStatusNode = function(id, statusState, prepTimeVal) {
@@ -429,58 +549,31 @@
             }, { passive: true });
         });
 
-        // LIVE QUICK CHAT RIDER TRANSMISSION REPLIES ENGINE
         window.sendRiderReplyNode = function(orderId, replyTextString) {
             db.ref('orders/' + orderId).update({
-                lastCustomerMsg: null, // Clear customer's message query on active reply strike
+                lastCustomerMsg: null, 
                 lastRiderReply: replyTextString
             });
         }
     </script>
 
-    <div id="secure-otp-popup-modal-layer" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[110] flex items-center justify-center hidden p-4">
-        <div class="glass-card-popup w-full max-w-sm rounded-[2.2rem] p-6 text-center shadow-2xl animate-in fade-in zoom-in duration-200">
-            <div class="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-xl mx-auto mb-4">
-                <i class="fa-solid fa-shield-halved"></i>
-            </div>
-            <h3 class="text-base font-black text-white uppercase tracking-wider mb-1">Verify Delivery OTP</h3>
-            <p class="text-slate-400 text-xs mb-5">Customer se 4-digit code pooch kar input karein.</p>
-            
-            <input type="hidden" id="secure-verification-target-order-id">
-            <input type="hidden" id="secure-verification-target-raw-otp">
-
-            <input type="text" id="secure-admin-otp-input-field" maxlength="4" placeholder="••••" class="w-full bg-slate-950/80 border border-white/10 rounded-xl py-3.5 text-center text-2xl font-mono font-black tracking-[0.4em] text-orange-500 focus:outline-none focus:border-orange-500 mb-4 placeholder-slate-800">
-            
-            <div class="grid grid-cols-2 gap-2.5">
-                <button onclick="closeSecureOTPModalNode()" class="bg-slate-900 border border-white/5 py-3 rounded-xl text-xs font-black text-slate-400 hover:text-white uppercase transition tracking-wider">Cancel</button>
-                <button onclick="validateAndCommitSecureDeliveryNode()" class="bg-gradient-to-r from-emerald-500 to-green-600 py-3 rounded-xl text-xs font-black text-black uppercase transition tracking-wider shadow-md active:scale-95">Verify Code</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Trigger verification pop-up module workflow logic
         window.initiateSecureOTPVerificationNode = function(orderId, exactDbOtpString, orderTypeString) {
-            // Bypass logic for DineIn orders so staff never get stuck on tables processing
             if(orderTypeString === 'DineIn') {
                 if(confirm('Clear this Dine-In order node?')) {
                     window.updateStatusNode(orderId, 'delivered', 0);
                 }
                 return;
             }
-
-            // Fallback safety if database connectivity drops out or otp fields fail to cache 
             if(!exactDbOtpString || exactDbOtpString.trim() === "") {
                 if(confirm("Warning: Security code parameter offline. Proceed bypass?")) {
                     window.updateStatusNode(orderId, 'delivered', 0);
                 }
                 return;
             }
-
-            // Bind values directly into virtual modal hidden input elements
             document.getElementById('secure-verification-target-order-id').value = orderId;
             document.getElementById('secure-verification-target-raw-otp').value = exactDbOtpString;
-            document.getElementById('secure-admin-otp-input-field').value = ""; // Refresh previous entries
+            document.getElementById('secure-admin-otp-input-field').value = ""; 
             
             document.getElementById('secure-otp-popup-modal-layer').classList.remove('hidden');
             setTimeout(() => document.getElementById('secure-admin-otp-input-field').focus(), 50);
@@ -496,7 +589,6 @@
             const userEnteredOtp = document.getElementById('secure-admin-otp-input-field').value.trim();
 
             if(userEnteredOtp === absoluteExpectedOtp) {
-                // If code checks out cleanly, execute transmission update to clear loop node
                 window.updateStatusNode(targetOrderId, 'delivered', 0);
                 window.closeSecureOTPModalNode();
             } else {
@@ -508,7 +600,6 @@
     </script>
 
     <script>
-        // 1. Toggle Sidebar drawer slide animation route
         window.toggleAdminSidebarNavigationDrawer = function(openStateFlag) {
             const sidebarDeckNode = document.getElementById('sw-admin-sidebar-deck');
             if(!sidebarDeckNode) return;
@@ -519,30 +610,75 @@
             }
         };
 
-        // 2. Active Module Layer Window Section Toggle Switchboard
         window.toggleAdminViewModuleSection = function(activeViewTargetString) {
             const ordersViewport = document.getElementById('sw-admin-main-orders-viewport-module');
             const customersViewport = document.getElementById('sw-admin-main-customers-viewport-module');
+            const financeViewport = document.getElementById('sw-admin-main-finance-viewport-module');
             
             const btnOrders = document.getElementById('sw-sidebar-btn-orders');
             const btnCustomers = document.getElementById('sw-sidebar-btn-customers');
+            const btnFinance = document.getElementById('sw-sidebar-btn-finance');
 
-            // Hard Reset sidebar item toggle highlight states template styling configuration parameters
             btnOrders.className = "w-full text-left hover:bg-white/[0.02] border-l-4 border-transparent px-4 py-3.5 rounded-r-xl text-xs font-bold text-slate-400 hover:text-white tracking-wider uppercase flex items-center gap-3 transition-all";
             btnCustomers.className = "w-full text-left hover:bg-white/[0.02] border-l-4 border-transparent px-4 py-3.5 rounded-r-xl text-xs font-bold text-slate-400 hover:text-white tracking-wider uppercase flex items-center gap-3 transition-all";
+            btnFinance.className = "w-full text-left hover:bg-white/[0.02] border-l-4 border-transparent px-4 py-3.5 rounded-r-xl text-xs font-bold text-slate-400 hover:text-white tracking-wider uppercase flex items-center gap-3 transition-all";
+
+            ordersViewport.classList.add('hidden');
+            customersViewport.classList.add('hidden');
+            financeViewport.classList.add('hidden');
 
             if(activeViewTargetString === 'orders') {
                 ordersViewport.classList.remove('hidden');
-                customersViewport.classList.add('hidden');
                 btnOrders.className = "w-full text-left bg-gradient-to-r from-orange-500/10 to-transparent border-l-4 border-orange-500 px-4 py-3.5 rounded-r-xl text-xs font-black text-orange-400 tracking-wider uppercase flex items-center gap-3 transition-all";
             } else if(activeViewTargetString === 'customers') {
-                ordersViewport.classList.add('hidden');
                 customersViewport.classList.remove('hidden');
                 btnCustomers.className = "w-full text-left bg-gradient-to-r from-orange-500/10 to-transparent border-l-4 border-orange-500 px-4 py-3.5 rounded-r-xl text-xs font-black text-orange-400 tracking-wider uppercase flex items-center gap-3 transition-all";
+            } else if(activeViewTargetString === 'finance') {
+                financeViewport.classList.remove('hidden');
+                btnFinance.className = "w-full text-left bg-gradient-to-r from-orange-500/10 to-transparent border-l-4 border-orange-500 px-4 py-3.5 rounded-r-xl text-xs font-black text-orange-400 tracking-wider uppercase flex items-center gap-3 transition-all";
             }
-
-            // Collapse drawer veil frame instantly on select trigger actions matrix strike
             toggleAdminSidebarNavigationDrawer(false);
+        };
+
+        // CORE EXECUTION: MANUAL SHIFT SETTLEMENT PIPELINE MACHINE
+        window.executeManualShiftSwitchingEngine = function() {
+            if(!window.swActiveShiftStatusFlag) {
+                if(confirm("Confirm: Aaj ka dhandha shuru karne ke liye new shift fire karein? 🟢")) {
+                    db.ref('system_shift_config').set({ isActive: true, shiftStartTimeStamp: Date.now() });
+                }
+            } else {
+                if(confirm("Settle Account: Kya aap sach me dukaan badh kar rahe hain? Aaj ka total revenue ledger me freeze ho jayega! 🔴")) {
+                    
+                    const shiftZoneDate = new Date();
+                    const cleanShiftDate = shiftZoneDate.toLocaleDateString('en-GB'); 
+                    const cleanShiftTime = shiftZoneDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                    const rawShiftIdString = "SHIFT-" + String(Math.floor(100000 + Math.random() * 900000));
+
+                    const completeFinancialLedgerBundle = {
+                        shiftId: rawShiftIdString,
+                        closeDate: cleanShiftDate,
+                        closeTime: cleanShiftTime,
+                        settledRevenue: window.swCurrentShiftNetRevenueCount,
+                        totalOrders: window.swCurrentShiftCompletedOrdersCount,
+                        settlementTimestamp: Date.now()
+                    };
+
+                    db.ref('financial_ledger/' + rawShiftIdString).set(completeFinancialLedgerBundle).then(() => {
+                        Object.keys(window.ordersCache).forEach(id => {
+                            const order = window.ordersCache[id];
+                            if(order.status === 'delivered') {
+                                db.ref('archived_past_shifts_orders/' + id).set(order).then(() => {
+                                    db.ref('orders/' + id).remove(); 
+                                });
+                            }
+                        });
+
+                        db.ref('system_shift_config').set({ isActive: false, lastSettledTimestamp: Date.now() }).then(() => {
+                            alert(`💸 Shift Settle Complete!\nShift Token ID: ${rawShiftIdString}\nNet Closed Income: ₹${window.swCurrentShiftNetRevenueCount}`);
+                        });
+                    });
+                }
+            }
         };
     </script>
 </body>
