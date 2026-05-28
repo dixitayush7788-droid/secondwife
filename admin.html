@@ -170,10 +170,10 @@
                     <thead class="bg-slate-950/60 border-b border-white/5 text-slate-400 text-[10px] font-black uppercase tracking-wider">
                         <tr>
                             <th class="px-6 py-4.5">Shift ID</th>
-                            <th class="px-6 py-4.5">Closing Date</th>
-                            <th class="px-6 py-4.5">Closing Time</th>
-                            <th class="px-6 py-4.5">Total Completed Orders</th>
-                            <th class="px-6 py-4.5">Net Revenue Profit</th>
+                            <th class="px-6 py-4.5">Opening Details</th>
+                            <th class="px-6 py-4.5">Closing Details</th>
+                            <th class="px-6 py-4.5">Total Shift Orders</th>
+                            <th class="px-6 py-4.5">Net Shift Revenue</th>
                         </tr>
                     </thead>
                     <tbody id="sw-financial-ledger-table-rows-container" class="divide-y divide-white/[0.02]">
@@ -245,8 +245,7 @@
         
         window.currentFilter = "all"; window.ordersCache = {}; window.reviewsCache = {}; 
         window.swActiveShiftStatusFlag = false; 
-        window.swCurrentShiftNetRevenueCount = 0;
-        window.swCurrentShiftCompletedOrdersCount = 0;
+        window.swCurrentShiftStartTimeStamp = 0;
 
         const fullMenu = [
             { id: 1, name: "Veg Biryani" }, { id: 2, name: "Soya Chaap Biryani" }, { id: 3, name: "Hyderabadi Dum Biryani" },
@@ -256,7 +255,7 @@
             { id: 38, name: "Makhmali Malai Chaap" }, { id: 40, name: "Paneer Tikka" }, { id: 46, name: "Jeera Rice" }, { id: 50, name: "French Fries" }
         ];
 
-        // REAL-TIME BROADCAST SNAPSHOT PIPELINES 
+        // DUAL LAYER PIPELINE SYNCHRONIZATION HOOK LISTENER
         db.ref('orders').on('value', (snapshot) => {
             window.ordersCache = snapshot.val() || {};
             filterOrdersEngine();
@@ -268,8 +267,12 @@
             filterOrdersEngine(); 
         });
 
-        db.ref('system_shift_config/isActive').on('value', (snapshot) => {
-            window.swActiveShiftStatusFlag = snapshot.val() || false;
+        // SHIFT STATUS CONFIG ENGINE WITH TIMESTAMP TRACING CAPSULES
+        db.ref('system_shift_config').on('value', (snapshot) => {
+            const shiftData = snapshot.val() || {};
+            window.swActiveShiftStatusFlag = shiftData.isActive || false;
+            window.swCurrentShiftStartTimeStamp = shiftData.shiftStartTimeStamp || 0;
+            
             const textNode = document.getElementById('sw-shift-status-text-node');
             const btnNode = document.getElementById('sw-shift-master-toggle-btn');
             
@@ -289,6 +292,7 @@
             filterOrdersEngine();
         });
 
+        // FINANCIAL REPORT STREAM RE-RENDERING NODE MAPPING
         db.ref('financial_ledger').on('value', (snapshot) => {
             const container = document.getElementById('sw-financial-ledger-table-rows-container');
             if(!container) return;
@@ -305,9 +309,9 @@
                 container.innerHTML += `
                     <tr class="hover:bg-white/[0.01] transition duration-150">
                         <td class="px-6 py-4 font-mono text-orange-400 font-bold">${row.shiftId}</td>
-                        <td class="px-6 py-4 text-white font-medium">${row.closeDate || 'N/A'}</td>
-                        <td class="px-6 py-4 text-slate-400 font-mono">${row.closeTime || 'N/A'}</td>
-                        <td class="px-6 py-4 text-slate-300 font-mono font-bold">${row.totalOrders || 0} Orders</td>
+                        <td class="px-6 py-4 text-white font-medium">${row.openDate || 'N/A'}<br><span class="text-[10px] text-slate-500 font-mono">${row.openTime || 'N/A'}</span></td>
+                        <td class="px-6 py-4 text-slate-300 font-medium">${row.closeDate || 'N/A'}<br><span class="text-[10px] text-slate-500 font-mono">${row.closeTime || 'N/A'}</span></td>
+                        <td class="px-6 py-4 text-slate-400 font-mono font-bold">${row.totalOrders || 0} Orders</td>
                         <td class="px-6 py-4 text-emerald-400 font-mono font-black text-sm">₹${row.settledRevenue || 0}</td>
                     </tr>
                 `;
@@ -351,18 +355,21 @@
             const grid = document.getElementById('admin-orders-grid'); grid.innerHTML = "";
             const query = document.getElementById('admin-search').value.toLowerCase().trim();
             
-            // Reset numerical aggregation metrics buffers safely
-            let total = 0, pending = 0, transit = 0;
-            window.swCurrentShiftNetRevenueCount = 0;
-            window.swCurrentShiftCompletedOrdersCount = 0;
+            // Core Aggregator Accumulator Variables Local Mapping
+            let total = 0, pending = 0, transit = 0, revenue = 0;
 
             Object.keys(window.ordersCache).sort((a, b) => window.ordersCache[b].timestamp - window.ordersCache[a].timestamp).forEach(id => {
-                const order = window.ordersCache[id]; total++;
-                if (order.status === 'placed' || order.status === 'cooking') pending++;
-                if (order.status === 'dispatched') transit++;
-                if (order.status === 'delivered') {
-                    window.swCurrentShiftNetRevenueCount += parseInt(order.total || 0);
-                    window.swCurrentShiftCompletedOrdersCount++;
+                const order = window.ordersCache[id];
+                
+                // --- STRAT: DYNAMIC SHIFT FILTER CRITERIA HOOK NODE ---
+                // If shift is active, only process mathematical numbers created inside current timeline limits!
+                const isBelongToCurrentShift = window.swActiveShiftStatusFlag && (order.timestamp >= window.swCurrentShiftStartTimeStamp);
+                
+                if (isBelongToCurrentShift) {
+                    total++;
+                    if (order.status === 'placed' || order.status === 'cooking') pending++;
+                    if (order.status === 'dispatched') transit++;
+                    if (order.status === 'delivered') revenue += parseInt(order.total || 0);
                 }
 
                 const statusMatches = window.currentFilter === 'all' || order.status === window.currentFilter;
@@ -439,7 +446,7 @@
                         <div class="glass-card ${emergencyClass} p-6 rounded-[2rem] flex flex-col justify-between border border-white/[0.04] transition duration-300 transform hover:-translate-y-1 shadow-2xl relative">
                             <div>
                                 <div class="flex justify-between items-start mb-4">
-                                    <div class="flex items-center">${neonDotHeader}<h4 class="text-base font-black text-white tracking-tight">${order.id}</h4></div>
+                                    <div class="flex items-center"><h4 class="text-base font-black text-white tracking-tight">${order.id}</h4></div>
                                     <span class="text-[10px] font-extrabold px-3 py-1.5 rounded-xl uppercase border ${sColor}">${order.status}</span>
                                 </div>
                                 <div class="bg-black/20 border border-white/[0.02] p-3.5 rounded-2xl mb-4 space-y-1.5 text-xs text-left">
@@ -471,17 +478,11 @@
                 }
             });
 
-            // Sync structural dashboard badges values
+            // Update main matrix statistics panels with shift isolation bounds
             document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-pending').innerText = pending;
             document.getElementById('stat-transit').innerText = transit;
-            
-            // IF SYSTEM SHIFT SHUTTER ACCIDENTALLY DROPS OUT, INJECT STANDARD COMPRESSION TO ZERO RENDERINGS
-            if(window.swActiveShiftStatusFlag) {
-                document.getElementById('stat-revenue').innerText = "₹" + window.swCurrentShiftNetRevenueCount;
-            } else {
-                document.getElementById('stat-revenue').innerText = "₹0 (Shift Closed)";
-            }
+            document.getElementById('stat-revenue').innerText = "₹" + revenue;
         }
 
         window.updateStatusNode = function(id, statusState, prepTimeVal) {
@@ -532,7 +533,10 @@
         function evaluateIncomingOrdersAlarmStateNode() {
             const bellNode = document.getElementById('kitchen-alert-bell');
             if(!bellNode) return;
-            let hasNewUnacceptedOrderNode = Object.keys(window.ordersCache).some(id => window.ordersCache[id].status === 'placed');
+            let hasNewUnacceptedOrderNode = Object.keys(window.ordersCache).some(id => {
+                const o = window.ordersCache[id];
+                return o.status === 'placed' && (!window.swActiveShiftStatusFlag || o.timestamp >= window.swCurrentShiftStartTimeStamp);
+            });
             if(hasNewUnacceptedOrderNode) {
                 bellNode.play().catch(() => { console.log("Dashboard engine alert triggered."); });
             } else {
@@ -640,41 +644,61 @@
             toggleAdminSidebarNavigationDrawer(false);
         };
 
-        // CORE EXECUTION: MANUAL SHIFT SETTLEMENT PIPELINE MACHINE
+        // DYNAMIC SHIFT LIFE-CYCLE CLOSING AND OPENING MANAGER MACHINE
         window.executeManualShiftSwitchingEngine = function() {
+            const shiftZoneDate = new Date();
+            const cleanShiftDate = shiftZoneDate.toLocaleDateString('en-GB'); 
+            const cleanShiftTime = shiftZoneDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
             if(!window.swActiveShiftStatusFlag) {
                 if(confirm("Confirm: Aaj ka dhandha shuru karne ke liye new shift fire karein? 🟢")) {
-                    db.ref('system_shift_config').set({ isActive: true, shiftStartTimeStamp: Date.now() });
+                    db.ref('system_shift_config').set({ 
+                        isActive: true, 
+                        shiftStartTimeStamp: Date.now(),
+                        openDate: cleanShiftDate,
+                        openTime: cleanShiftTime
+                    });
                 }
             } else {
                 if(confirm("Settle Account: Kya aap sach me dukaan badh kar rahe hain? Aaj ka total revenue ledger me freeze ho jayega! 🔴")) {
                     
-                    const shiftZoneDate = new Date();
-                    const cleanShiftDate = shiftZoneDate.toLocaleDateString('en-GB'); 
-                    const cleanShiftTime = shiftZoneDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                    // Pull current statistics directly from board calculations logs
+                    const currentShiftRevenue = parseInt(document.getElementById('stat-revenue').innerText.replace('₹', '')) || 0;
+                    const currentShiftOrders = parseInt(document.getElementById('stat-total').innerText) || 0;
                     const rawShiftIdString = "SHIFT-" + String(Math.floor(100000 + Math.random() * 900000));
 
-                    const completeFinancialLedgerBundle = {
-                        shiftId: rawShiftIdString,
-                        closeDate: cleanShiftDate,
-                        closeTime: cleanShiftTime,
-                        settledRevenue: window.swCurrentShiftNetRevenueCount,
-                        totalOrders: window.swCurrentShiftCompletedOrdersCount,
-                        settlementTimestamp: Date.now()
-                    };
+                    // Read current opening meta tags configuration safely from snapshot slots
+                    db.ref('system_shift_config').once('value').then((snapshot) => {
+                        const config = snapshot.val() || {};
+                        
+                        const completeFinancialLedgerBundle = {
+                            shiftId: rawShiftIdString,
+                            openDate: config.openDate || cleanShiftDate,
+                            openTime: config.openTime || cleanShiftTime,
+                            closeDate: cleanShiftDate,
+                            closeTime: cleanShiftTime,
+                            settledRevenue: currentShiftRevenue,
+                            totalOrders: currentShiftOrders,
+                            settlementTimestamp: Date.now()
+                        };
 
-                    db.ref('financial_ledger/' + rawShiftIdString).set(completeFinancialLedgerBundle).then(() => {
-                        Object.keys(window.ordersCache).forEach(id => {
-                            const order = window.ordersCache[id];
-                            if(order.status === 'delivered') {
-                                db.ref('archived_past_shifts_orders/' + id).set(order).then(() => {
-                                    db.ref('orders/' + id).remove(); 
-                                });
-                            }
-                        });
+                        // Store dynamic record array to historical shifts node tracking sheet
+                        db.ref('financial_ledger/' + rawShiftIdString).set(completeFinancialLedgerBundle).then(() => {
+                            
+                            // Iterate through all active records to push delivered slots to deep database backup logs
+                            Object.keys(window.ordersCache).forEach(id => {
+                                const order = window.ordersCache[id];
+                                if(order.status === 'delivered') {
+                                    db.ref('archived_past_shifts_orders/' + id).set(order).then(() => {
+                                        db.ref('orders/' + id).remove(); 
+                                    });
+                                }
+                            });
 
-                        db.ref('system_shift_config').set({ isActive: false, lastSettledTimestamp: Date.now() }).then(() => {
-                            alert(`💸 Shift Settle Complete!\nShift Token ID: ${rawShiftIdString}\nNet Closed Income: ₹${window.swCurrentShiftNetRevenueCount}`);
+                            // Turn switch off and reset dashboard interface safely
+                            db.ref('system_shift_config').set({ isActive: false, lastSettledTimestamp: Date.now() }).then(() => {
+                                alert(`💸 Shift Settle Complete!\nShift ID: ${rawShiftIdString}\nNet Revenue: ₹${currentShiftRevenue}\nTotal Orders: ${currentShiftOrders}`);
+                            });
                         });
                     });
                 }
